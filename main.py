@@ -10,11 +10,13 @@ TANK_HEIGHT=10
 TANK_RADIUS=3
 MAX_TIME = 10000
 
-WINDOW_HEIGHT=400
-WINDOW_WIDTH=300
-
-RENDER=False
-PLOT= False
+WINDOW_HEIGHT=500
+WINDOW_WIDTH=500
+TBCC = 100 # Time before choke change
+RENDER=True
+PLOT= True
+DELAY=100
+ADD_INFLOW = False
 
 EPISODES = 1
 # ============ MAIN ===========================#
@@ -24,33 +26,40 @@ def main():
     scores = []
     # ============== RENDER========== #
     if RENDER:
-        window = Window(tank)
+        window = Window(tank,WINDOW_HEIGHT,WINDOW_WIDTH)
     for _ in range(EPISODES):
         tank.reset()
-        level_history = []
+        level_history = DELAY*[tank.l]
         valve_history = []
         done = False
         
-        random_valve =  np.array([int(MAX_TIME/10)*[random.uniform(0,1)] for i in range(10)])
-        valve_history = random_valve.reshape(-1)
+        _ = 0
+        while _ < MAX_TIME:
+            valve_history.extend(TBCC*[np.random.uniform(0,1)])
+            _+=TBCC
+
+        valve_history = np.array(valve_history).reshape(-1)
 
         
         for t in range(MAX_TIME):
-            tank.z = valve_history[t]
+            input_z = valve_history[t]
             if RENDER:
-                running = window.Draw()
+                running = window.Draw(input_z)
                 if not running:
                     break
 
             level_history.append(tank.l)
-            tank.change_level()
+
+            tank.change_level(z=input_z)
             if tank.l < tank.min or tank.l > tank.max:
                 break
+            if ADD_INFLOW:
+                pass
         scores.append(t)
-        
+
         if PLOT:
             plt.plot(level_history)
-            plt.plot(valve_history)
+            plt.plot(valve_history[:t+DELAY])
             plt.show()
     pygame.display.quit()
     print(np.mean(scores)) 

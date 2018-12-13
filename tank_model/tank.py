@@ -1,6 +1,6 @@
 import numpy as np 
 import pygame
-from visualize.pygame_tank import Draw
+
 class Tank(): # Cylindric tank
     def __init__(self, 
     height=10, 
@@ -22,14 +22,13 @@ class Tank(): # Cylindric tank
         self.rho = rho
         self.g = 9.81
         self.A_pipe = pipe_radius**2*np.pi
-        self.z = None
 
     def dhdt(self,q_out):
         return -q_out/(np.pi * self.r**2) 
     
-    def change_level(self,p_out=1):
+    def change_level(self,z,p_out=1): # Z is the choke opening
         v_out = np.sqrt(2*(self.g*self.l-p_out/self.rho)) #bernoulli
-        q_out = v_out*self.A_pipe*self.z
+        q_out = v_out*self.A_pipe*z
         self.l += self.dhdt(q_out)
 
     def reset(self):
