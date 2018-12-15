@@ -40,8 +40,6 @@ class Tank(): # Cylindric tank
     def reset(self):
         self.l = self.init_l
 
-
-        
         
         
     
