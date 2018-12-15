@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np 
 import tflowtools as TFT 
 
+# Two hidden layer deep neural network
 class ANN():
         
     def __init__(self,structure=[1,10,10,2], learning_rate=0.1):
@@ -17,7 +18,7 @@ class ANN():
             self.hidden2_size,
             self.output_size
         )
-        
+
     def build(self,ni,nh1,nh2,no):
         self.w1 = tf.Variable(np.random.uniform(-.1,.1,size=(ni,nh1)),name='Weights-1')  # first weight array
         self.w2 = tf.Variable(np.random.uniform(-.1,.1,size=(nh1,nh2)),name='Weights-2') # second weight array
