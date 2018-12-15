@@ -13,6 +13,7 @@ class Tank(): # Cylindric tank
     ):
         self.h = height
         self.r = radius
+        self.A = radius**2*np.pi
 
         self.l = height*level
         self.init_l = self.l
@@ -23,13 +24,18 @@ class Tank(): # Cylindric tank
         self.g = 9.81
         self.A_pipe = pipe_radius**2*np.pi
 
-    def dhdt(self,q_out):
-        return -q_out/(np.pi * self.r**2) 
-    
-    def change_level(self,z,p_out=1): # Z is the choke opening
+    def get_dl_outflow(self,z,p_out=1): # Z is the choke opening
         v_out = np.sqrt(2*(self.g*self.l-p_out/self.rho)) #bernoulli
         q_out = v_out*self.A_pipe*z
-        self.l += self.dhdt(q_out)
+        dl = -q_out/(np.pi * self.r**2) 
+        return dl
+
+    def get_dl_inflow(self,q_inn):
+        dl = q_inn/(self.A*self.rho)
+        return dl
+
+    def change_level(self,dl):
+        self.l += dl
 
     def reset(self):
         self.l = self.init_l
