@@ -8,7 +8,7 @@ class ANN_model():
         self.get_valve_positions(output_size)
         # Defining network model
         self.model = keras.Sequential()
-        self.model.add(keras.layers.Dense(hidden_size[0],input_shape=(3,),activation='relu'))
+        self.model.add(keras.layers.Dense(hidden_size[0],input_shape=(input_size,),activation='relu'))
         for layer in hidden_size:
             self.model.add(keras.layers.Dense(layer,activation='relu'))
         self.model.add(keras.layers.Dense(output_size,activation='softmax'))
@@ -17,8 +17,9 @@ class ANN_model():
     
     def predict(self,x):
         x = np.array(x)/self.max_level
-        x = x.reshape(1,len(x))
-        pred = self.model.predict(x)
+        x_delta = np.array([x[i+1]- x[i] for i in range(len(x[:-1]))])
+        x_delta = x_delta.reshape(1,len(x_delta))
+        pred = self.model.predict(x_delta)
         choice = np.where(pred[0]==max(pred[0]))[0][0]
         z = self.valve_positions[choice]
         return z
@@ -28,7 +29,6 @@ class ANN_model():
         for i in range(output_size):
             valve_positions.append(i/(output_size-1))
         self.valve_positions = np.array(valve_positions)
-        print(valve_positions)
 
         
         
