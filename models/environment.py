@@ -4,9 +4,9 @@ from visualize.window import Window
 from params import *
 import matplotlib.pyplot as plt
 from drawnow import drawnow
-class Simulator():
+class Environment():
     def __init__(self):
-        self.model = Tank()
+        self.model = Tank(TANK_HEIGHT,TANK_RADIUS) # get model
         self.dist = InflowDist(DIST_PIPE_RADIUS,DIST_NOM_FLOW,DIST_VARIANCE_FLOW)
         self.add_dist = ADD_INFLOW
         self.action_delay= TBCC
