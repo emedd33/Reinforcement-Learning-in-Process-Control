@@ -6,16 +6,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def main():
     #============= Initialize variables ===========#
-    # tank = Tank(TANK_HEIGHT,TANK_RADIUS) # get model
+    
     environment = Environment()
-     
-     # initialize prediction model
-    # model = ANN_model(
-    #     input_size=OBSERVATIONS-1, #uses the gradient n observations
-    #     hidden_size=[10,10],
-    #     output_size=VALVE_POSITIONS,
-    #     max_state=environment.model.h
-    #     )
     agent = Agent()
     # ================= Running episodes =================#
     running=True
