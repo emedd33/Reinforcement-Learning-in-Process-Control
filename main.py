@@ -1,5 +1,8 @@
-from main_imports import *
+from models.environment import Environment
+from models.Agent import Agent
 from params import * # Parameters used in main
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def main():
     #============= Initialize variables ===========#
@@ -7,13 +10,13 @@ def main():
     environment = Environment()
      
      # initialize prediction model
-    model = ANN_model(
-        input_size=OBSERVATIONS-1, #uses the gradient n observations
-        hidden_size=[10,10],
-        output_size=VALVE_POSITIONS,
-        max_state=environment.model.h
-        )
-    # agent = Agent()
+    # model = ANN_model(
+    #     input_size=OBSERVATIONS-1, #uses the gradient n observations
+    #     hidden_size=[10,10],
+    #     output_size=VALVE_POSITIONS,
+    #     max_state=environment.model.h
+    #     )
+    agent = Agent()
     # ================= Running episodes =================#
     running=True
     rewards = [] 
@@ -26,9 +29,12 @@ def main():
         for t in range(MAX_TIME):
             state = level_history[-OBSERVATIONS:] # Observe the last states
             if environment.action_delay_counter >= environment.action_delay:
-                action = model.predict(state) 
+                action = agent.predict(state) 
                 environment.action_delay_counter = -1
-                # environment.remember(action,state)
+
+                # Save chosen action with state
+                agent.state_memory.append(state)
+                agent.action_memory.append(action)
             next_state = environment.get_next_state(action) # play out the action
             
             # Check terminate state
