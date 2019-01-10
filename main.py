@@ -2,6 +2,7 @@ from models.environment import Environment
 from models.Agent import Agent
 from params import * # Parameters used in main
 import os
+import numpy as np 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def main():
@@ -14,9 +15,10 @@ def main():
     rewards = [] 
     for e in range(EPISODES):
         environment.reset() # Reset level in tank
-        
+
         level_history = OBSERVATIONS*[environment.model.l] 
-        valve_history = OBSERVATIONS*[0.5]
+        action = 0.5
+        valve_history = OBSERVATIONS*[action] # initializer level history
         # Running through states in the episode
         for t in range(MAX_TIME):
             state = level_history[-OBSERVATIONS:] # Observe the last states
@@ -28,7 +30,8 @@ def main():
                 agent.state_memory.append(state)
                 agent.action_memory.append(action)
             next_state = environment.get_next_state(action) # play out the action
-            
+            reward = environment.get_reward()
+            rewards.append(reward)
             # Check terminate state
             if next_state == "Terminated":
                 break
@@ -48,7 +51,7 @@ def main():
                 
         
         
-    pygame.display.quit()
+    
     print("\nMean rewards for episodes: ", np.mean(rewards)) 
     print("Rewards for the last episode: ", rewards[-1])
 

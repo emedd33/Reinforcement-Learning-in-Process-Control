@@ -4,6 +4,7 @@ from visualize.window import Window
 from params import *
 import matplotlib.pyplot as plt
 from drawnow import drawnow
+import numpy as np 
 class Environment():
     def __init__(self):
         self.model = Tank(TANK_HEIGHT,TANK_RADIUS) # get model
@@ -14,7 +15,8 @@ class Environment():
         self.running = True
         self.episode = 0
         self.rewards = []
-        self.remember = []
+        
+        self.is_terminate_state = False
 
         self.show_rendering= RENDER
         self.live_plot = LIVE_REWARD_PLOT
@@ -40,6 +42,7 @@ class Environment():
         if ADD_INFLOW:
             q_inn = self.dist.get_flow()
             q_inn = 0 if q_inn < 0 else q_inn
+            q_inn = DIST_MAX_FLOW if q_inn > DIST_MAX_FLOW else q_inn
             dl_dist = self.model.get_dl_inflow(q_inn)
             self.model.change_level(dl_dist)    
         
@@ -58,6 +61,11 @@ class Environment():
             running = self.window.Draw(action,next_state)
             if not running:
                 self.running = False
+    def get_reward(self):
+        reward = np.abs(self.model.l - SS_POSITION) # Divergent from set point
+        if self.is_terminate_state:
+            reward *= 3 
+        return reward
     def plot_rewards(self):
         plt.plot(self.rewards,label="Episode number: {}".format(self.episode))
         plt.legend()

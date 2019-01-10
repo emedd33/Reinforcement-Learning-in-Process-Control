@@ -12,14 +12,22 @@ DELAY=0
 ADD_INFLOW = True
 DIST_PIPE_RADIUS=1
 DIST_DISTRIBUTION="gauss"
-DIST_NOM_FLOW=500
-DIST_VARIANCE_FLOW=100
+DIST_NOM_FLOW=70
+DIST_VARIANCE_FLOW=20
+DIST_MAX_FLOW = 120
 
 
-# Training parameters
+# Agent parameters
 MAX_TIME = 10000
-OBSERVATIONS = 10 # input = state[i+1]- state[i]
-VALVE_POSITIONS= 10
+SS_POSITION = 0.5 # steady state set position
+OBSERVATIONS = 3 # Number of time steos observed
+VALVE_POSITIONS= 10 # Number of valve positions #TODO change name
+GAMMA = 0.95    # discount rate
+EPSILON = 1.0  # exploration rate
+EPSILON_MIN = 0.01
+EPSILON_DECAY = 0.995
+LEARNING_RATE = 0.001
+
 
 # Render parameters
 RENDER=True
