@@ -3,7 +3,7 @@ from models.Agent import Agent
 from params import * # Parameters used in main
 import os
 import numpy as np 
-
+import keyboard
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def main():
@@ -41,7 +41,10 @@ def main():
         # Live plot rewards
         all_rewards.append(np.sum(rewards))
         if LIVE_REWARD_PLOT:
-            environment.plot(all_rewards,e)
+            if keyboard.is_pressed('c'):
+                break
+            else:
+                environment.plot(all_rewards,e)
         if not environment.running:
             break
                 

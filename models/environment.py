@@ -62,7 +62,7 @@ class Environment():
                 self.running = False
     def get_reward(self,state):
         if state == "Terminated":
-            return -TANK_HEIGHT**2
+            return -(SS_POSITION*TBCC)**2
         reward = -(state - SS_POSITION)**2 # MSE
         return reward
     def plot_rewards(self):
@@ -72,5 +72,8 @@ class Environment():
     def plot(self,all_rewards,episode):
         self.all_rewards.extend(all_rewards)
         self.episode = episode
-        drawnow(self.plot_rewards)
+        try:
+            drawnow(self.plot_rewards)
+        except:
+            print("Break")
 
