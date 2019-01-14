@@ -3,6 +3,7 @@ from models.Agent import Agent
 from params import * # Parameters used in main
 import os
 import numpy as np 
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def main():
@@ -12,48 +13,44 @@ def main():
     agent = Agent()
     # ================= Running episodes =================#
     running=True
-    rewards = [] 
+    all_rewards = [] 
     for e in range(EPISODES):
-        environment.reset() # Reset level in tank
-
-        level_history = OBSERVATIONS*[environment.model.l] 
-        action = 0.5
-        valve_history = OBSERVATIONS*[action] # initializer level history
+        action_state,states,rewards,action_delay_counter,action = environment.reset() # Reset level in tank
         # Running through states in the episode
-        for t in range(MAX_TIME):
-            state = level_history[-OBSERVATIONS:] # Observe the last states
-            if environment.action_delay_counter >= environment.action_delay:
-                action = agent.predict(state) 
-                environment.action_delay_counter = -1
+        for t in range(MAX_TIME):    
+            if action_delay_counter >= environment.action_delay:
+                action_state = states[-OBSERVATIONS:]
+                # Remember last action and the result from that action
+                agent.remember(action_state,action,np.sum(rewards[-environment.action_delay:]))
+                action = agent.predict(action_state) 
+                action_delay_counter = -1 
 
-                # Save chosen action with state
-                agent.state_memory.append(state)
-                agent.action_memory.append(action)
-            next_state = environment.get_next_state(action) # play out the action
-            reward = environment.get_reward()
-            rewards.append(reward)
+            action_delay_counter += 1
+            # Save chosen action with state
+            states.append(environment.get_next_state(action)) # play out the action
+            rewards.append(environment.get_reward(states[-1]))
             # Check terminate state
-            if next_state == "Terminated":
-                break
-
+            if states[-1] == "Terminated":
+                if action_state is not None:
+                    agent.remember(action_state,action,np.sum(rewards[-environment.action_delay:]))
+                break 
             if environment.show_rendering:
-                environment.render(action,next_state)
-
-            valve_history.append(action)
-            level_history.append(next_state)   
-        rewards.append(t)
+                environment.render(action,states[-1])
+            
 
         # Live plot rewards
-        if environment.live_plot:
-            environment.plot(t,e)
+        all_rewards.append(np.sum(rewards))
+        if LIVE_REWARD_PLOT:
+            environment.plot(all_rewards,e)
         if not environment.running:
             break
                 
         
         
-    
-    print("\nMean rewards for episodes: ", np.mean(rewards)) 
-    print("Rewards for the last episode: ", rewards[-1])
+    print("##### SIMULATION DONE #####")
+    print("Mean rewards for all episodes: {}".format(np.mean(all_rewards))) 
+    print("Mean rewards for the last 10 episodes: {}".format(np.mean(all_rewards[-10:]))) 
+    print("Rewards for the last episode: {}".format(all_rewards[-1]))
 
 if __name__ == "__main__":
     main()
