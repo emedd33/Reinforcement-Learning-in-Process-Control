@@ -15,7 +15,8 @@ class Environment():
         self.running = True
         self.episode = 0
         self.all_rewards = []
-        
+        self.terminated = False
+
         self.show_rendering= RENDER
         self.live_plot = LIVE_REWARD_PLOT
         if RENDER:
@@ -45,15 +46,21 @@ class Environment():
             self.model.change_level(dl_dist)    
         
         # Check terminate state
-        if self.model.l < self.model.min or self.model.l > self.model.max:
-            return "Terminated"
-        return self.model.l
+        if self.model.l < self.model.min:
+            self.model.l = self.model.min 
+            self.terminated = True
+        elif self.model.l > self.model.max:
+            self.model.l = self.model.max
+            self.terminated = True
+        return self.terminated, self.model.l
+
             
     def reset(self):
         self.model.reset() # reset to initial tank level
         self.dist.reset() # reset to nominal disturbance
         init_action = 0.5
-        return None,[0.5*TANK_HEIGHT], [],-OBSERVATIONS, init_action
+        self.terminated = False
+        return None,[SS_POSITION], [],-OBSERVATIONS, init_action
 
     def render(self,action,next_state):
         if RENDER:
@@ -61,16 +68,16 @@ class Environment():
             if not running:
                 self.running = False
     def get_reward(self,state):
-        if state == "Terminated":
-            return -(SS_POSITION*TBCC)**2
         reward = -(state - SS_POSITION)**2 # MSE
         return reward
+    def get_termination_reward(self,state,t):
+        return -(MAX_TIME-t)*(state-SS_POSITION)**2 # sums up the rest of the episode time
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Episode number: {}".format(self.episode))
         plt.legend()
 
     def plot(self,all_rewards,episode):
-        self.all_rewards.extend(all_rewards)
+        self.all_rewards = all_rewards
         self.episode = episode
         try:
             drawnow(self.plot_rewards)

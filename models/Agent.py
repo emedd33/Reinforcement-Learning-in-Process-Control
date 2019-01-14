@@ -12,6 +12,7 @@ class Agent():
 
         self.state_size = state_size
         self.action_size = action_size
+        self.action_choices = self.get_action_choices(action_size)
         self.memory = deque(maxlen=2000)
         self.gamma = 0.95    # discount rate
         self.epsilon = 1.0  # exploration rate
@@ -20,8 +21,6 @@ class Agent():
         self.learning_rate = 0.001
 
         self.memory = deque(maxlen=2000) 
-        
-        self.valve_positions = self.get_valve_positions(action_size)
         self.ANN_model = self.build_ANN(state_size,hl_size,action_size,learning_rate=0.01)
         
     
@@ -38,30 +37,28 @@ class Agent():
             optimizer=keras.optimizers.Adam(lr=learning_rate)
             )
         return model
-    def get_valve_positions(self,action_size):
+
+    def get_action_choices(self,action_size):
         valve_positions= []
         for i in range(action_size):
             valve_positions.append(i/(action_size-1))
         return np.array(valve_positions)
+        
 
     def remember(self, state, action, reward):
         self.memory.append((state, action, reward))
 
-    def predict(self,states):
+    def act_greedy(self,states):
         states_grad = [states[i+1]- states[i] for i in range(len(states[:-1]))] # calculate dhdt
         states_data = np.array(states+states_grad) # Combine level with gradient of level
-
         states_data = states_data.reshape(1,len(states_data))
         pred = self.ANN_model.predict(states_data) 
         choice = np.where(pred[0]==max(pred[0]))[0][0]
-        z = self.valve_positions[choice]
-        # random 
-        z = random.uniform(0,1)
-        return z
+        return self.action_choices[choice]
+         
 
-    def act(self, state):
-        if np.random.rand() <= self.epsilon:
-            return random.randrange(self.action_size)
-        #act_values = self.model.predict(state)
-        # return np.argmax(act_values[0])  # returns action
-        return random.randrange(self.action_size)
+    def act(self, states):
+        if np.random.rand() <= self.epsilon: # Exploration 
+            random_action = random.randint(0,self.action_size-1)
+            return self.action_choices[random_action]
+        return self.act_greedy(states)
