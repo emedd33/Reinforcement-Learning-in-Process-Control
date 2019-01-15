@@ -16,42 +16,31 @@ def main():
     running=True
     all_rewards = [] 
     batch_size = BATCH_SIZE
-    
+    reward_index = int(0)
     for e in range(EPISODES):
-        action_state,states,rewards,action_delay_counter,action = environment.reset() # Reset level in tank
+        state, action, next_state,episode_reward = environment.reset() # Reset level in tank
         # Running through states in the episode
         for t in range(MAX_TIME):    
-            if action_delay_counter >= environment.action_delay:
-                action_state = states[-OBSERVATIONS:]
-                # Remember last action and the result from that action
-                agent.remember(action_state,action,np.sum(rewards[-environment.action_delay:]))
-                action = agent.act(action_state)  
-                action_delay_counter = -1 
-                states = [] # Free up memory 
-
-            action_delay_counter += 1
-            # Save chosen action with state
-            terminated, next_state = environment.get_next_state(action) # play out the action
-            states.append(next_state)
-
-            rewards.append(environment.get_reward(states[-1]))
-            # Check terminate state
+            action = agent.act(state)
+            z = agent.action_choices[action]
+            terminated, next_state = environment.get_next_state(z,state) 
+            reward = environment.get_reward(next_state,terminated,t)
+            agent.remember(state,action,next_state,reward,terminated)
+            episode_reward+=reward
             if terminated:
-                reward = environment.get_termination_reward(states[-1],t)
-                rewards.append(reward)
-                if action_state is not None:
-                    agent.remember(action_state,action,np.sum(rewards[-environment.action_delay:]))
                 break 
             if environment.show_rendering:
-                environment.render(action,states[-1])
-            
+                environment.render(z,next_state[-1])
+            if len(agent.memory)>batch_size:
+                agent.replay(batch_size)
         # Live plot rewards
-        all_rewards.append(np.sum(rewards))
+        agent.decay_exploration()
+        all_rewards.append(episode_reward)
         if LIVE_REWARD_PLOT:
             if keyboard.is_pressed('ctrl+c'):
                 break
             else:
-                environment.plot(all_rewards,e)       
+                environment.plot(all_rewards,agent.epsilon)       
         if not environment.running:
             break
                     

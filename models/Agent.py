@@ -14,11 +14,11 @@ class Agent():
         self.action_size = action_size
         self.action_choices = self.get_action_choices(action_size)
         self.memory = deque(maxlen=2000)
-        self.gamma = 0.95    # discount rate
-        self.epsilon = 1.0  # exploration rate
-        self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
-        self.learning_rate = 0.001
+        self.gamma = GAMMA    # discount rate
+        self.epsilon = EPSILON  # exploration rate
+        self.epsilon_min = EPSILON_MIN
+        self.epsilon_decay = EPSILON_DECAY
+        self.learning_rate = LEARNING_RATE
 
         self.memory = deque(maxlen=2000) 
         self.ANN_model = self.build_ANN(state_size,hl_size,action_size,learning_rate=0.01)
@@ -45,20 +45,38 @@ class Agent():
         return np.array(valve_positions)
         
 
-    def remember(self, state, action, reward):
-        self.memory.append((state, action, reward))
+    def remember(self, state, action, next_state,reward,done):
+        self.memory.append((state, action, next_state, reward,done))
 
     def act_greedy(self,states):
+        states_data = self.process_state_data(states)
+        pred = self.ANN_model.predict(states_data) 
+        choice = np.where(pred[0]==max(pred[0]))[0][0]
+        return choice
+         
+    def process_state_data(self,states):
         states_grad = [states[i+1]- states[i] for i in range(len(states[:-1]))] # calculate dhdt
         states_data = np.array(states+states_grad) # Combine level with gradient of level
         states_data = states_data.reshape(1,len(states_data))
-        pred = self.ANN_model.predict(states_data) 
-        choice = np.where(pred[0]==max(pred[0]))[0][0]
-        return self.action_choices[choice]
-         
+        return states_data
 
     def act(self, states):
         if np.random.rand() <= self.epsilon: # Exploration 
             random_action = random.randint(0,self.action_size-1)
-            return self.action_choices[random_action]
+            return random_action
         return self.act_greedy(states)
+        
+    def replay(self, batch_size):
+        minibatch = random.sample(self.memory, batch_size)
+        for state, action, next_state,reward,done in minibatch:
+            target = reward
+            state_data = self.process_state_data(state)
+            next_state_data = self.process_state_data(next_state)
+            if not done:
+                target = (reward + self.gamma *np.amax(self.ANN_model.predict(next_state_data)))
+            target_f = self.ANN_model.predict(state_data)
+            target_f[0][action] = target
+            self.ANN_model.fit(state_data, target_f, epochs=1, verbose=0)
+    def decay_exploration(self):
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.epsilon_decay
