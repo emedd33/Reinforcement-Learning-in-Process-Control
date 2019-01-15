@@ -1,15 +1,15 @@
 import numpy as np 
 import pygame
-from params import MAX_LEVEL,MIN_LEVEL
+from params import MAX_LEVEL,MIN_LEVEL,TANK_HEIGHT,TANK_RADIUS
 class Tank(): # Cylindric tank
     def __init__(self, 
-    height=10, 
-    radius=3, 
-    level=0.5, 
+    height=TANK_HEIGHT, 
+    radius=TANK_RADIUS, 
+    level=0.5, # %
     max_level=MAX_LEVEL, 
     min_level=MIN_LEVEL, 
     rho=1000,
-    pipe_radius=0.2
+    pipe_radius=0.1 #m
     ):
         self.h = height
         self.r = radius

@@ -53,7 +53,7 @@ class Window():
             self.CHOKE_WIDTH,
             self.CHOKE_HEIGHT
             ))
-    def DrawLevel(self,level):
+    def DrawLevel(self,level): #TODO change max min level visual 
         level_percent = level/self.tank.h
         draw_level = int(level_percent*self.TANK_HEIGHT)
         pygame.draw.rect(self.screen,self.RGA_WATER,

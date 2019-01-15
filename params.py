@@ -1,9 +1,12 @@
 
 #=============== PARAMETERS ==================#
+EPISODES = 100
+MAX_TIME = 20000
+SAVE_ANN_MODEL=False
 
 # Model parameters
 TANK_HEIGHT=10
-TANK_RADIUS=2
+TANK_RADIUS=3
 TBCC = 200 # Time before choke change
 DELAY=0
 MAX_LEVEL=0.99
@@ -20,11 +23,10 @@ DIST_MAX_FLOW = 200
 
 
 # Agent parameters
-MAX_TIME = 10000
 SS_POSITION = 0.5*TANK_HEIGHT # steady state set position
 VALVE_START_POSITION=0.5
 OBSERVATIONS = 2 # Number of time steos observed
-VALVE_POSITIONS= 2 # Number of valve positions #TODO change name
+VALVE_POSITIONS= 3 # Number of valve positions #TODO change name
 GAMMA = 0.95    # discount rate
 EPSILON = 1.0  # exploration rate
 EPSILON_MIN = 0.01
@@ -34,7 +36,5 @@ BATCH_SIZE=50
 
 
 # Render parameters
-RENDER=True
-LIVE_REWARD_PLOT= True
-
-EPISODES = 100
+RENDER=False
+LIVE_REWARD_PLOT= False

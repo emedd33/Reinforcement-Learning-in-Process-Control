@@ -57,9 +57,10 @@ def main():
                     
         
         
-    print("##### SIMULATION DONE #####")
+    print("##### {} EPISODES DONE #####".format(EPISODES))
     print("Mean rewards for all episodes: {}".format(np.mean(all_rewards))) 
     print("Mean rewards for the last 10 episodes: {}".format(np.mean(all_rewards[-10:]))) 
-    print("Rewards for the last episode: {}".format(all_rewards[-1]))
+    if SAVE_ANN_MODEL:
+        print("ANN_Model was saved")
 if __name__ == "__main__":
     main()
