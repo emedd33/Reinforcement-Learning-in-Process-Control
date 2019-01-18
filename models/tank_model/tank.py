@@ -44,7 +44,8 @@ class Tank(): # Cylindric tank
         return action
         
     def get_params(self,action):
-        return self.get_valve(action),self.A_pipe,self.g,self.l,0,self.rho,self.r
+        f = self.get_valve(action)
+        return f,self.A_pipe,self.g,self.l,0,self.rho,self.r
         
         
     

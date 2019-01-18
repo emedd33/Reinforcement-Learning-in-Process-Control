@@ -33,13 +33,14 @@ class Environment():
         else:
             q_inn = 0
         f,A_pipe,g,l,delta_p,rho,r = self.model.get_params(action) 
-        return q_inn/(np.pi*r**2)-(f*A_pipe*np.sqrt(1*g*l+delta_p/rho))/(np.pi*r**2) # Eq: 1
+        
+        term1 = q_inn/(np.pi*r**2)
+        term2 = (f*A_pipe*np.sqrt(1*g*l+delta_p/rho))/(np.pi*r**2)
+        return term1- term2 # Eq: 1
 
     def get_next_state(self,action,state): 
         # models response to input change
         dldt = self.get_dhdt(action)
-
-        # dl = self.model.get_dl_outflow(z=action)
         self.model.change_level(dldt)
 
         # Check terminate state
@@ -49,6 +50,7 @@ class Environment():
         elif self.model.l > self.model.max:
             self.model.l = self.model.max
             self.terminated = True
+
         next_state = state[1:] + [self.model.l]
         return self.terminated, next_state
 
