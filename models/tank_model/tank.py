@@ -34,12 +34,17 @@ class Tank(): # Cylindric tank
         dl = q_inn/(self.A*self.rho)
         return dl
 
-    def change_level(self,dl):
-        self.l += dl
+    def change_level(self,dldt):
+        self.l += dldt
 
     def reset(self):
         self.l = self.init_l
 
+    def get_valve(self,action):
+        return action
+        
+    def get_params(self,action):
+        return self.get_valve(action),self.A_pipe,self.g,self.l,0,self.rho,self.r
         
         
     

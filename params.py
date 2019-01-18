@@ -1,7 +1,7 @@
 
 #=============== PARAMETERS ==================#
-EPISODES = 100
-MAX_TIME = 500
+EPISODES = 500
+MAX_TIME = 300
 SAVE_ANN_MODEL=False
 
 # Model parameters
@@ -31,11 +31,12 @@ VALVE_POSITIONS= 3 # Number of valve positions #TODO change name
 GAMMA = 0.95    # discount rate
 EPSILON = 1.0  # exploration rate
 EPSILON_MIN = 0.01
-EPSILON_DECAY = 0.5
-LEARNING_RATE = 0.001
-BATCH_SIZE=10
+EPSILON_DECAY = 0.995
+LEARNING_RATE = 0.01
+NUMBER_OF_HIDDEN_LAYERS = []
+BATCH_SIZE=50
 
 
 # Render parameters
-RENDER=False
+RENDER=True
 LIVE_REWARD_PLOT= True

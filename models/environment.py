@@ -23,28 +23,25 @@ class Environment():
             self.window = Window(self.model)
         if LIVE_REWARD_PLOT:
             plt.ion()  # enable interactivity
-            fig = plt.figure(num="Max reward: {}".format(MAX_TIME))  # make a figure
-            
-            # def plot_rewards():
-            #     plt.plot(rewards,label="Episode number: {}".format(e))
-            #     plt.legend()
+            fig = plt.figure(num="Rewards per episode")  # make a figure
 
-    def remember(self,action,state):
-        self.remember.append([action,state])
-
-    def get_next_state(self,action,state):
-        # models response to input change
-        dl = self.model.get_dl_outflow(z=action)
-        self.model.change_level(dl)
-
-        # Random disturbance
+    def get_dhdt(self,action):
         if ADD_INFLOW:
             q_inn = self.dist.get_flow()
             q_inn = DIST_MIN_FLOW if q_inn < DIST_MIN_FLOW else q_inn
             q_inn = DIST_MAX_FLOW if q_inn > DIST_MAX_FLOW else q_inn
-            dl_dist = self.model.get_dl_inflow(q_inn)
-            self.model.change_level(dl_dist)    
-        
+        else:
+            q_inn = 0
+        f,A_pipe,g,l,delta_p,rho,r = self.model.get_params(action) 
+        return q_inn/(np.pi*r**2)-(f*A_pipe*np.sqrt(1*g*l+delta_p/rho))/(np.pi*r**2) # Eq: 1
+
+    def get_next_state(self,action,state): 
+        # models response to input change
+        dldt = self.get_dhdt(action)
+
+        # dl = self.model.get_dl_outflow(z=action)
+        self.model.change_level(dldt)
+
         # Check terminate state
         if self.model.l < self.model.min:
             self.model.l = self.model.min 
@@ -60,7 +57,7 @@ class Environment():
         self.model.reset() # reset to initial tank level
         self.dist.reset() # reset to nominal disturbance
         self.terminated = False
-        init_state = OBSERVATIONS*[SS_POSITION]
+        init_state = OBSERVATIONS*[self.model.init_l]
         return init_state, None ,init_state,0
         # state,next_state,action,rewards,action_delay_counter
 
@@ -71,7 +68,8 @@ class Environment():
                 self.running = False
     def get_reward(self,state,terminated,t):
         if terminated: # sums up the rest of the episode time
-            reward = -(MAX_TIME-t)*(state[-1]-SS_POSITION)**2
+            reward = -MAX_TIME*(state[-1]-SS_POSITION)**2
+            #reward = -(MAX_TIME-t)*(state[-1]-SS_POSITION)**2
             return reward
         reward = -(state[-1] - SS_POSITION)**2 # MSE
         return reward

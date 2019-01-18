@@ -5,7 +5,7 @@ import numpy as np
 import random
 class Agent():
     def __init__(self,
-            hl_size=[10,10],
+            hl_size=NUMBER_OF_HIDDEN_LAYERS,
             state_size=OBSERVATIONS*2-1, #All states plus the gradients
             action_size=VALVE_POSITIONS
         ):
@@ -27,9 +27,12 @@ class Agent():
     def build_ANN(self,state_size,hl_size,action_size,learning_rate):    
         # Defining network model
         model = keras.Sequential()
-        model.add(keras.layers.Dense(hl_size[0],input_shape=(state_size,),activation='relu'))
-        for i in hl_size:
-            model.add(keras.layers.Dense(i,activation='relu'))
+        try:
+            model.add(keras.layers.Dense(hl_size[0],input_shape=(state_size,),activation='relu'))
+            for i in hl_size:
+                model.add(keras.layers.Dense(i,activation='relu'))
+        except IndexError:
+            model.add(keras.layers.Dense(action_size,input_shape=(state_size,),activation='relu'))
         model.add(keras.layers.Dense(action_size,activation='softmax'))
         
         model.compile(
@@ -77,6 +80,7 @@ class Agent():
             target_f = self.ANN_model.predict(state_data)
             target_f[0][action] = target
             self.ANN_model.fit(state_data, target_f, epochs=1, verbose=0)
+            self.decay_exploration()
     def decay_exploration(self):
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
