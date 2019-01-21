@@ -6,7 +6,7 @@ class Window():
         self.WINDOW_HEIGHT=WINDOW_HEIGHT=400
         self.WINDOW_WIDTH=WINDOW_WIDTH=300
         self.screen = pygame.display.set_mode((self.WINDOW_HEIGHT, self.WINDOW_WIDTH))
-        self.background_image = pygame.image.load("visualize/figures/EmptyTank.png").convert()
+        self.background_image = pygame.image.load("visualize/images/EmptyTank.png").convert()
         self.background_image = pygame.transform.scale(self.background_image, (WINDOW_HEIGHT, WINDOW_WIDTH))
         
         # The parameters set to this are hardcoded and should not be changed

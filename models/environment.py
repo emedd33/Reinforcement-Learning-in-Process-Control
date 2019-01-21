@@ -7,9 +7,9 @@ from drawnow import drawnow
 import numpy as np 
 class Environment():
     def __init__(self):
-        self.model = Tank(TANK_HEIGHT,TANK_RADIUS) # get model
-        self.dist = InflowDist(DIST_PIPE_RADIUS,DIST_NOM_FLOW,DIST_VARIANCE_FLOW)
-        self.add_dist = ADD_INFLOW
+        self.model = Tank() # get tank model
+        if ADD_INFLOW:
+            self.dist = InflowDist()
         self.action_delay= TBCC
         self.action_delay_counter = -OBSERVATIONS # Does not train on initial settings
         self.running = True
@@ -57,7 +57,8 @@ class Environment():
             
     def reset(self):
         self.model.reset() # reset to initial tank level
-        self.dist.reset() # reset to nominal disturbance
+        if ADD_INFLOW:
+            self.dist.reset() # reset to nominal disturbance
         self.terminated = False
         init_state = OBSERVATIONS*[self.model.init_l]
         return init_state, None ,init_state,0

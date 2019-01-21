@@ -30,12 +30,12 @@ def main():
                 break 
             if environment.show_rendering:
                 environment.render(z,next_state[-1])
-            if len(agent.memory)>batch_size:
+            if len(agent.memory)>batch_size and agent.epsilon != 0:
                 agent.replay(batch_size)
             if keyboard.is_pressed('ctrl+c'):
                 break
         # Live plot rewards
-        # agent.decay_exploration()
+        agent.decay_exploration()
         all_rewards.append(episode_reward)
         if keyboard.is_pressed('ctrl+c'):
                 break

@@ -79,7 +79,8 @@ class Agent():
             target_f = self.ANN_model.predict(state_data)
             target_f[0][action] = target
             self.ANN_model.fit(state_data, target_f, epochs=1, verbose=0)
-            #self.decay_exploration()
     def decay_exploration(self):
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+        else:
+            self.epsilon = 0
