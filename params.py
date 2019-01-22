@@ -1,7 +1,7 @@
 
 #=============== PARAMETERS ==================#
-EPISODES = 500
-MAX_TIME = 300
+EPISODES = 100
+MAX_TIME = 100
 SAVE_ANN_MODEL=False
 
 # Model parameters
@@ -29,14 +29,14 @@ DIST_MIN_FLOW=  DIST_NOM_FLOW - 3*DIST_VARIANCE_FLOW
 SS_POSITION = 0.5*TANK_HEIGHT # steady state set position
 VALVE_START_POSITION=0.5
 OBSERVATIONS = 1 # Number of time steos observed
-VALVE_POSITIONS= 3 # Number of valve positions 
+VALVE_POSITIONS= 2 # Number of valve positions 
 GAMMA = 0.95    # discount rate
 EPSILON = 1.0  # exploration rate
 EPSILON_MIN = 0.01
 EPSILON_DECAY = 0.995
 LEARNING_RATE = 0.01
-NUMBER_OF_HIDDEN_LAYERS = []
-BATCH_SIZE=10
+NUMBER_OF_HIDDEN_LAYERS = [5]
+BATCH_SIZE=MAX_TIME
 
 
 # Render parameters

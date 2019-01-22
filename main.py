@@ -30,8 +30,8 @@ def main():
                 break 
             if environment.show_rendering:
                 environment.render(z,next_state[-1])
-            if len(agent.memory)>batch_size and agent.epsilon != 0:
-                agent.replay(batch_size)
+            if (agent.is_ready(batch_size)):
+                agent.Qreplay(batch_size)
             if keyboard.is_pressed('ctrl+c'):
                 break
         # Live plot rewards
@@ -44,7 +44,7 @@ def main():
         if not environment.running:
             break
                     
-        
+        print("Episode reward: {}".format(episode_reward))
         
     print("##### {} EPISODES DONE #####".format(e))
     print("Max rewards for all episodes: {}".format(np.max(all_rewards))) 

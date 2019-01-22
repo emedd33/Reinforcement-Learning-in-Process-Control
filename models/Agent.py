@@ -21,6 +21,7 @@ class Agent():
         self.learning_rate = LEARNING_RATE
 
         self.memory = deque(maxlen=1000) 
+        self.replay_counter = 0
         self.ANN_model = self._build_ANN(state_size,hl_size,action_size,learning_rate=0.01)
         
     
@@ -49,6 +50,7 @@ class Agent():
 
     def remember(self, state, action, next_state,reward,done):
         self.memory.append((state, action, next_state, reward,done))
+        self.replay_counter += 1
 
     def act_greedy(self,states):
         states_data = self.process_state_data(states)
@@ -67,8 +69,14 @@ class Agent():
             random_action = random.randint(0,self.action_size-1)
             return random_action
         return self.act_greedy(states)
-        
-    def replay(self, batch_size):
+
+    def is_ready(self,batch_size):
+        if len(self.memory)< batch_size:
+            return False
+        if self.replay_counter < batch_size:
+            return False
+        return True
+    def Qreplay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
         for state, action, next_state,reward,done in minibatch:
             target = reward
@@ -79,8 +87,8 @@ class Agent():
             target_f = self.ANN_model.predict(state_data)
             target_f[0][action] = target
             self.ANN_model.fit(state_data, target_f, epochs=1, verbose=0)
+        self.decay_exploration()
+        self.replay_counter = 0
     def decay_exploration(self):
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
-        else:
-            self.epsilon = 0
