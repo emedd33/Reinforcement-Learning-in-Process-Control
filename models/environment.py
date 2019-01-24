@@ -5,6 +5,7 @@ from params import *
 import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np 
+from params import SS_POSITION
 class Environment():
     def __init__(self):
         self.model = Tank() # get tank model
@@ -45,13 +46,13 @@ class Environment():
 
         # Check terminate state
         if self.model.l < self.model.min:
-            self.model.l = self.model.min 
             self.terminated = True
+            self.model.l = self.model.min
         elif self.model.l > self.model.max:
-            self.model.l = self.model.max
             self.terminated = True
-
-        next_state = state[1:] + [self.model.l]
+            self.model.l = self.model.max
+        grad = self.model.l-state[0]
+        next_state = [self.model.l, grad]
         return self.terminated, next_state
 
             
@@ -60,21 +61,27 @@ class Environment():
         if ADD_INFLOW:
             self.dist.reset() # reset to nominal disturbance
         self.terminated = False
-        init_state = OBSERVATIONS*[self.model.init_l]
-        return init_state, None ,init_state,0
-        # state,next_state,action,rewards,action_delay_counter
+        init_state = [self.model.init_l,0]
+        return init_state,TBCC,init_state,[]
 
     def render(self,action,next_state):
         if RENDER:
             running = self.window.Draw(action,next_state)
             if not running:
                 self.running = False
-    def get_reward(self,state,terminated,t):
+
+    def get_reward(self,state,terminated,t):  
+        if state > self.model.max or state < self.model.min:
+            return -10
+        if state > self.model.soft_max or state < self.model.soft_min:
+            return 0
+        return 1  
+
         if terminated: # sums up the rest of the episode time
-            reward = -MAX_TIME*(state[-1]-SS_POSITION)**2
-            #reward = -(MAX_TIME-t)*(state[-1]-SS_POSITION)**2
+            reward = -MAX_TIME*(state-SS_POSITION)**2
+            # reward = -(MAX_TIME-t)*(state[-1]-SS_POSITION)**2
             return reward
-        reward = -(state[-1] - SS_POSITION)**2 # MSE
+        reward = -(state - SS_POSITION)**2 # MSE
         return reward
         
     def plot_rewards(self):

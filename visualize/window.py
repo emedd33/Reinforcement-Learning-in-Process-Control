@@ -1,4 +1,5 @@
 import pygame
+from params import HARD_MAX,HARD_MIN
 class Window():
     def __init__(self,tank):
         pygame.init()
@@ -15,6 +16,10 @@ class Window():
         self.TANK_HEIGHT=200
         self.TANK_WIDTH=157
         self.TANK_BOARDER = 10
+
+        self.HARD_MAX=HARD_MAX
+        self.HARD_MIN=HARD_MIN
+        self.max_min_interval = self.HARD_MAX-self.HARD_MIN
 
         self.MEASER_BOARDER = 10
         self.MEASER_HEIGHT=150
@@ -53,8 +58,9 @@ class Window():
             self.CHOKE_WIDTH,
             self.CHOKE_HEIGHT
             ))
-    def DrawLevel(self,level): #TODO change max min level visual 
+    def DrawLevel(self,level):  
         level_percent = level/self.tank.h
+        level_percent = (level_percent-self.HARD_MIN)/self.max_min_interval 
         draw_level = int(level_percent*self.TANK_HEIGHT)
         pygame.draw.rect(self.screen,self.RGA_WATER,
         pygame.Rect(
