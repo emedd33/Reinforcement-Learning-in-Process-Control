@@ -1,5 +1,6 @@
 
 #=============== PARAMETERS ==================#
+
 EPISODES = 10000
 MAX_TIME = 400
 SAVE_ANN_MODEL=False
@@ -33,6 +34,7 @@ OBSERVATIONS = 1 # Number of time steos observed
 VALVE_POSITIONS= 2 # Number of valve positions 
 GAMMA = 0.9    # discount rate
 EPSILON = 1.0  # exploration rate
+
 EPSILON_MIN = 0.05
 EPSILON_DECAY = 0.995
 LEARNING_RATE = 0.001

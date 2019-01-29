@@ -49,6 +49,11 @@ class Agent():
         return model        
 
     def remember(self, state, action, next_state,reward,done):
+        state=np.array(state)
+        state=state.reshape(1,state.size)
+
+        next_state=np.array(next_state)
+        next_state=next_state.reshape(1,next_state.size)
         self.memory.append((state, action, next_state, reward,done))
         self.replay_counter += 1
 
