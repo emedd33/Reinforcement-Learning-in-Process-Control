@@ -1,4 +1,4 @@
-# Deep-Reinforcement-Learning-Process-Control
+# Reinforcement Learning in Process Control. Q learning with ANN as value aproximator.
 
 <img src="https://github.com/emedd33/Deep-Reinforcement-Learning-Process-Control/blob/master/visualize/images/DescriptionImage.png" width="500">
 
