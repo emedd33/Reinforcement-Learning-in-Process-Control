@@ -51,8 +51,8 @@ class Environment():
         elif self.model.l > self.model.max:
             self.terminated = True
             self.model.l = self.model.max
-        grad = self.model.l-state[0]
-        next_state = [self.model.l]
+        next_state = np.append(state[0][1:],self.model.l/self.model.h)
+        next_state = next_state.reshape(1, state.size)
         return self.terminated, next_state
 
             
@@ -61,7 +61,8 @@ class Environment():
         if ADD_INFLOW:
             self.dist.reset() # reset to nominal disturbance
         self.terminated = False
-        init_state = [self.model.init_l]
+        init_state = OBSERVATIONS*[self.model.init_l/self.model.h]
+        init_state = np.array([init_state])
         return init_state,TBCC,init_state,[]
 
     def render(self,action,next_state):
@@ -71,7 +72,7 @@ class Environment():
                 self.running = False
 
     def get_reward(self,state,terminated,t):
-        if state > 2.5 and state < 7.5:
+        if state[0][-1] > 0.25 and state[0][-1] < 0.75:
             return 1
         if terminated: # sums up the rest of the episode time
             return -10

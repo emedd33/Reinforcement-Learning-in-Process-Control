@@ -27,18 +27,17 @@ def main():
             else:
                 action_delay+=1
             terminated, next_state = environment.get_next_state(z,state) 
-            reward = environment.get_reward(next_state[0],terminated,t)
+            reward = environment.get_reward(next_state,terminated,t)
             episode_reward.append(reward)
             if action_delay >=TBCC or terminated:
                 agent.remember(state,action,next_state,reward,terminated)
-                state=next_state
+            state=next_state
             if terminated:
                 break 
             if environment.show_rendering:
                 environment.render(z,next_state[0])
             if (agent.is_ready(batch_size)):
                 agent.Qreplay(batch_size)
-                agent.decay_exploration()
             if keyboard.is_pressed('ctrl+c'):
                 break
         # agent.decay_exploration()

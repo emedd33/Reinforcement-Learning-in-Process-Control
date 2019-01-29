@@ -59,7 +59,7 @@ class Window():
             self.CHOKE_HEIGHT
             ))
     def DrawLevel(self,level):  
-        level_percent = level/self.tank.h
+        level_percent = self.tank.l/self.tank.h
         level_percent = (level_percent-self.HARD_MIN)/self.max_min_interval 
         draw_level = int(level_percent*self.TANK_HEIGHT)
         pygame.draw.rect(self.screen,self.RGA_WATER,

@@ -52,9 +52,8 @@ class Agent():
         self.memory.append((state, action, next_state, reward,done))
         self.replay_counter += 1
 
-    def act_greedy(self,states):
-        states_data = self.process_state_data(states)
-        pred = self.ANN_model.predict(states_data) 
+    def act_greedy(self,state):
+        pred = self.ANN_model.predict(state) 
         choice = np.where(pred[0]==max(pred[0]))[0][0]
         return choice
          
@@ -62,7 +61,7 @@ class Agent():
         # states_grad = [states[i+1]- states[i] for i in range(len(states[:-1]))] # calculate dhdt
         # states_data = np.array(states+states_grad) # Combine level with gradient of level
         states_data = np.array(states[0]/10)
-        states_data = states_data.reshape(1,len(states))
+        states_data = states_data.reshape(1,)
         return states_data
 
     def act(self, states):
@@ -72,26 +71,22 @@ class Agent():
         return self.act_greedy(states) # Exploitation
 
     def is_ready(self,batch_size):
-        if len(self.memory)< 500:
+        if len(self.memory)< batch_size:
             return False
-        # if len(self.memory)< batch_size:
-        #     return False
-        # if self.replay_counter < batch_size:
-        #     return False
         return True
 
     def Qreplay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
         for state, action, next_state,reward,done in minibatch:
             target = reward
-            state_data = self.process_state_data(state)
-            next_state_data = self.process_state_data(next_state)
+            # state_data = self.process_state_data(state)
+            # next_state_data = self.process_state_data(next_state)
             if not done:
-                target = (reward + self.gamma *np.amax(self.ANN_model.predict(next_state_data)))
-            target_f = self.ANN_model.predict(state_data)
+                target = (reward + self.gamma *np.amax(self.ANN_model.predict(next_state)))
+            target_f = self.ANN_model.predict(state)
             target_f[0][action] = target
-            self.ANN_model.fit(state_data, target_f, epochs=1, verbose=0)
-        # self.decay_exploration()
+            self.ANN_model.fit(state, target_f, epochs=1, verbose=0)
+        self.decay_exploration()
         # self.replay_counter = 0
 
     def decay_exploration(self):

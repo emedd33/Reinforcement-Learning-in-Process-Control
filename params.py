@@ -11,7 +11,7 @@ TANK_PIPE_RADIUS=0.3 #m
 INIT_LEVEL=0.5 # initial water level for each episode
 
 # Choke parameters
-TBCC = 20 # Time before choke change
+TBCC = 1 # Time before choke change
 HARD_MAX=0.9
 SOFT_MAX=0.55
 HARD_MIN = 0.1
@@ -30,13 +30,13 @@ DIST_MIN_FLOW=  DIST_NOM_FLOW - 3*DIST_VARIANCE_FLOW
 SS_POSITION = 0.5*TANK_HEIGHT # steady state set position
 VALVE_START_POSITION=0.5
 OBSERVATIONS = 1 # Number of time steos observed
-VALVE_POSITIONS= 4 # Number of valve positions 
-GAMMA = 1    # discount rate
+VALVE_POSITIONS= 2 # Number of valve positions 
+GAMMA = 0.9    # discount rate
 EPSILON = 1.0  # exploration rate
 EPSILON_MIN = 0.05
 EPSILON_DECAY = 0.995
-LEARNING_RATE = 0.01
-NUMBER_OF_HIDDEN_LAYERS = [10,10]
+LEARNING_RATE = 0.001
+NUMBER_OF_HIDDEN_LAYERS = [2]
 BATCH_SIZE=20
 
 

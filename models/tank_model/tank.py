@@ -40,7 +40,7 @@ class Tank(): # Cylindric tank
         return dl
 
     def change_level(self,dldt):
-        self.l += dldt
+        self.l += dldt*self.h
 
     def reset(self):
         self.l = self.init_l
