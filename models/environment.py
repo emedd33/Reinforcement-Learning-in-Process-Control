@@ -52,7 +52,7 @@ class Environment():
             self.terminated = True
             self.model.l = self.model.max
         grad = self.model.l-state[0]
-        next_state = [self.model.l, grad]
+        next_state = [self.model.l]
         return self.terminated, next_state
 
             
@@ -61,7 +61,7 @@ class Environment():
         if ADD_INFLOW:
             self.dist.reset() # reset to nominal disturbance
         self.terminated = False
-        init_state = [self.model.init_l,0]
+        init_state = [self.model.init_l]
         return init_state,TBCC,init_state,[]
 
     def render(self,action,next_state):
@@ -70,19 +70,13 @@ class Environment():
             if not running:
                 self.running = False
 
-    def get_reward(self,state,terminated,t):  
-        if state > self.model.max or state < self.model.min:
-            return -10
-        if state > self.model.soft_max or state < self.model.soft_min:
-            return 0
-        return 1  
-
+    def get_reward(self,state,terminated,t):
+        if state > 2.5 and state < 7.5:
+            return 1
         if terminated: # sums up the rest of the episode time
-            reward = -MAX_TIME*(state-SS_POSITION)**2
-            # reward = -(MAX_TIME-t)*(state[-1]-SS_POSITION)**2
-            return reward
-        reward = -(state - SS_POSITION)**2 # MSE
-        return reward
+            return -10
+        else:
+            return 0
         
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))

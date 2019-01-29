@@ -29,7 +29,7 @@ class Agent():
         valve_positions= []
         for i in range(action_size):
             valve_positions.append((i)/(action_size-1))
-        return np.array(valve_positions)
+        return np.array(list(reversed(valve_positions)))
 
     def _build_ANN(self,state_size,hl_size,action_size,learning_rate):    
         # Defining network model
@@ -61,8 +61,8 @@ class Agent():
     def process_state_data(self,states):
         # states_grad = [states[i+1]- states[i] for i in range(len(states[:-1]))] # calculate dhdt
         # states_data = np.array(states+states_grad) # Combine level with gradient of level
-        states_data = np.array(states)
-        states_data = states_data.reshape(1,len(states_data))
+        states_data = np.array(states[0]/10)
+        states_data = states_data.reshape(1,len(states))
         return states_data
 
     def act(self, states):
@@ -72,10 +72,12 @@ class Agent():
         return self.act_greedy(states) # Exploitation
 
     def is_ready(self,batch_size):
-        if len(self.memory)< batch_size:
+        if len(self.memory)< 500:
             return False
-        if self.replay_counter < batch_size:
-            return False
+        # if len(self.memory)< batch_size:
+        #     return False
+        # if self.replay_counter < batch_size:
+        #     return False
         return True
 
     def Qreplay(self, batch_size):
@@ -89,7 +91,7 @@ class Agent():
             target_f = self.ANN_model.predict(state_data)
             target_f[0][action] = target
             self.ANN_model.fit(state_data, target_f, epochs=1, verbose=0)
-        self.decay_exploration()
+        # self.decay_exploration()
         # self.replay_counter = 0
 
     def decay_exploration(self):

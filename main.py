@@ -38,8 +38,10 @@ def main():
                 environment.render(z,next_state[0])
             if (agent.is_ready(batch_size)):
                 agent.Qreplay(batch_size)
+                agent.decay_exploration()
             if keyboard.is_pressed('ctrl+c'):
                 break
+        # agent.decay_exploration()
         # Live plot rewards
         all_rewards.append(np.sum(np.array(episode_reward)))
         if keyboard.is_pressed('ctrl+c'):
