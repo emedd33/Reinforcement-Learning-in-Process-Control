@@ -5,6 +5,7 @@ from params import *
 import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np 
+from params import SS_POSITION
 class Environment():
     def __init__(self):
         self.model = Tank() # get tank model
@@ -45,13 +46,13 @@ class Environment():
 
         # Check terminate state
         if self.model.l < self.model.min:
-            self.model.l = self.model.min 
             self.terminated = True
+            self.model.l = self.model.min
         elif self.model.l > self.model.max:
-            self.model.l = self.model.max
             self.terminated = True
-
-        next_state = state[1:] + [self.model.l/self.model.h]
+            self.model.l = self.model.max
+        next_state = np.append(state[0][1:],self.model.l/self.model.h)
+        next_state = next_state.reshape(1, state.size)
         return self.terminated, next_state
 
             
@@ -61,19 +62,20 @@ class Environment():
             self.dist.reset() # reset to nominal disturbance
         self.terminated = False
         init_state = OBSERVATIONS*[self.model.init_l/self.model.h]
-        return init_state, None ,init_state,0
-        # state,next_state,action,rewards,action_delay_counter
+        init_state = np.array([init_state])
+        return init_state,TBCC,init_state,[]
 
     def render(self,action,next_state):
         if RENDER:
             running = self.window.Draw(action,next_state)
             if not running:
                 self.running = False
+
     def get_reward(self,state,terminated,t):
-        if state[0] > 0.25 and state[0] < 0.75:
+        if state[0][-1] > 0.25 and state[0][-1] < 0.75:
             return 1
         if terminated: # sums up the rest of the episode time
-            return -1
+            return -10
         else:
             return 0
         

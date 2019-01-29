@@ -1,13 +1,15 @@
 import numpy as np 
 import pygame
-from params import MAX_LEVEL,MIN_LEVEL,TANK_HEIGHT,TANK_RADIUS,INIT_LEVEL,TANK_PIPE_RADIUS
+from params import HARD_MAX,HARD_MIN,TANK_HEIGHT,TANK_RADIUS,INIT_LEVEL,TANK_PIPE_RADIUS,SOFT_MAX,SOFT_MIN
 class Tank(): # Cylindric tank
     def __init__(self, 
     height=TANK_HEIGHT, 
     radius=TANK_RADIUS, 
     level=INIT_LEVEL, # %
-    max_level=MAX_LEVEL, 
-    min_level=MIN_LEVEL, 
+    max_level=HARD_MAX, 
+    min_level=HARD_MIN, 
+    soft_max_level = SOFT_MAX,
+    soft_min_level = SOFT_MIN,
     rho=1000,
     pipe_radius=TANK_PIPE_RADIUS #m
     ):
@@ -20,6 +22,9 @@ class Tank(): # Cylindric tank
         
         self.max = height*max_level
         self.min = height*min_level
+        self.soft_max = height*soft_max_level
+        self.soft_min = height*soft_min_level
+        
         self.rho = rho
         self.g = 9.81
         self.A_pipe = pipe_radius**2*np.pi
@@ -35,7 +40,7 @@ class Tank(): # Cylindric tank
         return dl
 
     def change_level(self,dldt):
-        self.l += dldt
+        self.l += dldt*self.h
 
     def reset(self):
         self.l = self.init_l

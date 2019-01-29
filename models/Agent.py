@@ -6,7 +6,7 @@ import random
 class Agent():
     def __init__(self,
             hl_size=NUMBER_OF_HIDDEN_LAYERS,
-            state_size=OBSERVATIONS*2-1, #All states plus the gradients
+            state_size=OBSERVATIONS, #All states plus the gradients
             action_size=VALVE_POSITIONS
         ):
 
@@ -28,7 +28,7 @@ class Agent():
     def _get_action_choices(self,action_size):
         valve_positions= []
         for i in range(action_size):
-            valve_positions.append(i/(action_size-1))
+            valve_positions.append((i)/(action_size-1))
         return np.array(list(reversed(valve_positions)))
 
     def _build_ANN(self,state_size,hl_size,action_size,learning_rate):    
@@ -57,33 +57,29 @@ class Agent():
         self.memory.append((state, action, next_state, reward,done))
         self.replay_counter += 1
 
-    def act_greedy(self,states):
-        states_data = self.process_state_data(states)
-        pred = self.ANN_model.predict(states_data) 
+    def act_greedy(self,state):
+        pred = self.ANN_model.predict(state) 
         choice = np.where(pred[0]==max(pred[0]))[0][0]
         return choice
          
     def process_state_data(self,states):
         # states_grad = [states[i+1]- states[i] for i in range(len(states[:-1]))] # calculate dhdt
         # states_data = np.array(states+states_grad) # Combine level with gradient of level
-        # states_data = states_data.reshape(1,len(states_data))
-        
-        states_data = np.array(states)
-        states_data = states_data.reshape(1,len(states_data))
+        states_data = np.array(states[0]/10)
+        states_data = states_data.reshape(1,)
         return states_data
 
     def act(self, states):
         if np.random.rand() <= self.epsilon: # Exploration 
             random_action = random.randint(0,self.action_size-1)
             return random_action
-        return self.act_greedy(states)
+        return self.act_greedy(states) # Exploitation
 
     def is_ready(self,batch_size):
         if len(self.memory)< batch_size:
             return False
-        # if self.replay_counter < batch_size:
-        #     return False
         return True
+
     def Qreplay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
         for state, action, next_state,reward,done in minibatch:
@@ -96,7 +92,8 @@ class Agent():
             target_f[0][action] = target
             self.ANN_model.fit(state, target_f, epochs=1, verbose=0)
         self.decay_exploration()
-        self.replay_counter = 0
+        # self.replay_counter = 0
+
     def decay_exploration(self):
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
