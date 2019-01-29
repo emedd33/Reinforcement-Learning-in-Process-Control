@@ -77,7 +77,7 @@ class Environment():
         if terminated: # sums up the rest of the episode time
             return -10
         else:
-            return 0
+            return -1
         
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))
