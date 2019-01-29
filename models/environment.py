@@ -51,7 +51,7 @@ class Environment():
             self.model.l = self.model.max
             self.terminated = True
 
-        next_state = state[1:] + [self.model.l]
+        next_state = state[1:] + [self.model.l/self.model.h]
         return self.terminated, next_state
 
             
@@ -60,7 +60,7 @@ class Environment():
         if ADD_INFLOW:
             self.dist.reset() # reset to nominal disturbance
         self.terminated = False
-        init_state = OBSERVATIONS*[self.model.init_l]
+        init_state = OBSERVATIONS*[self.model.init_l/self.model.h]
         return init_state, None ,init_state,0
         # state,next_state,action,rewards,action_delay_counter
 
@@ -70,7 +70,7 @@ class Environment():
             if not running:
                 self.running = False
     def get_reward(self,state,terminated,t):
-        if state[0] > 2.5 and state[0] < 7.5:
+        if state[0] > 0.25 and state[0] < 0.75:
             return 1
         if terminated: # sums up the rest of the episode time
             return -1
