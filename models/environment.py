@@ -70,12 +70,12 @@ class Environment():
             if not running:
                 self.running = False
     def get_reward(self,state,terminated,t):
+        if state[0] > 2.5 and state[0] < 7.5:
+            return 1
         if terminated: # sums up the rest of the episode time
-            reward = -MAX_TIME*(state[-1]-SS_POSITION)**2
-            #reward = -(MAX_TIME-t)*(state[-1]-SS_POSITION)**2
-            return reward
-        reward = -(state[-1] - SS_POSITION)**2 # MSE
-        return reward
+            return -1
+        else:
+            return 0
         
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))

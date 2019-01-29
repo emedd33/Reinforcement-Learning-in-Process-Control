@@ -73,8 +73,8 @@ class Agent():
     def is_ready(self,batch_size):
         if len(self.memory)< batch_size:
             return False
-        if self.replay_counter < batch_size:
-            return False
+        # if self.replay_counter < batch_size:
+        #     return False
         return True
     def Qreplay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
