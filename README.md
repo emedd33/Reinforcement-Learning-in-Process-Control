@@ -14,7 +14,7 @@ Run the following to install requirements for the project.
 pip install -r requirements.txt
 ```
 #### The different project
-Tank_Q-learning is one tank which utilizes model free, value based aproximator with TD(0), default is set with gamme equals 0 so technically is not a q-learning with gamme=0, feel free to change the parameters.
+**Tank_Q-learning:** Controlling one tank by an agent which utilizes model free, value based aproximator with TD(0), default is set with gamme equals 0 so technically is not a q-learning but rather supervised learning of the value value function, feel free to change the parameters.
 
 #### Alter Parameter
 To alter parameters change the values in python file params.py
