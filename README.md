@@ -1,4 +1,4 @@
-# Reinforcement Learning in Process Control. Q learning with ANN as value aproximator.
+# Reinforcement Learning in Process Control.
 
 <img src="https://github.com/emedd33/Reinforcement-Learning-in-Process-Control/blob/master/Tank_Q-learning/visualize/images/DescriptionImage.png" width="500">
 
@@ -13,7 +13,7 @@ Run the following to install requirements for the project.
 ```shell
 pip install -r requirements.txt
 ```
-#### The different project
+#### The different projects
 **Tank_Q-learning:** Controlling one tank by an agent which utilizes model free, value based aproximator with TD(0), default is set with gamme equals 0 so technically is not a q-learning but rather supervised learning of the value value function, feel free to change the parameters.
 
 #### Alter Parameter
