@@ -1,6 +1,6 @@
 # Reinforcement Learning in Process Control. Q learning with ANN as value aproximator.
 
-<img src="https://github.com/emedd33/Reinforcement-Learning-in-Process-Control/Tank_Q-learning/visualize/images/DescriptionImage.png" width="500">
+<img src="https://github.com/emedd33/Reinforcement-Learning-in-Process-Control/blob/master/Tank_Q-learning/visualize/images/DescriptionImage.png" width="500">
 
 
 #### Install requirements
