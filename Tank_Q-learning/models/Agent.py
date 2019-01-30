@@ -60,6 +60,8 @@ class Agent():
     def act_greedy(self,state):
         pred = self.ANN_model.predict(state) 
         choice = np.where(pred[0]==max(pred[0]))[0][0]
+        if max(pred[0]) < 0.95:
+            pass
         return choice
          
     def process_state_data(self,states):

@@ -51,7 +51,9 @@ class Environment():
         elif self.model.l > self.model.max:
             self.terminated = True
             self.model.l = self.model.max
-        next_state = np.append(state[0][1:],self.model.l/self.model.h)
+        #next_state = np.append(state[0][1:],self.model.l/self.model.h) # last states
+        grad = self.model.l/self.model.h - state[0][0]
+        next_state = np.array([self.model.l/self.model.h,grad])
         next_state = next_state.reshape(1, state.size)
         return self.terminated, next_state
 
@@ -61,7 +63,8 @@ class Environment():
         if ADD_INFLOW:
             self.dist.reset() # reset to nominal disturbance
         self.terminated = False
-        init_state = OBSERVATIONS*[self.model.init_l/self.model.h]
+        # init_state = OBSERVATIONS*[self.model.init_l/self.model.h]
+        init_state = [self.model.init_l/self.model.h,0] 
         init_state = np.array([init_state])
         return init_state,TBCC,init_state,[]
 
@@ -72,12 +75,13 @@ class Environment():
                 self.running = False
 
     def get_reward(self,state,terminated,t):
-        if state[0][-1] > 0.25 and state[0][-1] < 0.75:
+        # if state[0][-1] > 0.25 and state[0][-1] < 0.75:
+        if state[0][0] > 0.25 and state[0][0] < 0.75:
             return 1
         if terminated: # sums up the rest of the episode time
             return -10
         else:
-            return -1
+            return 0
         
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))

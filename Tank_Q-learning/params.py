@@ -1,14 +1,15 @@
 
 #=============== PARAMETERS ==================#
 
-EPISODES = 10000
-MAX_TIME = 400
+EPISODES = 500
+MEAN_EPISODE=10
+MAX_TIME = 300
 SAVE_ANN_MODEL=False
 
 # Model parameters
 TANK_HEIGHT=5
 TANK_RADIUS=2
-TANK_PIPE_RADIUS=0.3 #m
+TANK_PIPE_RADIUS=0.5 #m
 INIT_LEVEL=0.5 # initial water level for each episode
 
 # Choke parameters
@@ -22,7 +23,7 @@ SOFT_MIN = 0.45
 ADD_INFLOW = True
 DIST_DISTRIBUTION="gauss"
 DIST_NOM_FLOW=0.4 # m^3/s
-DIST_VARIANCE_FLOW= 0.01 # m^3/s
+DIST_VARIANCE_FLOW= 0.1 # m^3/s
 DIST_MAX_FLOW = DIST_NOM_FLOW + 3*DIST_VARIANCE_FLOW # 
 DIST_MIN_FLOW=  DIST_NOM_FLOW - 3*DIST_VARIANCE_FLOW
 
@@ -30,18 +31,18 @@ DIST_MIN_FLOW=  DIST_NOM_FLOW - 3*DIST_VARIANCE_FLOW
 # Agent parameters
 SS_POSITION = 0.5*TANK_HEIGHT # steady state set position
 VALVE_START_POSITION=0
-OBSERVATIONS = 1 # Number of time steos observed
-VALVE_POSITIONS= 2 # Number of valve positions 
-GAMMA = 0.9    # discount rate
+OBSERVATIONS = 2 # Number of time steos observed
+VALVE_POSITIONS= 10 # Number of valve positions 
+GAMMA = 0    # discount rate
 EPSILON = 1.0  # exploration rate
 
-EPSILON_MIN = 0.05
+EPSILON_MIN = 0.001
 EPSILON_DECAY = 0.995
-LEARNING_RATE = 0.0001
-NUMBER_OF_HIDDEN_LAYERS = [5]
+LEARNING_RATE = 0.05
+NUMBER_OF_HIDDEN_LAYERS = [10,10]
 BATCH_SIZE=20
 
 
 # Render parameters
-RENDER=True
-LIVE_REWARD_PLOT= True
+RENDER=False
+LIVE_REWARD_PLOT= False

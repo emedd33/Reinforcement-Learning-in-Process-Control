@@ -38,11 +38,14 @@ def main():
                 environment.render(z,next_state[0])
             if (agent.is_ready(batch_size)):
                 agent.Qreplay(batch_size)
-            if keyboard.is_pressed('ctrl+c'):
+            if keyboard.is_pressed('ctrl+x'):
                 break
         # agent.decay_exploration()
         # Live plot rewards
         all_rewards.append(np.sum(np.array(episode_reward)))
+        # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
+        if e % MEAN_EPISODE == 0:
+            print("Mean rewards for the last {} of {}/{} episodes : {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:])))
         if keyboard.is_pressed('ctrl+c'):
                 break
         if LIVE_REWARD_PLOT:
@@ -53,8 +56,12 @@ def main():
     print("##### {} EPISODES DONE #####".format(e))
     print("Max rewards for all episodes: {}".format(np.max(all_rewards))) 
     print("Mean rewards for the last 10 episodes: {}".format(np.mean(all_rewards[-10:]))) 
-    # plt.ioff()
-    # plt.show()
+    plt.ioff()
+    plt.clf()
+    plt.plot(all_rewards)
+    plt.ylabel('Episodic reward')
+    plt.xlabel('Episode')
+    plt.show()
     if SAVE_ANN_MODEL:
         print("ANN_Model was saved")
 if __name__ == "__main__":
