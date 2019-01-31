@@ -46,7 +46,7 @@ def main():
         # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
         if e % MEAN_EPISODE == 0:
             print("Mean rewards for the last {} of {}/{} episodes : {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:])))
-        if keyboard.is_pressed('ctrl+c'):
+        if keyboard.is_pressed('ctrl+x'):
                 break
         if LIVE_REWARD_PLOT:
             environment.plot(all_rewards,agent.epsilon)       

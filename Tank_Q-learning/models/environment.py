@@ -76,10 +76,14 @@ class Environment():
 
     def get_reward(self,state,terminated,t):
         # if state[0][-1] > 0.25 and state[0][-1] < 0.75:
-        if state[0][0] > 0.25 and state[0][0] < 0.75:
+        if terminated:
+            return -1
+        if state[0][0] > 0.4 and state[0][0] < 0.6:
             return 1
-        if terminated: # sums up the rest of the episode time
-            return -10
+        if state[0][0] > 0.3 and state[0][0] < 0.7:
+            return 0.5
+        if state[0][0] > 0.2 and state[0][0] < 0.8:
+            return 0.2
         else:
             return 0
         
