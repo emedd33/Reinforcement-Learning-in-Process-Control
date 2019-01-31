@@ -14,10 +14,12 @@ Run the following to install requirements for the project.
 pip install -r requirements.txt
 ```
 #### The different projects
-**Tank_Q-learning:** Controlling one tank by an agent which utilizes model free, value based aproximator with TD(0), default is set with gamme equals 0 so technically is not a q-learning but rather supervised learning of the value value function, feel free to change the parameters.
+**Tank_Q-learning:** Controlling one tank by an agent which utilizes model free, value based aproximator with TD(0), default is set with gamme equals 0 so technically is not a q-learning but rather temperoal difference learning by value function approximation, feel free to change gamma.
 
-#### Alter Parameter
+#### How to run the different project and update parameters
+Run main.py in each project. The different project are independent on each other.
 To alter parameters change the values in python file params.py.
 
 Also, Feel free to experiment with the reward function in the Environment.get_reward() function.
+
 
