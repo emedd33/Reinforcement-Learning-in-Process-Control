@@ -13,14 +13,12 @@ class Agent():
         self.state_size = state_size
         self.action_size = action_size
         self.action_choices = self._get_action_choices(action_size)
-        self.memory = deque(maxlen=2000)
+        self.memory = deque(maxlen=3000)
         self.gamma = GAMMA    # discount rate
         self.epsilon = EPSILON  # exploration rate
         self.epsilon_min = EPSILON_MIN
         self.epsilon_decay = EPSILON_DECAY
         self.learning_rate = LEARNING_RATE
-
-        self.memory = deque(maxlen=1000) 
         self.replay_counter = 0
         self.ANN_model = self._build_ANN(state_size,hl_size,action_size,learning_rate=0.01)
         
@@ -40,7 +38,7 @@ class Agent():
                 model.add(keras.layers.Dense(i,activation='relu'))
         except IndexError: # Zero hidden layer
             model.add(keras.layers.Dense(action_size,input_shape=(state_size,),activation='relu'))
-        model.add(keras.layers.Dense(action_size,activation='softmax'))
+        model.add(keras.layers.Dense(action_size))
         
         model.compile(
             loss='mse',
