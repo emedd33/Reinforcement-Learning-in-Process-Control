@@ -1,17 +1,19 @@
 import numpy as np 
 import pygame
-from params import HARD_MAX,HARD_MIN,TANK_HEIGHT,TANK_RADIUS,INIT_LEVEL,TANK_PIPE_RADIUS,SOFT_MAX,SOFT_MIN
+from params import INIT_LEVEL
+from models.tank_model.disturbance import InflowDist
 class Tank(): # Cylindric tank
+    g=9.81
+    rho=1000
+    
     def __init__(self, 
-    height=TANK_HEIGHT, 
-    radius=TANK_RADIUS, 
-    level=INIT_LEVEL, # %
-    max_level=HARD_MAX, 
-    min_level=HARD_MIN, 
-    soft_max_level = SOFT_MAX,
-    soft_min_level = SOFT_MIN,
-    rho=1000,
-    pipe_radius=TANK_PIPE_RADIUS #m
+        height, 
+        radius, 
+        pipe_radius, 
+        max_level, 
+        min_level, 
+        dist,
+        level=INIT_LEVEL, # %  
     ):
         self.h = height
         self.r = radius
@@ -20,23 +22,27 @@ class Tank(): # Cylindric tank
         self.l = height*level
         self.init_l = self.l
         
-        self.max = height*max_level
-        self.min = height*min_level
-        self.soft_max = height*soft_max_level
-        self.soft_min = height*soft_min_level
-        
-        self.rho = rho
-        self.g = 9.81
+        self.max = max_level*height
+        self.min = min_level*height
+
         self.A_pipe = pipe_radius**2*np.pi
+        self.add_dist = dist['add']
+        if dist['add']:
+            self.dist =  InflowDist(
+                nom_flow=dist['nom_flow'],
+                var_flow=dist['var_flow'],    
+                max_flow=dist['max_flow'],
+                min_flow=['min_flow'],
+            )
 
     def get_dl_outflow(self,z,p_out=1): # Z is the choke opening
-        v_out = np.sqrt(2*(self.g*self.l-p_out/self.rho)) #bernoulli
+        v_out = np.sqrt(2*(Tank.g*self.l-p_out/Tank.rho)) #bernoulli
         q_out = v_out*self.A_pipe*z
         dl = -q_out/(np.pi * self.r**2) 
         return dl
 
     def get_dl_inflow(self,q_inn):
-        dl = q_inn/(self.A*self.rho)
+        dl = q_inn/(self.A*Tank.rho)
         return dl
 
     def change_level(self,dldt):
@@ -45,12 +51,12 @@ class Tank(): # Cylindric tank
     def reset(self):
         self.l = self.init_l
 
-    def get_valve(self,action):
+    def get_valve(self,action): #
         return action
         
     def get_params(self,action):
         f = self.get_valve(action)
-        return f,self.A_pipe,self.g,self.l,0,self.rho,self.r
+        return f,self.A_pipe,Tank.g,self.l,0,Tank.rho,self.r
         
         
     

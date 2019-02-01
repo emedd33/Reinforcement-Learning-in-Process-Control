@@ -1,5 +1,4 @@
 import pygame
-from params import HARD_MAX,HARD_MIN
 class Window():
     def __init__(self,tank):
         pygame.init()
@@ -9,84 +8,55 @@ class Window():
         self.screen = pygame.display.set_mode((self.WINDOW_HEIGHT, self.WINDOW_WIDTH))
         self.background_image = pygame.image.load("Tank_Q-learning/visualize/images/EmptyTank.png").convert()
         self.background_image = pygame.transform.scale(self.background_image, (WINDOW_HEIGHT, WINDOW_WIDTH))
-        
-        # The parameters set to this are hardcoded and should not be changed
-        self.TANK_LEFT_POS = WINDOW_WIDTH/6.3
-        self.TANK_TOP_POS = WINDOW_HEIGHT/14
-        self.TANK_HEIGHT=200
-        self.TANK_WIDTH=157
-        self.TANK_BOARDER = 10
-
-        self.HARD_MAX=HARD_MAX
-        self.HARD_MIN=HARD_MIN
-        self.max_min_interval = self.HARD_MAX-self.HARD_MIN
-
-        self.MEASER_BOARDER = 10
-        self.MEASER_HEIGHT=150
-
-        self.CHOKE_CLOSED_POS = self.TANK_TOP_POS + self.TANK_HEIGHT*0.8
-        self.CHOKE_WIDTH = 35
-        self.CHOKE_HEIGHT=5
-        self.CHOKE_LEFT_POS = WINDOW_WIDTH*0.97
-        self.CHOKE_RANGE = 165
-
-        self.RGA_CHOKE=(0, 0, 0)
-        self.RGA_WATER = (25,130,150)
-        
         self.clock  = pygame.time.Clock()
-        self.tank = tank
+        self.tank = TankImage(tank,56.5,29)
+        
 
-    def Draw(self,input_z,level):
+    def Draw(self,input_z):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                     return False
         self.screen.blit(self.background_image, [0, 0])
-        # self.DrawTank()
-        self.DrawLevel(level)
-        self.DrawChoke(input_z)
+        self.tank.draw(self.screen,input_z)
+        
         pygame.display.flip()
         return True
 
-    def DrawChoke(self,input_z):
-        delta_z = self.CHOKE_RANGE*input_z
-        choke_pos = self.CHOKE_CLOSED_POS -delta_z
-        
-        pygame.draw.rect(self.screen,self.RGA_CHOKE,
+class TankImage():
+    height=200
+    width=148
+    choke_width=35
+    choke_height=5
+    rga_water = (25,130,150)
+    rga_choke = (0,0,0)
+    choke_left_adj = 234
+    choke_top_adj = -7
+    choke_range = 167
+    def __init__(self,tank,left_pos,top_pos):
+        self.tank = tank
+        self.left_pos = left_pos
+        self.top_pos = top_pos
+    
+    def draw(self,screen,z):
+        self.draw_level(screen)
+        self.draw_choke(screen,z)
+
+    def draw_level(self,screen):
+        level_percent = (self.tank.l-self.tank.min)/(self.tank.max-self.tank.min)
+        level = int(level_percent*TankImage.height)
+        pygame.draw.rect(screen, TankImage.rga_water,
         pygame.Rect(
-            self.CHOKE_LEFT_POS,
-            choke_pos,
-            self.CHOKE_WIDTH,
-            self.CHOKE_HEIGHT
+            self.left_pos,
+            self.top_pos+(1-level_percent)*TankImage.height,
+            TankImage.width,
+            level_percent*TankImage.height
             ))
-    def DrawLevel(self,level):  
-        level_percent = self.tank.l/self.tank.h
-        level_percent = (level_percent-self.HARD_MIN)/self.max_min_interval 
-        draw_level = int(level_percent*self.TANK_HEIGHT)
-        pygame.draw.rect(self.screen,self.RGA_WATER,
+    
+    def draw_choke(self,screen,z):
+        pygame.draw.rect(screen, TankImage.rga_choke,
         pygame.Rect(
-            self.TANK_LEFT_POS+self.TANK_BOARDER,
-            self.TANK_TOP_POS+self.TANK_HEIGHT-draw_level+1,
-            self.TANK_WIDTH-self.TANK_BOARDER,
-            draw_level
+            self.left_pos+TankImage.choke_left_adj,
+            self.top_pos+TankImage.choke_top_adj +(1-z)*TankImage.choke_range,
+            TankImage.choke_width,
+            TankImage.choke_height
             ))
-    def DrawTank(self):
-        
-        pygame.draw.rect(self.screen,self.RGA_TANK,
-        pygame.Rect(
-            self.TANK_LEFT_POS,
-            self.TANK_TOP_POS,
-            self.TANK_BOARDER,
-            self.TANK_HEIGHT))
-        pygame.draw.rect(self.screen,self.RGA_TANK,
-        pygame.Rect(
-            self.TANK_LEFT_POS+self.TANK_WIDTH,
-            self.TANK_TOP_POS,
-            self.TANK_BOARDER,
-            self.TANK_HEIGHT))
-        pygame.draw.rect(self.screen,self.RGA_TANK,
-        pygame.Rect(
-            self.TANK_LEFT_POS,
-            self.TANK_TOP_POS+self.TANK_HEIGHT,
-            self.TANK_WIDTH+self.TANK_BOARDER,
-            self.TANK_BOARDER
-        ))

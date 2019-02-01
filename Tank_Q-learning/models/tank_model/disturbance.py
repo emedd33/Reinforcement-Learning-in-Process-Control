@@ -1,20 +1,28 @@
 import numpy as np 
-from params import ADD_INFLOW,DIST_DISTRIBUTION,DIST_NOM_FLOW,DIST_VARIANCE_FLOW,DIST_MAX_FLOW,DIST_MIN_FLOW
+
 
 
 # Agent parameters
 class InflowDist():
 
-    def __init__(self, nom_flow=DIST_NOM_FLOW, variance=DIST_VARIANCE_FLOW, distribution=DIST_DISTRIBUTION):
-        self.variance = variance
+    def __init__(self, nom_flow, var_flow,max_flow,min_flow):
+        self.var_flow = var_flow
         self.nom_flow = nom_flow
-        self.flow = nom_flow
-        self.dist = distribution
+        self.min_flow = min_flow
+        self.max_flow = max_flow
 
     def get_flow(self):
-        if self.dist is "gauss":
-            new_flow = np.random.normal(self.flow, self.variance)
+        
+        new_flow = np.random.normal(self.flow, self.variance)
+        if new_flow > self.max_flow:
+            self.flow = self.max_flow
+            return self.flow
+        elif new_flow < self.min_flow:
+            self.flow = self.min_flow
+            return self.flow
+        else:
             self.flow = new_flow
             return self.flow
+            
     def reset(self):
         self.flow = self.nom_flow

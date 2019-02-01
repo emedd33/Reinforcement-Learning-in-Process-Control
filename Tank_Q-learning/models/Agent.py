@@ -3,17 +3,18 @@ from tensorflow import keras
 from params import *
 import numpy as np 
 import random
+import itertools
 class Agent():
     def __init__(self,
             hl_size=NUMBER_OF_HIDDEN_LAYERS,
-            state_size=OBSERVATIONS, #All states plus the gradients
-            action_size=VALVE_POSITIONS
+            state_size=OBSERVATIONS,
+            action_size=VALVE_POSITIONS,
         ):
 
         self.state_size = state_size
         self.action_size = action_size
         self.action_choices = self._get_action_choices(action_size)
-        self.memory = deque(maxlen=5000)
+        self.memory = deque(maxlen=2000)
         self.gamma = GAMMA    # discount rate
         self.epsilon = EPSILON  # exploration rate
         self.epsilon_min = EPSILON_MIN
@@ -58,17 +59,8 @@ class Agent():
     def act_greedy(self,state):
         pred = self.ANN_model.predict(state) 
         choice = np.where(pred[0]==max(pred[0]))[0][0]
-        if max(pred[0]) < 0.95:
-            pass
         return choice
          
-    def process_state_data(self,states):
-        # states_grad = [states[i+1]- states[i] for i in range(len(states[:-1]))] # calculate dhdt
-        # states_data = np.array(states+states_grad) # Combine level with gradient of level
-        states_data = np.array(states[0]/10)
-        states_data = states_data.reshape(1,)
-        return states_data
-
     def act(self, states):
         if np.random.rand() <= self.epsilon: # Exploration 
             random_action = random.randint(0,self.action_size-1)

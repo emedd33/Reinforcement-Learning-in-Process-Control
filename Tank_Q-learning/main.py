@@ -27,7 +27,7 @@ def main():
             else:
                 action_delay+=1
             terminated, next_state = environment.get_next_state(z,state) 
-            reward = environment.get_reward(next_state,terminated,t)
+            reward = environment.get_reward(next_state,terminated)
             episode_reward.append(reward)
             if action_delay >=TBCC or terminated:
                 agent.remember(state,action,next_state,reward,terminated)
@@ -35,7 +35,7 @@ def main():
             if terminated:
                 break 
             if environment.show_rendering:
-                environment.render(z,next_state[0])
+                environment.render(z)
             if (agent.is_ready(batch_size)):
                 agent.Qreplay(batch_size)
             if keyboard.is_pressed('ctrl+x'):
@@ -45,7 +45,7 @@ def main():
         all_rewards.append(np.sum(np.array(episode_reward)))
         # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
         if e % MEAN_EPISODE == 0:
-            print("Mean rewards for the last {} of {}/{} episodes : {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:])))
+            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2))
         if keyboard.is_pressed('ctrl+x'):
                 break
         if LIVE_REWARD_PLOT:
