@@ -32,7 +32,7 @@ class Tank(): # Cylindric tank
                 nom_flow=dist['nom_flow'],
                 var_flow=dist['var_flow'],    
                 max_flow=dist['max_flow'],
-                min_flow=['min_flow'],
+                min_flow=dist['min_flow'],
             )
 
     def get_dl_outflow(self,z,p_out=1): # Z is the choke opening

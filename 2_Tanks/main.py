@@ -26,8 +26,8 @@ def main():
                 action_delay=0
             else:
                 action_delay+=1
-            terminated, next_state = environment.get_next_state(z,state[0]) 
-            reward = environment.get_reward(next_state[0],terminated)
+            terminated, next_state = environment.get_next_state(z,state) 
+            reward = environment.get_reward(next_state,terminated)
             episode_reward.append(reward)
             if action_delay >=TBCC or terminated:
                 agent.remember(state,action,next_state,reward,terminated)
@@ -45,7 +45,7 @@ def main():
         all_rewards.append(np.sum(np.array(episode_reward)))
         # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
         if e % MEAN_EPISODE == 0:
-            print("Mean rewards for the last {} of {}/{} episodes : {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:])))
+            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2))
         if keyboard.is_pressed('ctrl+x'):
                 break
         if LIVE_REWARD_PLOT:
@@ -63,6 +63,7 @@ def main():
     plt.xlabel('Episode')
     plt.show()
     if SAVE_ANN_MODEL:
+        agent.ANN_model.save('saved_model/2_tanks_agent_1.h5') 
         print("ANN_Model was saved")
 if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")

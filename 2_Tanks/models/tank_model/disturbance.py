@@ -13,7 +13,7 @@ class InflowDist():
 
     def get_flow(self):
         
-        new_flow = np.random.normal(self.flow, self.variance)
+        new_flow = np.random.normal(self.flow, self.var_flow)
         if new_flow > self.max_flow:
             self.flow = self.max_flow
             return self.flow

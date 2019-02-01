@@ -46,7 +46,7 @@ class Environment():
 
     def get_dhdt(self,action,tank,prev_q_out):
         if tank.add_dist:
-            q_inn = self.dist.get_flow() + prev_q_out
+            q_inn = tank.dist.get_flow() + prev_q_out
         else:
             q_inn = 0
         f,A_pipe,g,l,delta_p,rho,r = tank.get_params(action) 
@@ -101,8 +101,8 @@ class Environment():
     def get_reward(self,state,terminated):
         reward = 0
         if terminated:
-            return -10*len(state)
-        for sub_state in state:
+            return -10*len(state[0])
+        for sub_state in state[0]:
             if sub_state[0] > 0.25 and sub_state[0] < 0.75:
                 reward +=1
         return reward
