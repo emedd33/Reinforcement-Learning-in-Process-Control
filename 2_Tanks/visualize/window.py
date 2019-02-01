@@ -1,7 +1,7 @@
 import pygame
 
 class Window():
-    def __init__(self,tank1,tank2):
+    def __init__(self,tank):
         pygame.init()
         pygame.display.set_caption('2 Tank simulation')
         self.WINDOW_HEIGHT=280
@@ -11,16 +11,16 @@ class Window():
         self.background_image = pygame.transform.scale(self.background_image, (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
         
         self.clock  = pygame.time.Clock()
-        self.tank1 = TankImage(tank1,56.5,29)
-        self.tank2 = TankImage(tank2,407,29)
+        self.tank1 = TankImage(tank[0],56.5,29)
+        self.tank2 = TankImage(tank[1],407,29)
 
-    def Draw(self,input_z,level):
+    def Draw(self,input_z):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                     return False
         self.screen.blit(self.background_image, [0, 0])
-        self.tank1.draw(self.screen,0)
-        self.tank2.draw(self.screen,1) 
+        self.tank1.draw(self.screen,input_z[0])
+        self.tank2.draw(self.screen,input_z[1]) 
         pygame.display.flip()
         return True
 
