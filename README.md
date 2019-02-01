@@ -16,6 +16,9 @@ pip install -r requirements.txt
 #### The different projects
 **Tank_Q-learning:** Controlling one tank by an agent which utilizes model free, value based aproximator with TD(0), default is set with gamme equals 0 so technically is not a q-learning but rather temperoal difference learning by value function approximation, feel free to change gamma.
 
+**2_Tanks:**
+Same principle as in Tank_Q-learning with two tanks instead of one
+
 #### How to run the different project and update parameters
 Run main.py in each project. The different project are independent on each other.
 To alter parameters change the values in python file params.py.
