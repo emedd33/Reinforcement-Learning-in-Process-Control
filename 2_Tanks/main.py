@@ -1,7 +1,8 @@
 print("#### IMPORTING ####")
 from models.environment import Environment
 from models.Agent import Agent
-from params import * # Parameters used in main
+from params import BATCH_SIZE,EPISODES,MAX_TIME,TBCC,MEAN_EPISODE,\
+    LIVE_REWARD_PLOT,SAVE_ANN_MODEL,RENDER,NUMBER_OF_HIDDEN_LAYERS
 import os
 import matplotlib.pyplot as plt
 import numpy as np 
@@ -46,8 +47,11 @@ def main():
         all_rewards.append(np.sum(np.array(episode_reward)))
         # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
         if e % MEAN_EPISODE == 0:
-            all_mean_rewards.append(np.mean(all_rewards[-MEAN_EPISODE:]))
+            mean_reward = np.mean(all_rewards[-MEAN_EPISODE:])
+            all_mean_rewards.append(mean_reward)
             print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2)))
+            if mean_reward/MAX_TIME > 0.75:
+                break
         if keyboard.is_pressed('ctrl+x'):
                 break
         if LIVE_REWARD_PLOT:
@@ -66,8 +70,8 @@ def main():
     plt.show()
     if SAVE_ANN_MODEL:
         for i,model in enumerate(agent.ANN_models):
-            model_name = "\ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL_" + str(i) 
-            model_path = "2_Tanks\models\saved_models" + model_name+ ".h5"
+            model_name = "/ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL_" + str(i) 
+            model_path = "2_Tanks/models/saved_models" + model_name+ ".h5"
             
             model.save(model_path)
         print("ANN_Model was saved")
@@ -75,5 +79,6 @@ if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")
     print("  Max number of episodes: {}".format(EPISODES))
     print("  Max time in each episode: {}".format(MAX_TIME))
+    print("  Max reward in each episode: {}".format(MAX_TIME))
     print("  {}Rendring simulation ".format("" if RENDER else "Not "))
     main()

@@ -1,11 +1,11 @@
 from models.tank_model.tank import Tank
 from models.tank_model.disturbance import InflowDist
 from visualize.window import Window
-from params import *
 import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np 
-from params import SS_POSITION
+from params import SS_POSITION,TANK1_PARAMS,TANK1_DIST,TANK2_DIST,TANK2_PARAMS,\
+    TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT
 class Environment():
     def __init__(self):
         
@@ -23,7 +23,8 @@ class Environment():
             max_level=TANK2_PARAMS['max_level'],
             min_level=TANK2_PARAMS['min_level'],
             pipe_radius=TANK2_PARAMS['pipe_radius'],
-            dist = TANK2_DIST
+            dist = TANK2_DIST,
+            prev_tank=self.model1
             ) 
         self.model = []
         self.model.append(self.model1)
@@ -42,27 +43,28 @@ class Environment():
             self.window = Window(self.model)
         if LIVE_REWARD_PLOT:
             plt.ion()  # enable interactivity
-            fig = plt.figure(num="Rewards per episode")  # make a figure
+            plt.figure(num="Rewards per episode")  # make a figure
 
     def get_dhdt(self,action,tank,prev_q_out):
         if tank.add_dist:
-            q_inn = tank.dist.get_flow() + prev_q_out
+            q_inn = tank.dist.get_flow() + tank.prev_q_out
         else:
-            q_inn = prev_q_out
+            q_inn = tank.prev_q_out
+        tank.prev_q_out = prev_q_out
+
         f,A_pipe,g,l,delta_p,rho,r = tank.get_params(action) 
-        
         q_out = f*A_pipe*np.sqrt(1*g*l+delta_p/rho)
 
         term1 = q_inn/(np.pi*r**2)
         term2 = (q_out)/(np.pi*r**2)
         return term1- term2,q_out # Eq: 1
 
-    def get_next_state(self,action,state): 
+    def get_next_state(self,z,state): 
         # models response to input change
         prev_q_out = 0
         next_state = []
         for i,tank in enumerate(self.model):
-            dldt,prev_q_out = self.get_dhdt(action[i],tank,prev_q_out)
+            dldt,prev_q_out = self.get_dhdt(z[i],tank,prev_q_out) 
             tank.change_level(dldt)
 
             # Check terminate state
@@ -72,7 +74,11 @@ class Environment():
             elif tank.l > tank.max:
                 self.terminated = True
                 tank.l = tank.max
-            next_state.append([tank.l/tank.h,(dldt+1)/2])    
+            if i == 0:
+                next_state.append([tank.l/tank.h,(dldt+1)/2,0])
+            else:
+                next_state.append([tank.l/tank.h,(dldt+1)/2,z[i-1]])
+                
         next_state = np.array(next_state)
         next_state = next_state.reshape(1,next_state.shape[0],next_state.shape[1])
         return self.terminated, next_state
@@ -85,7 +91,7 @@ class Environment():
             tank.reset() # reset to initial tank level
             if tank.add_dist:
                 tank.dist.reset() # reset to nominal disturbance
-            init_state = [tank.init_l/tank.h,0] #Level plus gradient
+            init_state = [tank.init_l/tank.h,0,0] #Level plus gradient
             state.append(init_state)
         state = np.array(state)
         state = state.reshape(1,state.shape[0],state.shape[1])
@@ -100,7 +106,7 @@ class Environment():
     def get_reward(self,state,terminated):
         reward = 0
         if terminated:
-            return -len(state[0])
+            return -10
         for sub_state in state[0]:
             if sub_state[0] > 0.25 and sub_state[0] < 0.75:
                 reward +=1
