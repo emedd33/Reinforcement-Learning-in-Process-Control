@@ -61,5 +61,5 @@ BATCH_SIZE=10
 
 
 # Render parameters
-RENDER=True
+RENDER=False
 LIVE_REWARD_PLOT= False

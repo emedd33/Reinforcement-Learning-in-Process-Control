@@ -26,8 +26,7 @@ class Tank(): # Cylindric tank
         self.max = max_level*height
         self.min = min_level*height
         self.prev_q_out = 0
-        # if prev_tank is not None:
-        #     self.prev_tank_q_out = prev_tank.get_nom_q_out()
+        
         self.A_pipe = pipe_radius**2*np.pi
         self.add_dist = dist['add']
         if dist['add']:
@@ -38,18 +37,23 @@ class Tank(): # Cylindric tank
                 min_flow=dist['min_flow'],
             )
 
-    # def get_dl_outflow(self,z,p_out=1): # Z is the choke opening
-    #     v_out = np.sqrt(2*(Tank.g*self.l-p_out/Tank.rho)) #bernoulli
-    #     q_out = v_out*self.A_pipe*z
-    #     dl = -q_out/(np.pi * self.r**2) 
-    #     return dl
-
-    # def get_dl_inflow(self,q_inn):
-    #     dl = q_inn/(self.A*Tank.rho)
-    #     return dl
 
     def change_level(self,dldt):
         self.l += dldt*self.h
+
+    def get_dhdt(self,action,prev_q_out):
+        if self.add_dist:
+            q_inn = self.dist.get_flow() + self.prev_q_out
+        else:
+            q_inn = self.prev_q_out
+        self.prev_q_out = prev_q_out
+
+        f,A_pipe,g,l,delta_p,rho,r = self.get_params(action) 
+        q_out = f*A_pipe*np.sqrt(1*g*l+delta_p/rho)
+
+        term1 = q_inn/(np.pi*r**2)
+        term2 = (q_out)/(np.pi*r**2)
+        return term1- term2,q_out # Eq: 1
 
     def reset(self):
         self.l = self.init_l

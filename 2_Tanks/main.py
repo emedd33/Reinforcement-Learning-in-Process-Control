@@ -2,7 +2,7 @@ print("#### IMPORTING ####")
 from models.environment import Environment
 from models.Agent import Agent
 from params import BATCH_SIZE,EPISODES,MAX_TIME,TBCC,MEAN_EPISODE,\
-    LIVE_REWARD_PLOT,SAVE_ANN_MODEL,RENDER,NUMBER_OF_HIDDEN_LAYERS
+    LIVE_REWARD_PLOT,SAVE_ANN_MODEL,RENDER,NUMBER_OF_HIDDEN_LAYERS,N_TANKS
 import os
 import matplotlib.pyplot as plt
 import numpy as np 
@@ -79,6 +79,6 @@ if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")
     print("  Max number of episodes: {}".format(EPISODES))
     print("  Max time in each episode: {}".format(MAX_TIME))
-    print("  Max reward in each episode: {}".format(MAX_TIME))
+    print("  Max reward in each episode: {}".format(MAX_TIME*N_TANKS))
     print("  {}Rendring simulation ".format("" if RENDER else "Not "))
     main()

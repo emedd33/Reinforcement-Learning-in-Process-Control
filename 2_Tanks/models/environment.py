@@ -45,26 +45,12 @@ class Environment():
             plt.ion()  # enable interactivity
             plt.figure(num="Rewards per episode")  # make a figure
 
-    def get_dhdt(self,action,tank,prev_q_out):
-        if tank.add_dist:
-            q_inn = tank.dist.get_flow() + tank.prev_q_out
-        else:
-            q_inn = tank.prev_q_out
-        tank.prev_q_out = prev_q_out
-
-        f,A_pipe,g,l,delta_p,rho,r = tank.get_params(action) 
-        q_out = f*A_pipe*np.sqrt(1*g*l+delta_p/rho)
-
-        term1 = q_inn/(np.pi*r**2)
-        term2 = (q_out)/(np.pi*r**2)
-        return term1- term2,q_out # Eq: 1
-
     def get_next_state(self,z,state): 
         # models response to input change
         prev_q_out = 0
         next_state = []
         for i,tank in enumerate(self.model):
-            dldt,prev_q_out = self.get_dhdt(z[i],tank,prev_q_out) 
+            dldt,prev_q_out = tank.get_dhdt(z[i],prev_q_out) 
             tank.change_level(dldt)
 
             # Check terminate state
