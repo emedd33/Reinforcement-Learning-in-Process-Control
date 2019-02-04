@@ -28,6 +28,7 @@ INIT_LEVEL=0.5 # initial water level for each episode
 TBCC = 1 # Time before choke change
 
 # Agent parameters
+MEMORY_LENGTH=3000
 SS_POSITION = 0.5 # steady state set position
 VALVE_START_POSITION=0
 OBSERVATIONS = 2 # Number of time steos observed

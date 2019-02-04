@@ -15,7 +15,7 @@ class Agent():
         self.state_size = state_size
         self.action_size = action_size
         self.action_choices = self._set_action_choices(action_size)
-        self.memory = [deque(maxlen=2000)]*n_tanks
+        self.memory = [deque(maxlen=MEMORY_LENGTH)]*n_tanks
         self.gamma = GAMMA    # discount rate
         self.epsilon = EPSILON  # exploration rate
         self.epsilon_min = EPSILON_MIN

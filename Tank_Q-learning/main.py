@@ -45,7 +45,7 @@ def main():
         all_rewards.append(np.sum(np.array(episode_reward)))
         # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
         if e % MEAN_EPISODE == 0:
-            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2))
+            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2)))
         if keyboard.is_pressed('ctrl+x'):
                 break
         if LIVE_REWARD_PLOT:
@@ -63,6 +63,9 @@ def main():
     plt.xlabel('Episode')
     plt.show()
     if SAVE_ANN_MODEL:
+        model_name = "\ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL"  
+        model_path = "2_Tanks\models\saved_models" + model_name+ ".h5"
+        model.save(model_path)
         print("ANN_Model was saved")
 if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")

@@ -15,11 +15,12 @@ def main():
     agent = Agent()
     # ================= Running episodes =================#
     all_rewards = [] 
+    all_mean_rewards = []
     batch_size = BATCH_SIZE
     for e in range(EPISODES):
         state,action_delay, next_state,episode_reward = environment.reset() # Reset level in tank
         # Running through states in the episode
-        for t in range(MAX_TIME):    
+        for _ in range(MAX_TIME):    
             if action_delay >= TBCC:
                 action = agent.act(state)
                 z = agent.action_choices[action]
@@ -45,7 +46,8 @@ def main():
         all_rewards.append(np.sum(np.array(episode_reward)))
         # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
         if e % MEAN_EPISODE == 0:
-            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2))
+            all_mean_rewards.append(np.mean(all_rewards[-MEAN_EPISODE:]))
+            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2)))
         if keyboard.is_pressed('ctrl+x'):
                 break
         if LIVE_REWARD_PLOT:
@@ -63,7 +65,11 @@ def main():
     plt.xlabel('Episode')
     plt.show()
     if SAVE_ANN_MODEL:
-        agent.ANN_model.save('saved_model/2_tanks_agent_1.h5') 
+        for i,model in enumerate(agent.ANN_models):
+            model_name = "\ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL_" + str(i) 
+            model_path = "2_Tanks\models\saved_models" + model_name+ ".h5"
+            
+            model.save(model_path)
         print("ANN_Model was saved")
 if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")

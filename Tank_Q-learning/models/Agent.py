@@ -9,12 +9,11 @@ class Agent():
             hl_size=NUMBER_OF_HIDDEN_LAYERS,
             state_size=OBSERVATIONS,
             action_size=VALVE_POSITIONS,
-        ):
-
+        ): 
         self.state_size = state_size
         self.action_size = action_size
         self.action_choices = self._get_action_choices(action_size)
-        self.memory = deque(maxlen=2000)
+        self.memory = deque(maxlen=MEMORY_LENGTH)
         self.gamma = GAMMA    # discount rate
         self.epsilon = EPSILON  # exploration rate
         self.epsilon_min = EPSILON_MIN

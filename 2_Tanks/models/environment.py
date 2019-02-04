@@ -48,7 +48,7 @@ class Environment():
         if tank.add_dist:
             q_inn = tank.dist.get_flow() + prev_q_out
         else:
-            q_inn = 0
+            q_inn = prev_q_out
         f,A_pipe,g,l,delta_p,rho,r = tank.get_params(action) 
         
         q_out = f*A_pipe*np.sqrt(1*g*l+delta_p/rho)
@@ -72,8 +72,7 @@ class Environment():
             elif tank.l > tank.max:
                 self.terminated = True
                 tank.l = tank.max
-            
-            next_state.append([tank.l/tank.h,dldt])    
+            next_state.append([tank.l/tank.h,(dldt+1)/2])    
         next_state = np.array(next_state)
         next_state = next_state.reshape(1,next_state.shape[0],next_state.shape[1])
         return self.terminated, next_state
@@ -101,7 +100,7 @@ class Environment():
     def get_reward(self,state,terminated):
         reward = 0
         if terminated:
-            return -10*len(state[0])
+            return -len(state[0])
         for sub_state in state[0]:
             if sub_state[0] > 0.25 and sub_state[0] < 0.75:
                 reward +=1
