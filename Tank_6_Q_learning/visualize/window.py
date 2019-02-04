@@ -3,16 +3,21 @@ import pygame
 class Window():
     def __init__(self,tank):
         pygame.init()
-        pygame.display.set_caption('2 Tank simulation')
-        self.WINDOW_HEIGHT=280
-        self.WINDOW_WIDTH=750
+        pygame.display.set_caption('6 Tank simulation')
+        self.WINDOW_HEIGHT=600
+        self.WINDOW_WIDTH=1115
         self.screen = pygame.display.set_mode((self.WINDOW_WIDTH,self.WINDOW_HEIGHT))
-        self.background_image = pygame.image.load("2_Tanks/visualize/images/2_tanks.png").convert()
+        self.background_image = pygame.image.load("Tank_6_Q_learning/visualize/images/6_tanks.png").convert()
         self.background_image = pygame.transform.scale(self.background_image, (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
         
         self.clock  = pygame.time.Clock()
-        self.tank1 = TankImage(tank[0],56.5,29)
-        self.tank2 = TankImage(tank[1],407,29)
+        self.tank1 = TankImage(tank[0],81,34)
+        self.tank2 = TankImage(tank[1],433,34)
+        self.tank3 = TankImage(tank[2],783,34)
+        self.tank4 = TankImage(tank[3],81,353)
+        self.tank5 = TankImage(tank[4],433,353)
+        self.tank6 = TankImage(tank[5],783,353)
+        
 
     def Draw(self,input_z):
         for event in pygame.event.get():
@@ -21,6 +26,10 @@ class Window():
         self.screen.blit(self.background_image, [0, 0])
         self.tank1.draw(self.screen,input_z[0])
         self.tank2.draw(self.screen,input_z[1]) 
+        self.tank3.draw(self.screen,input_z[2]) 
+        self.tank4.draw(self.screen,input_z[3])
+        self.tank5.draw(self.screen,input_z[4]) 
+        self.tank6.draw(self.screen,input_z[5]) 
         pygame.display.flip()
         return True
 
@@ -45,7 +54,6 @@ class TankImage():
 
     def draw_level(self,screen):
         level_percent = (self.tank.l-self.tank.min)/(self.tank.max-self.tank.min)
-        level = int(level_percent*TankImage.height)
         pygame.draw.rect(screen, TankImage.rga_water,
         pygame.Rect(
             self.left_pos,
