@@ -42,7 +42,7 @@ def main():
                 agent.Qreplay(batch_size)
             if keyboard.is_pressed('ctrl+x'):
                 break
-        # agent.decay_exploration()
+        
         # Live plot rewards
         all_rewards.append(np.sum(np.array(episode_reward)))
         # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
@@ -50,7 +50,7 @@ def main():
             mean_reward = np.mean(all_rewards[-MEAN_EPISODE:])
             all_mean_rewards.append(mean_reward)
             print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2)))
-            if mean_reward/MAX_TIME > 0.75:
+            if mean_reward/(MAX_TIME*N_TANKS) > 0.75:
                 break
         if keyboard.is_pressed('ctrl+x'):
                 break
