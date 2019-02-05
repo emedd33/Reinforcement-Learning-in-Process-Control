@@ -10,9 +10,9 @@ TANK1_PARAMS = {
 TANK1_DIST = {
     'add':True,
     'nom_flow':0.5,
-    'var_flow':0.01,
-    'max_flow':0.7,
-    'min_flow':0.3,
+    'var_flow':0,
+    'max_flow':0.5,
+    'min_flow':0.5,
 }
 # Model parameters Tank 1
 TANK2_PARAMS = {

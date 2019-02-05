@@ -4,7 +4,7 @@ from visualize.window import Window
 import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np 
-from params import SS_POSITION,TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT
+from params import SS_POSITION,TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT,N_TANKS
 from models.tank_model.create_tank_models import create 
 class Environment():
     def __init__(self):
@@ -14,7 +14,8 @@ class Environment():
         self.running = True
         self.episode = 0
         self.all_rewards = []
-        self.terminated = False
+        self.n_tanks = N_TANKS
+        self.terminated = [False]*self.n_tanks
 
         self.show_rendering= RENDER
         self.live_plot = LIVE_REWARD_PLOT
@@ -34,10 +35,10 @@ class Environment():
 
             # Check terminate state
             if tank.l < tank.min:
-                self.terminated = True
+                self.terminated[i] = True
                 tank.l = tank.min
             elif tank.l > tank.max:
-                self.terminated = True
+                self.terminated[i] = True
                 tank.l = tank.max
             if i == 0:
                 next_state.append([tank.l/tank.h,(dldt+1)/2,0])
@@ -51,7 +52,7 @@ class Environment():
             
     def reset(self):
         state = []
-        self.terminated = False
+        self.terminated = [False]*self.n_tanks
         for tank in self.models:
             tank.reset() # reset to initial tank level
             if tank.add_dist:
@@ -69,12 +70,14 @@ class Environment():
                 self.running = False
 
     def get_reward(self,state,terminated):
-        reward = 0
-        if terminated:
-            return -50  
-        for sub_state in state[0]:
+        reward = []
+        for i,sub_state in enumerate(state[0]):
+            if terminated[i]:
+                reward.append(-10)  
             if sub_state[0] > 0.25 and sub_state[0] < 0.75:
-                reward +=1
+                reward.append(1)
+            else:
+                reward.append(0)
         return reward
         
     def plot_rewards(self):

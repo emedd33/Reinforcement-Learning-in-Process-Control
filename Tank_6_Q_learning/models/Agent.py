@@ -1,7 +1,8 @@
 from collections import deque
 from tensorflow import keras
 from params import N_TANKS,NUMBER_OF_HIDDEN_LAYERS,OBSERVATIONS,VALVE_POSITIONS,\
-    MEMORY_LENGTH,GAMMA,EPSILON,EPSILON_MIN,EPSILON_DECAY,LEARNING_RATE,LOAD_ANN_MODEL
+    MEMORY_LENGTH,GAMMA,EPSILON,EPSILON_MIN,EPSILON_DECAY,LEARNING_RATE,LOAD_ANN_MODEL,\
+        LOAD_ANN_MODEL
 
 import numpy as np 
 import random
@@ -19,7 +20,7 @@ class Agent():
         self.action_choices = self._set_action_choices(action_size)
         self.memory = [deque(maxlen=MEMORY_LENGTH)]*n_tanks
         self.gamma = GAMMA    # discount rate
-        self.epsilon = EPSILON  # exploration rate
+        self.epsilon = EPSILON if not LOAD_ANN_MODEL else EPSILON_MIN # exploration rate
         self.epsilon_min = EPSILON_MIN
         self.epsilon_decay = EPSILON_DECAY
         self.learning_rate = LEARNING_RATE
@@ -63,7 +64,7 @@ class Agent():
         # Defining network model
         if LOAD_ANN_MODEL:
             model_name = "/ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL_" + str(id) 
-            model_path = "2_Tanks/models/saved_models" + model_name+ ".h5"
+            model_path = "Tank_6_Q_learning/models/saved_models" + model_name+ ".h5"
             model = keras.models.load_model(model_path)
             return model
         model = keras.Sequential()
@@ -81,14 +82,15 @@ class Agent():
             )
         return model        
 
-    def remember(self, state, action, next_state,reward,done):
-        for i in range(self.n_tanks):
-            rem_state = state[0][i]
-            rem_state = rem_state.reshape(1,len(rem_state))
-            rem_next_state = next_state[0][i]
-            rem_next_state = rem_next_state.reshape(1,len(rem_next_state))
-            self.memory[i].append((rem_state, action[i], rem_next_state, reward,done))
-        self.replay_counter += 1
+    def remember(self, state, action, next_state,reward,terminated):
+        if not LOAD_ANN_MODEL:
+            for i in range(self.n_tanks):
+                rem_state = state[0][i]
+                rem_state = rem_state.reshape(1,len(rem_state))
+                rem_next_state = next_state[0][i]
+                rem_next_state = rem_next_state.reshape(1,len(rem_next_state))
+                self.memory[i].append((rem_state, action[i], rem_next_state, reward[i],terminated[i]))
+            self.replay_counter += 1
 
     def act_greedy(self,states,i):
         pred_state = states[0][i]
@@ -109,6 +111,8 @@ class Agent():
         return actions # Exploitation
 
     def is_ready(self,batch_size):
+        if LOAD_ANN_MODEL:
+            return False
         if len(self.memory[0])< batch_size:
             return False
         return True
