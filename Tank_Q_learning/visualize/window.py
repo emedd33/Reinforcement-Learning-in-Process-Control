@@ -1,22 +1,15 @@
 import pygame
-
 class Window():
     def __init__(self,tank):
         pygame.init()
-        pygame.display.set_caption('6 Tank simulation')
-        self.WINDOW_HEIGHT=600
-        self.WINDOW_WIDTH=1115
-        self.screen = pygame.display.set_mode((self.WINDOW_WIDTH,self.WINDOW_HEIGHT))
-        self.background_image = pygame.image.load("Tank_6_Q_learning/visualize/images/6_tanks.png").convert()
-        self.background_image = pygame.transform.scale(self.background_image, (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
-        
+        pygame.display.set_caption('Tank simulation')
+        self.WINDOW_HEIGHT=WINDOW_HEIGHT=400
+        self.WINDOW_WIDTH=WINDOW_WIDTH=300
+        self.screen = pygame.display.set_mode((self.WINDOW_HEIGHT, self.WINDOW_WIDTH))
+        self.background_image = pygame.image.load("Tank_Q_learning/visualize/images/EmptyTank.png").convert()
+        self.background_image = pygame.transform.scale(self.background_image, (WINDOW_HEIGHT, WINDOW_WIDTH))
         self.clock  = pygame.time.Clock()
-        self.tank1 = TankImage(tank[0],81,34)
-        self.tank2 = TankImage(tank[1],433,34)
-        self.tank3 = TankImage(tank[2],783,34)
-        self.tank4 = TankImage(tank[3],81,353)
-        self.tank5 = TankImage(tank[4],433,353)
-        self.tank6 = TankImage(tank[5],783,353)
+        self.tank = TankImage(tank,56.5,29)
         
 
     def Draw(self,input_z):
@@ -24,25 +17,21 @@ class Window():
             if event.type == pygame.QUIT:
                     return False
         self.screen.blit(self.background_image, [0, 0])
-        self.tank1.draw(self.screen,input_z[0])
-        self.tank2.draw(self.screen,input_z[1]) 
-        self.tank3.draw(self.screen,input_z[2]) 
-        self.tank4.draw(self.screen,input_z[3])
-        self.tank5.draw(self.screen,input_z[4]) 
-        self.tank6.draw(self.screen,input_z[5]) 
+        self.tank.draw(self.screen,input_z)
+        
         pygame.display.flip()
         return True
 
 class TankImage():
-    height=186
-    width=147
+    height=200
+    width=148
     choke_width=35
     choke_height=5
     rga_water = (25,130,150)
     rga_choke = (0,0,0)
     choke_left_adj = 234
     choke_top_adj = -7
-    choke_range = 155
+    choke_range = 167
     def __init__(self,tank,left_pos,top_pos):
         self.tank = tank
         self.left_pos = left_pos
@@ -54,6 +43,7 @@ class TankImage():
 
     def draw_level(self,screen):
         level_percent = (self.tank.l-self.tank.min)/(self.tank.max-self.tank.min)
+        level = int(level_percent*TankImage.height)
         pygame.draw.rect(screen, TankImage.rga_water,
         pygame.Rect(
             self.left_pos,

@@ -47,8 +47,8 @@ def main():
                 if mean_reward > max_mean_reward:
                     for i,model in enumerate(agent.ANN_models):
                         model_name = "/ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL_" + str(i) 
-                        model_path = "Tank_6_Q_learning/models/saved_models" + model_name+ ".h5"
-                        # model.save(model_path)
+                        model_path = "Tank_Q_learning_6/models/saved_models" + model_name+ ".h5"
+                        model.save(model_path)
                     print("ANN_Model was saved")
                     max_mean_reward = mean_reward
         if (agent.is_ready(batch_size)):
@@ -58,7 +58,7 @@ def main():
         
         # Live plot rewards
         all_rewards.append(np.sum(np.array(episode_reward)))
-        # print("Episode {}: reward: {}. Exploration rate {}".format(e,np.sum(episode_reward),round(agent.epsilon,2)))
+      
         
         if keyboard.is_pressed('ctrl+x'):
                 break
@@ -76,14 +76,7 @@ def main():
     plt.ylabel('Episodic reward')
     plt.xlabel('Episode')
     plt.show()
-    # if SAVE_ANN_MODEL:
-    #     if mean_reward > max_mean_reward:
-    #         for i,model in enumerate(agent.ANN_models):
-    #             model_name = "/ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL_" + str(i) 
-    #             model_path = "Tank_6_Q_learning/models/saved_models" + model_name+ ".h5"
-                
-    #             model.save(model_path)
-    #         print("ANN_Model was saved")
+   
 if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")
     print("  Max number of episodes: {}".format(EPISODES))
