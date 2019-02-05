@@ -1,10 +1,11 @@
 from models.tank_model.tank import Tank
 from models.tank_model.disturbance import InflowDist
 from visualize.window import Window
-from params import *
 import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np 
+from params import SS_POSITION,TANK_PARAMS,TANK_DIST,\
+    TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT
 class Environment():
     def __init__(self):
         
@@ -30,23 +31,12 @@ class Environment():
             self.window = Window(self.model)
         if LIVE_REWARD_PLOT:
             plt.ion()  # enable interactivity
-            fig = plt.figure(num="Rewards per episode")  # make a figure
+            plt.figure(num="Rewards per episode")  # make a figure
 
-    def get_dhdt(self,action):
-        if self.model.add_dist:
-            q_inn = self.dist.get_flow()
-        else:
-            q_inn = 0
-        f,A_pipe,g,l,delta_p,rho,r = self.model.get_params(action) 
-        
-        q_out = f*A_pipe*np.sqrt(1*g*l+delta_p/rho)
-        term1 = q_inn/(np.pi*r**2)
-        term2 = (q_out)/(np.pi*r**2)
-        return term1- term2 # Eq: 1
-
-    def get_next_state(self,action,state): 
+    def get_next_state(self,z,state): 
         # models response to input change
-        dldt = self.get_dhdt(action)
+    
+        dldt = self.model.get_dhdt(z) 
         self.model.change_level(dldt)
 
         # Check terminate state
@@ -56,21 +46,22 @@ class Environment():
         elif self.model.l > self.model.max:
             self.terminated = True
             self.model.l = self.model.max
-        grad = self.model.l/self.model.h - state[0][0]
-        next_state = np.array([self.model.l/self.model.h,grad])
-        next_state = next_state.reshape(1, state.size)
+        next_state = np.array([self.model.l/self.model.h,(dldt+1)/2])
+        next_state = next_state.reshape(1,2)
         return self.terminated, next_state
 
             
     def reset(self):
+        state = []
+        self.terminated = False
         self.model.reset() # reset to initial tank level
         if self.model.add_dist:
-            self.model.dist.reset()
-        self.terminated = False
-        # init_state = OBSERVATIONS*[self.model.init_l/self.model.h]
-        init_state = [self.model.init_l/self.model.h,0] 
-        init_state = np.array([init_state])
-        return init_state,TBCC,init_state,[]
+            self.model.dist.reset() # reset to nominal disturbance
+        init_state = [self.model.init_l/self.model.h,0] #Level plus gradient
+        state.append(init_state)
+        state = np.array(state)
+        state = state.reshape(1,2)
+        return state,TBCC,state,[]
 
     def render(self,action):
         if RENDER:
@@ -80,11 +71,12 @@ class Environment():
 
     def get_reward(self,state,terminated):
         if terminated:
-            return -10
-        elif state[0][0] > 0.25 and state[0][0] < 0.75:
-            return 1
+            reward=-10
+        if state[0][0] > 0.25 and state[0][1] < 0.75:
+            reward=1
         else:
-            return 0
+            reward=0
+        return reward
         
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))
