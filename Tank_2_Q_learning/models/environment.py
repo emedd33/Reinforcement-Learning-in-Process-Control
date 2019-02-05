@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np 
 from params import SS_POSITION,TANK1_PARAMS,TANK1_DIST,TANK2_DIST,TANK2_PARAMS,\
-    TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT
+    TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT,N_TANKS
 class Environment():
     def __init__(self):
         
@@ -26,21 +26,22 @@ class Environment():
             dist = TANK2_DIST,
             prev_tank=self.model1
             ) 
-        self.model = []
-        self.model.append(self.model1)
-        self.model.append(self.model2)
+        self.models = []
+        self.models.append(self.model1)
+        self.models.append(self.model2)
         
         self.action_delay= TBCC
         self.action_delay_counter = -OBSERVATIONS # Does not train on initial settings
         self.running = True
         self.episode = 0
         self.all_rewards = []
-        self.terminated = False
+        self.n_tanks = N_TANKS
+        self.terminated = [False]*self.n_tanks
 
         self.show_rendering= RENDER
         self.live_plot = LIVE_REWARD_PLOT
         if RENDER:
-            self.window = Window(self.model)
+            self.window = Window(self.models)
         if LIVE_REWARD_PLOT:
             plt.ion()  # enable interactivity
             plt.figure(num="Rewards per episode")  # make a figure
@@ -49,16 +50,16 @@ class Environment():
         # models response to input change
         prev_q_out = 0
         next_state = []
-        for i,tank in enumerate(self.model):
+        for i,tank in enumerate(self.models):
             dldt,prev_q_out = tank.get_dhdt(z[i],prev_q_out) 
             tank.change_level(dldt)
 
             # Check terminate state
             if tank.l < tank.min:
-                self.terminated = True
+                self.terminated[i] = True
                 tank.l = tank.min
             elif tank.l > tank.max:
-                self.terminated = True
+                self.terminated[i] = True
                 tank.l = tank.max
             if i == 0:
                 next_state.append([tank.l/tank.h,(dldt+1)/2,0])
@@ -72,8 +73,8 @@ class Environment():
             
     def reset(self):
         state = []
-        self.terminated = False
-        for tank in self.model:
+        self.terminated = [False]*self.n_tanks
+        for tank in self.models:
             tank.reset() # reset to initial tank level
             if tank.add_dist:
                 tank.dist.reset() # reset to nominal disturbance
@@ -90,12 +91,14 @@ class Environment():
                 self.running = False
 
     def get_reward(self,state,terminated):
-        reward = 0
-        if terminated:
-            return -10
-        for sub_state in state[0]:
+        reward = []
+        for i,sub_state in enumerate(state[0]):
+            if terminated[i]:
+                reward.append(-10)  
             if sub_state[0] > 0.25 and sub_state[0] < 0.75:
-                reward +=1
+                reward.append(1)
+            else:
+                reward.append(0)
         return reward
         
     def plot_rewards(self):
