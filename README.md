@@ -13,7 +13,8 @@ Run the following to install requirements for the project.
 ```shell
 pip install -r requirements.txt
 ```
-#### The different projects
+### The different projects
+#### All Q-learning methods uses a batch learning method
 **Tank_Q_learning:** 
 Controlling one tank by an agent which utilizes model free, value based aproximator with TD(0), default is set with gamme equals 0 so technically is not a q-learning but rather temperoal difference learning by value function approximation, feel free to change gamma.
 
@@ -22,6 +23,9 @@ Tank_Q-learning with two tanks instead of one. the main difference is that there
 
 **Tank_6_Q_learning:**
 Same as principle as with two tanks but with 6 instead.
+
+**Tank_Actor_Critic:**
+Work in progress
 
 #### How to run the different project and update parameters
 Run main.py in each project. The different project are independent on each other.
