@@ -20,25 +20,23 @@ def main():
     all_mean_rewards = []
     batch_size = BATCH_SIZE
     for e in range(EPISODES):
-        state,action_delay, next_state,episode_reward = environment.reset() # Reset level in tank
+        state,reward,action_delay, next_state,episode_reward = environment.reset() # Reset level in tank
         # Running through states in the episode
         for _ in range(MAX_TIME):    
             if action_delay >= TBCC:
-                action = agent.act(state)
-                z = agent.action_choices[action]
-                action_delay=0
+                z = agent.act(state)
             else:
                 action_delay+=1
             terminated, next_state = environment.get_next_state(z,state) 
-            reward = environment.get_reward(next_state,terminated)
-            episode_reward.append(np.sum(reward))
+            reward.append(environment.get_reward(next_state,terminated))
             if action_delay >=TBCC or terminated:
-                agent.remember(state,action,next_state,reward,terminated)
+                agent.remember(state,z,next_state,reward,terminated)
             state=next_state
-            if True in terminated:
+            if terminated:
                 break 
             if environment.show_rendering:
                 environment.render(z)
+        episode_reward.append(np.sum(reward))
         if e % MEAN_EPISODE == 0 and e != 0:
             mean_reward = np.mean(all_rewards[-MEAN_EPISODE:])
             all_mean_rewards.append(mean_reward)

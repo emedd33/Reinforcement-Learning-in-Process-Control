@@ -9,7 +9,7 @@ from params import SS_POSITION,TANK_PARAMS,TANK_DIST,\
 class Environment():
     def __init__(self):
         
-        self.model1 = Tank(
+        self.tank = Tank(
             height=TANK_PARAMS['height'],
             radius=TANK_PARAMS['width'],
             max_level=TANK_PARAMS['max_level'],
@@ -17,9 +17,7 @@ class Environment():
             pipe_radius=TANK_PARAMS['pipe_radius'],
             dist = TANK_DIST
             ) 
-        self.models = []
-        self.models.append(self.model1)
-
+        
         self.action_delay= TBCC
         self.action_delay_counter = -OBSERVATIONS # Does not train on initial settings
         self.running = True
@@ -31,7 +29,7 @@ class Environment():
         self.show_rendering= RENDER
         self.live_plot = LIVE_REWARD_PLOT
         if RENDER:
-            self.window = Window(self.models)
+            self.window = Window(self.tank)
         if LIVE_REWARD_PLOT:
             plt.ion()  # enable interactivity
             plt.figure(num="Rewards per episode")  # make a figure
@@ -40,39 +38,34 @@ class Environment():
         # models response to input change
         prev_q_out = 0
         next_state = []
-        for i,tank in enumerate(self.models):
-            dldt,prev_q_out = tank.get_dhdt(z[i],prev_q_out) 
-            tank.change_level(dldt)
+    
+        dldt,prev_q_out = self.tank.get_dhdt(z,prev_q_out) 
+        self.tank.change_level(dldt)
 
-            # Check terminate state
-            if tank.l < tank.min:
-                self.terminated[i] = True
-                tank.l = tank.min
-            elif tank.l > tank.max:
-                self.terminated[i] = True
-                tank.l = tank.max
-            if i == 0:
-                next_state.append([tank.l/tank.h,(dldt+1)/2,0])
-            else:
-                next_state.append([tank.l/tank.h,(dldt+1)/2,z[i-1]])
-                
+        # Check terminate state
+        if self.tank.l < self.tank.min:
+            self.terminated = True
+            self.tank.l = self.tank.min
+        elif self.tank.l > self.tank.max:
+            self.terminated = True
+            self.tank.l = self.tank.max
+        
+        next_state = [self.tank.l/self.tank.h,(dldt+1)/2]        
         next_state = np.array(next_state)
-        next_state = next_state.reshape(1,next_state.shape[0],next_state.shape[1])
+        next_state = next_state.reshape(1,len(next_state))
         return self.terminated, next_state
 
             
     def reset(self):
-        state = []
-        self.terminated = [False]*self.n_tanks
-        for tank in self.models:
-            tank.reset() # reset to initial tank level
-            if tank.add_dist:
-                tank.dist.reset() # reset to nominal disturbance
-            init_state = [tank.init_l/tank.h,0,0] #Level plus gradient
-            state.append(init_state)
-        state = np.array(state)
-        state = state.reshape(1,state.shape[0],state.shape[1])
-        return state,TBCC,state,[]
+        self.terminated = False
+        self.tank.reset()
+
+        if self.tank.add_dist:
+            self.tank.dist.reset() # reset to nominal disturbance
+        init_state = [self.tank.init_l/self.tank.h,0] #Level plus gradient
+        state = np.array(init_state)
+        state = state.reshape(1,len(init_state))
+        return state,[],TBCC,state,[]
 
     def render(self,action):
         if RENDER:
@@ -81,15 +74,12 @@ class Environment():
                 self.running = False
 
     def get_reward(self,state,terminated):
-        reward = []
-        for i,sub_state in enumerate(state[0]):
-            if terminated[i]:
-                reward.append(-10)  
-            if sub_state[0] > 0.25 and sub_state[0] < 0.75:
-                reward.append(1)
-            else:
-                reward.append(0)
-        return reward
+        if terminated:
+            return -10
+        if state[0][0] > 0.25 and state[0][0] < 0.75:
+            return 1
+        else:
+            return 0
         
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))
