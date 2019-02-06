@@ -2,7 +2,7 @@ from collections import deque
 from tensorflow import keras
 from params import N_TANKS,NUMBER_OF_HIDDEN_LAYERS,OBSERVATIONS,VALVE_POSITIONS,\
     MEMORY_LENGTH,GAMMA,EPSILON,EPSILON_MIN,EPSILON_DECAY,LEARNING_RATE,LOAD_ANN_MODEL,\
-        LOAD_ANN_MODEL,BATCH_SIZE,TRAIN_MODEL
+        LOAD_ANN_MODEL
 
 import numpy as np 
 import random
@@ -20,12 +20,11 @@ class Agent():
         self.action_choices = self._set_action_choices(action_size)
         self.memory = [deque(maxlen=MEMORY_LENGTH)]*n_tanks
         self.gamma = GAMMA    # discount rate
-        self.epsilon = EPSILON if TRAIN_MODEL else EPSILON_MIN # exploration rate
+        self.epsilon = EPSILON if not LOAD_ANN_MODEL else EPSILON_MIN # exploration rate
         self.epsilon_min = EPSILON_MIN
         self.epsilon_decay = EPSILON_DECAY
         self.learning_rate = LEARNING_RATE
-        self.buffer = 0
-        self.buffer_thresh = BATCH_SIZE*4
+        self.replay_counter = 0
         self.n_tanks = N_TANKS
         self.ANN_models = []
         for i in range(self.n_tanks):
@@ -66,14 +65,14 @@ class Agent():
         return model        
 
     def remember(self, state, action, next_state,reward,terminated):
-        if TRAIN_MODEL:
+        if not LOAD_ANN_MODEL:
             for i in range(self.n_tanks):
                 rem_state = state[0][i]
                 rem_state = rem_state.reshape(1,len(rem_state))
                 rem_next_state = next_state[0][i]
                 rem_next_state = rem_next_state.reshape(1,len(rem_next_state))
                 self.memory[i].append((rem_state, action[i], rem_next_state, reward[i],terminated[i]))
-            self.buffer += 1
+            self.replay_counter += 1
 
     def act_greedy(self,states,i):
         pred_state = states[0][i]
@@ -94,35 +93,25 @@ class Agent():
         return actions # Exploitation
 
     def is_ready(self,batch_size):
-        if not TRAIN_MODEL:
+        if LOAD_ANN_MODEL:
             return False
         if len(self.memory[0])< batch_size:
-            return False
-        if self.buffer < self.buffer_thresh:
             return False
         return True
 
     def Qreplay(self, batch_size):
-        loss = []
         for i in range(self.n_tanks):
             minibatch = random.sample(self.memory[i], batch_size)
-            states, targets_f = [], []
             for state, action, next_state,reward,done in minibatch:
                 target = reward
+
                 if not done:
-                    target = (reward + self.gamma *
-                            np.amax(self.ANN_models[i].predict(next_state)[0]))
+                    target = (reward + self.gamma *np.amax(self.ANN_models[i].predict(next_state)))
                 target_f = self.ANN_models[i].predict(state)
-                target_f[0][action] = target 
-                # Filtering out states and targets for training
-                states.append(state[0])
-                targets_f.append(target_f[0])
-            history = self.ANN_models[i].fit(np.array(states), np.array(targets_f), epochs=1, verbose=0)
-        
-        loss.append(history.history['loss'][0])
-        self.decay_exploration()
-        self.buffer = 0
-        return loss
+                target_f[0][action] = target
+                self.ANN_models[i].fit(state, target_f, epochs=1, verbose=0)
+            self.decay_exploration()
+            # self.replay_counter = 0
 
     def decay_exploration(self):
         if self.epsilon > self.epsilon_min:

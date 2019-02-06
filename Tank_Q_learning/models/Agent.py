@@ -1,7 +1,8 @@
 from collections import deque
 from tensorflow import keras
 from params import NUMBER_OF_HIDDEN_LAYERS,OBSERVATIONS,VALVE_POSITIONS,MEMORY_LENGTH,\
-    EPSILON,EPSILON_MIN,EPSILON_DECAY,LOAD_ANN_MODEL,GAMMA,LEARNING_RATE
+    EPSILON,EPSILON_MIN,EPSILON_DECAY,LOAD_ANN_MODEL,GAMMA,LEARNING_RATE,TRAIN_MODEL,\
+        BATCH_SIZE
 import numpy as np 
 import random
 import itertools
@@ -16,11 +17,12 @@ class Agent():
         self.action_choices = self._get_action_choices(action_size)
         self.memory = deque(maxlen=MEMORY_LENGTH)
         self.gamma = GAMMA    # discount rate
-        self.epsilon = EPSILON if not LOAD_ANN_MODEL else EPSILON_MIN # exploration rate
+        self.epsilon = EPSILON if TRAIN_MODEL else EPSILON_MIN # exploration rate
         self.epsilon_min = EPSILON_MIN
         self.epsilon_decay = EPSILON_DECAY
         self.learning_rate = LEARNING_RATE
-        self.replay_counter = 0
+        self.buffer = 0
+        self.buffer_thres = BATCH_SIZE*4
         self.ANN_model = self._build_ANN(state_size,hl_size,action_size,learning_rate=0.01)
         
     
@@ -53,11 +55,11 @@ class Agent():
         return model        
 
     def remember(self, state, action, next_state,reward,done):
-        if not LOAD_ANN_MODEL:
+        if TRAIN_MODEL:
             next_state=np.array(next_state)
             next_state=next_state.reshape(1,next_state.size)
             self.memory.append((state, action, next_state, reward,done))
-            self.replay_counter += 1
+            self.buffer += 1
 
     def act_greedy(self,state):
         pred = self.ANN_model.predict(state) 
@@ -71,25 +73,33 @@ class Agent():
         return self.act_greedy(states) # Exploitation
 
     def is_ready(self,batch_size):
-        if LOAD_ANN_MODEL:
+        if not TRAIN_MODEL:
             return False
         if len(self.memory)< batch_size:
+            return False
+        if self.buffer < self.buffer_thres:
             return False
         return True
 
     def Qreplay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
+        states, targets_f = [], []
         for state, action, next_state,reward,done in minibatch:
             target = reward
-            
             if not done:
-                target = (reward + self.gamma *np.amax(self.ANN_model.predict(next_state)))
+                target = (reward + self.gamma *
+                          np.amax(self.ANN_model.predict(next_state)[0]))
             target_f = self.ANN_model.predict(state)
-            target_f[0][action] = target
-            self.ANN_model.fit(state, target_f, epochs=1, verbose=0)
+            target_f[0][action] = target 
+            # Filtering out states and targets for training
+            states.append(state[0])
+            targets_f.append(target_f[0])
+        history = self.ANN_model.fit(np.array(states), np.array(targets_f), epochs=1, verbose=0)
+        
+        loss = history.history['loss'][0]
         self.decay_exploration()
-        # self.replay_counter = 0
-
+        self.buffer = 0
+        return loss
     def decay_exploration(self):
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay

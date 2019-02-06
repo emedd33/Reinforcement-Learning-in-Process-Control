@@ -42,7 +42,7 @@ def main():
         if e % MEAN_EPISODE == 0 and e != 0:
             mean_reward = np.mean(all_rewards[-MEAN_EPISODE:])
             all_mean_rewards.append(mean_reward)
-            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,np.mean(all_rewards[-MEAN_EPISODE:]),round(agent.epsilon,2)))
+            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,mean_reward,round(agent.epsilon,2)))
             if SAVE_ANN_MODEL:
                 if mean_reward > max_mean_reward:
                     for i,model in enumerate(agent.ANN_models):
@@ -52,7 +52,7 @@ def main():
                     print("ANN_Model was saved")
                     max_mean_reward = mean_reward
         if (agent.is_ready(batch_size)):
-            agent.Qreplay(batch_size)
+            loss = agent.Qreplay(batch_size)
         if keyboard.is_pressed('ctrl+x'):
             break
         
@@ -72,7 +72,7 @@ def main():
     print("Mean rewards for the last 10 episodes: {}".format(np.mean(all_rewards[-10:]))) 
     plt.ioff()
     plt.clf()
-    plt.plot(all_rewards)
+    plt.plot(all_mean_rewards)
     plt.ylabel('Episodic reward')
     plt.xlabel('Episode')
     plt.show()
