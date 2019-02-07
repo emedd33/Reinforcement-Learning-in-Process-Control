@@ -4,6 +4,7 @@ from visualize.window import Window
 import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np 
+import math
 from params import SS_POSITION,TANK_PARAMS,TANK_DIST,\
     TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT,N_TANKS
 class Environment():
@@ -50,7 +51,7 @@ class Environment():
             self.terminated = True
             self.tank.l = self.tank.max
         
-        next_state = [self.tank.l/self.tank.h,(dldt+1)/2]        
+        next_state = [self.tank.l/self.tank.h-SS_POSITION]        
         next_state = np.array(next_state)
         next_state = next_state.reshape(1,len(next_state))
         return self.terminated, next_state
@@ -59,13 +60,14 @@ class Environment():
     def reset(self):
         self.terminated = False
         self.tank.reset()
-
+        state = []
         if self.tank.add_dist:
             self.tank.dist.reset() # reset to nominal disturbance
-        init_state = [self.tank.init_l/self.tank.h,0] #Level plus gradient
-        state = np.array(init_state)
-        state = state.reshape(1,len(init_state))
-        return state,[],TBCC,state,[]
+        init_state = [self.tank.init_l/self.tank.h-SS_POSITION] #Level plus gradient
+        init_state = np.array(init_state)
+        init_state = init_state.reshape(1,len(init_state))
+        state.append(init_state)
+        return state,[],TBCC,state
 
     def render(self,action):
         if RENDER:
@@ -75,11 +77,19 @@ class Environment():
 
     def get_reward(self,state,terminated):
         if terminated:
-            return -10
-        if state[0][0] > 0.25 and state[0][0] < 0.75:
-            return 1
+            return -100
+        # if state[0][0] > 0.45 and state[0][0] < 0.55:
+        #     return 5
+        # if state[0][0] > 0.4 and state[0][0] < 0.60:
+        #     return 4
+        # if state[0][0] > 0.3 and state[0][0] < 0.7:
+        #     return 3
+        # if state[0][0] > 0.2 and state[0][0] < 0.8:
+        #     return 2
+        # if state[0][0] > 0.1 and state[0][0] < 0.9:
+        #     return 1
         else:
-            return 0
+            return 1
         
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))

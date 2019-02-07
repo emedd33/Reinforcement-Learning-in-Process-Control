@@ -1,5 +1,6 @@
 import numpy as np 
 import pygame
+import math
 from params import INIT_LEVEL
 from models.tank_model.disturbance import InflowDist
 class Tank(): # Cylindric tank

@@ -3,7 +3,7 @@
 
 EPISODES = 10000
 MEAN_EPISODE=10
-MAX_TIME = 100
+MAX_TIME = 300
 MAX_OBTAINED_REWARD = 176.4
 LOAD_ANN_MODEL = False
 SAVE_ANN_MODEL=False
@@ -21,19 +21,19 @@ INIT_LEVEL=0.5 # initial water level for each episode
 TBCC = 1 # Time before choke change
 
 # Agent parameters
-MEMORY_LENGTH = 10000
+MEMORY_LENGTH = 20000
 SS_POSITION = 0.5 # steady state set position
 VALVE_START_POSITION=0
 OBSERVATIONS = 3 # Last timestep + gradient of water level + choke position of prev tank
 VALVE_POSITIONS= 10 # Number of valve positions 
-GAMMA = 0.1    # discount rate
-EPSILON = 0  # exploration rate
+GAMMA = 0.99    # discount rate
+EPSILON = 0 # exploration rate
 
 EPSILON_MIN = 0.0001
-EPSILON_DECAY = 0.995
-LEARNING_RATE = 0.01 
-NUMBER_OF_HIDDEN_LAYERS = [10]
-BATCH_SIZE=20
+EPSILON_DECAY = 0.95
+LEARNING_RATE = 0.000025
+NUMBER_OF_HIDDEN_LAYERS = [5,5]
+BATCH_SIZE=1
 
 
 
@@ -48,8 +48,8 @@ TANK_PARAMS = {
 
 TANK_DIST = {
     'add':True,
-    'nom_flow':1,
+    'nom_flow':0.3,
     'var_flow':0,
-    'max_flow':1.5,
-    'min_flow':0.3,
+    'max_flow':0.5,
+    'min_flow':0.2,
 }
