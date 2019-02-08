@@ -17,38 +17,31 @@ def main():
     # ================= Running episodes =================#
     batch_size = BATCH_SIZE
     episode_reward = []
+    adv,state,reward,actions,terminateds = [0,0],[],[],[],[]
+
     for e in range(EPISODES):
         environment.episode = e
-        state,reward,action_delay, next_state = environment.reset() # Reset level in tank
+        state.append(environment.reset()) # Reset level in tank
         grads = []
         # Running through states in the episode
         for _ in range(MAX_TIME):    
-            probs,z,action = agent.act(state[-1])
-            if _ == 0:
-                saved_probs = probs
-            terminated, next_state = environment.get_next_state(z,state[-1]) 
+            actions.append(agent.act(state[-1]))
+   
+            terminated, next_state = environment.get_next_state(actions[-1],state[-1]) 
             reward.append(environment.get_reward(next_state,terminated))
             state.append(next_state)
-            dsoftmax = agent.softmax_grad(probs)[z,:]
-            dlog = dsoftmax / probs[0,z]
-            # state[-1] = state[-1].reshape(2,1)
-            grad = state[-1].dot(dlog[None,:])
-            grads.append(grad)
-            
+            terminateds.append(terminated)
+            if environment.show_rendering:
+                environment.render(actions[-1])
             if terminated:
                 break 
-            if environment.show_rendering:
-                environment.render(z)
-        for i in range(len(grads)):
-            agent.model_w += LEARNING_RATE * grads[i] * sum([ r * (agent.gamma ** r) for t,r in enumerate(reward[i:])])
-        # agent.remember(state[-1],z,next_state,reward,terminated)
+        adv = agent.remember(state,actions,reward,terminateds,adv)
+        if len(agent.memory)>=batch_size:
+            agent.GP_replay()
+
         episode_reward.append(np.sum(reward))
-        
-        agent.status(episode_reward,e,round(saved_probs[0][0],3))
-        
-        # if (agent.is_ready(batch_size)):
-        agent.b.append(np.mean(reward))
-        #     agent.GP_replay(batch_size,np.mean(agent.b))
+        state,reward,actions,terminateds = [],[],[],[]
+        agent.status(episode_reward,e)
         if keyboard.is_pressed('ctrl+x'):
             break
         
@@ -62,8 +55,6 @@ def main():
             break
                     
     print("##### {} EPISODES DONE #####".format(e+1))
-    # print("Max rewards for all episodes: {}".format(np.max(all_rewards))) 
-    # print("Mean rewards for the last 10 episodes: {}".format(np.mean(all_rewards[-10:]))) 
     plt.ioff()
     plt.clf()
     plt.plot(episode_reward)

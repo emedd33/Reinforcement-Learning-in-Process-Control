@@ -51,9 +51,9 @@ class Environment():
             self.terminated = True
             self.tank.l = self.tank.max
         
-        next_state = [self.tank.l/self.tank.h-SS_POSITION]        
+        next_state = [self.tank.l/self.tank.h,dldt]        
         next_state = np.array(next_state)
-        next_state = next_state.reshape(1,len(next_state))
+        next_state = next_state.reshape(1,2)
         return self.terminated, next_state
 
             
@@ -63,11 +63,9 @@ class Environment():
         state = []
         if self.tank.add_dist:
             self.tank.dist.reset() # reset to nominal disturbance
-        init_state = [self.tank.init_l/self.tank.h-SS_POSITION] #Level plus gradient
+        init_state = [self.tank.init_l/self.tank.h,0] #Level plus gradient
         init_state = np.array(init_state)
-        init_state = init_state.reshape(1,len(init_state))
-        state.append(init_state)
-        return state,[],TBCC,state
+        return init_state.reshape(1,2)
 
     def render(self,action):
         if RENDER:

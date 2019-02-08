@@ -3,7 +3,7 @@
 
 EPISODES = 10000
 MEAN_EPISODE=10
-MAX_TIME = 300
+MAX_TIME = 500
 MAX_OBTAINED_REWARD = 176.4
 LOAD_ANN_MODEL = False
 SAVE_ANN_MODEL=False
@@ -27,7 +27,7 @@ VALVE_START_POSITION=0
 OBSERVATIONS = 3 # Last timestep + gradient of water level + choke position of prev tank
 VALVE_POSITIONS= 10 # Number of valve positions 
 GAMMA = 0.99    # discount rate
-EPSILON = 0 # exploration rate
+EPSILON = 1 # exploration rate
 
 EPSILON_MIN = 0.0001
 EPSILON_DECAY = 0.95
