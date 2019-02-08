@@ -51,9 +51,9 @@ class Environment():
             self.terminated = True
             self.tank.l = self.tank.max
         
-        next_state = [self.tank.l/self.tank.h,dldt]        
+        next_state = [self.tank.l/self.tank.h-SS_POSITION]        
         next_state = np.array(next_state)
-        next_state = next_state.reshape(1,2)
+        next_state = next_state.reshape(1,)
         return self.terminated, next_state
 
             
@@ -63,9 +63,9 @@ class Environment():
         state = []
         if self.tank.add_dist:
             self.tank.dist.reset() # reset to nominal disturbance
-        init_state = [self.tank.init_l/self.tank.h,0] #Level plus gradient
+        init_state = [self.tank.init_l/self.tank.h-SS_POSITION] #Level plus gradient
         init_state = np.array(init_state)
-        return init_state.reshape(1,2)
+        return init_state.reshape(1,)
 
     def render(self,action):
         if RENDER:
@@ -75,7 +75,7 @@ class Environment():
 
     def get_reward(self,state,terminated):
         if terminated:
-            return -100
+            reward =-1
         # if state[0][0] > 0.45 and state[0][0] < 0.55:
         #     return 5
         # if state[0][0] > 0.4 and state[0][0] < 0.60:
@@ -87,7 +87,8 @@ class Environment():
         # if state[0][0] > 0.1 and state[0][0] < 0.9:
         #     return 1
         else:
-            return 1
+            reward =1
+        return reward
         
     def plot_rewards(self):
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))

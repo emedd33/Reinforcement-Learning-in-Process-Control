@@ -22,24 +22,23 @@ def main():
     for e in range(EPISODES):
         environment.episode = e
         state.append(environment.reset()) # Reset level in tank
-        grads = []
         # Running through states in the episode
         for _ in range(MAX_TIME):    
-            actions.append(agent.act(state[-1]))
-   
-            terminated, next_state = environment.get_next_state(actions[-1],state[-1]) 
-            reward.append(environment.get_reward(next_state,terminated))
+            prob,action = agent.act(state[-1])
+            terminated, next_state = environment.get_next_state(action,state[-1]) 
+            agent.drs.append(environment.get_reward(next_state,terminated))
             state.append(next_state)
             terminateds.append(terminated)
             if environment.show_rendering:
-                environment.render(actions[-1])
+                environment.render(action)
             if terminated:
                 break 
-        adv = agent.remember(state,actions,reward,terminateds,adv)
-        if len(agent.memory)>=batch_size:
-            agent.GP_replay()
+        # adv = agent.remember(state,actions,reward,terminateds,adv)
+        
+        episode_reward.append(np.sum(agent.drs))        
+        agent.GP_replay(e)
 
-        episode_reward.append(np.sum(reward))
+        
         state,reward,actions,terminateds = [],[],[],[]
         agent.status(episode_reward,e)
         if keyboard.is_pressed('ctrl+x'):
