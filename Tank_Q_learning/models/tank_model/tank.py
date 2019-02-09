@@ -2,7 +2,8 @@ import numpy as np
 import pygame
 from params import INIT_LEVEL
 from models.tank_model.disturbance import InflowDist
-class Tank(): # Cylindric tank
+class Tank(): 
+    "Cylindric tank"
     g=9.81
     rho=1000
     
@@ -42,6 +43,7 @@ class Tank(): # Cylindric tank
         self.l += dldt*self.h
 
     def get_dhdt(self,action):
+        "Calculates the change in water level"
         if self.add_dist:
             q_inn = self.dist.get_flow() 
         else:
@@ -55,12 +57,15 @@ class Tank(): # Cylindric tank
         return term1- term2 # Eq: 1
 
     def reset(self):
+        "reset tank to initial liquid level"
         self.l = self.init_l
 
-    def get_valve(self,action): #
+    def get_valve(self,action): 
+        "linear valve equation"
         return action
         
     def get_params(self,action):
+        "collects the tanks parameters"
         f = self.get_valve(action)
         return f,self.A_pipe,Tank.g,self.l,0,Tank.rho,self.r
         

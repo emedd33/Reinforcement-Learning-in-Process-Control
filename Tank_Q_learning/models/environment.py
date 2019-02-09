@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np 
 from params import SS_POSITION,TANK_PARAMS,TANK_DIST,\
-    TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT
+    OBSERVATIONS,RENDER,LIVE_REWARD_PLOT
 class Environment():
+    "Parameters are set in the params.py file"
+    
     def __init__(self):
         
         self.model = Tank(
@@ -18,8 +20,6 @@ class Environment():
             dist = TANK_DIST
             ) 
         
-        self.action_delay= TBCC
-        self.action_delay_counter = -OBSERVATIONS # Does not train on initial settings
         self.running = True
         self.episode = 0
         self.all_rewards = []
@@ -27,6 +27,7 @@ class Environment():
 
         self.show_rendering= RENDER
         self.live_plot = LIVE_REWARD_PLOT
+        
         if RENDER:
             self.window = Window(self.model)
         if LIVE_REWARD_PLOT:
@@ -34,7 +35,7 @@ class Environment():
             plt.figure(num="Rewards per episode")  # make a figure
 
     def get_next_state(self,z,state): 
-        # models response to input change
+        "Calculates the dynamics of the agents action and gives back the next state"
     
         dldt = self.model.get_dhdt(z) 
         self.model.change_level(dldt)
@@ -52,6 +53,8 @@ class Environment():
 
             
     def reset(self):
+        "Reset the environment to the initial tank level and disturbance"
+
         state = []
         self.terminated = False
         self.model.reset() # reset to initial tank level
@@ -61,15 +64,19 @@ class Environment():
         state.append(init_state)
         state = np.array(state)
         state = state.reshape(1,2)
-        return state,TBCC,state,[]
+        return state,state,[]
 
     def render(self,action):
+        "Draw the water level of the tank in pygame"
+
         if RENDER:
             running = self.window.Draw(action)
             if not running:
                 self.running = False
 
     def get_reward(self,state,terminated):
+        "Calculates the environments reward for the next state"
+
         if terminated:
             reward=-10
         if state[0][0] > 0.25 and state[0][1] < 0.75:
@@ -79,10 +86,13 @@ class Environment():
         return reward
         
     def plot_rewards(self):
+        "drawnow plot of the reward"
+
         plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))
         plt.legend()
 
     def plot(self,all_rewards,epsilon):
+        "Live plot of the reward"
         self.all_rewards = all_rewards
         self.epsilon = round(epsilon,4)
         try:

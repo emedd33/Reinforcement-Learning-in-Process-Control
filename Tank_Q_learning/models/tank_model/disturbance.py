@@ -1,10 +1,9 @@
 import numpy as np 
 
 
-
-# Agent parameters
 class InflowDist():
-
+    "Inlet disturbance flow"
+    
     def __init__(self, nom_flow, var_flow,max_flow,min_flow):
         self.var_flow = var_flow
         self.nom_flow = nom_flow
@@ -12,6 +11,7 @@ class InflowDist():
         self.max_flow = max_flow
 
     def get_flow(self):
+        "Gausian distribution of flow rate"
         
         new_flow = np.random.normal(self.flow, self.var_flow)
         if new_flow > self.max_flow:
@@ -25,4 +25,5 @@ class InflowDist():
             return self.flow
             
     def reset(self):
+        "Sets dstubance flow to nominal value"
         self.flow = self.nom_flow

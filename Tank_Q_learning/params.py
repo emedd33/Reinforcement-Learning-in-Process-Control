@@ -1,12 +1,31 @@
 
-EPISODES = 2000
-MEAN_EPISODE=10
-MAX_TIME = 100
-SAVE_ANN_MODEL=False
+EPISODES = 20000
+MEAN_EPISODE=1
+MAX_TIME = 200
+SAVE_ANN_MODEL=True
 LOAD_ANN_MODEL = False
 TRAIN_MODEL=True
+# Render parameters, will increase run time when set to True
+RENDER=True
+LIVE_REWARD_PLOT= False 
+
+# Agent parameters
+MEMORY_LENGTH=3000
+SS_POSITION = 0.5 # steady state set position
+VALVE_START_POSITION=0
+OBSERVATIONS = 2 # Number of time steos observed
+VALVE_POSITIONS= 10 # Number of valve positions 
+GAMMA = 0.98    # discount rate
+EPSILON = 1.0  # exploration rate
+
+EPSILON_MIN = 0.01
+EPSILON_DECAY = 0.95
+LEARNING_RATE = 0.00001
+NUMBER_OF_HIDDEN_LAYERS = [5,5]
+BATCH_SIZE=30
 
 # Model parameters Tank 1
+INIT_LEVEL=0.5 # initial water level for each episode
 TANK_PARAMS = {
     'height':10,
     'width':3,
@@ -22,29 +41,5 @@ TANK_DIST = {
     'max_flow':1,
     'min_flow':0,
 }
-# Model parameters Tank 1
-
-INIT_LEVEL=0.5 # initial water level for each episode
-
-# Choke parameters
-TBCC = 1 # Time before choke change
-
-# Agent parameters
-MEMORY_LENGTH=3000
-SS_POSITION = 0.5 # steady state set position
-VALVE_START_POSITION=0
-OBSERVATIONS = 2 # Number of time steos observed
-VALVE_POSITIONS= 30 # Number of valve positions 
-GAMMA = 0.98    # discount rate
-EPSILON = 1.0  # exploration rate
-
-EPSILON_MIN = 0.0001
-EPSILON_DECAY = 0.95
-LEARNING_RATE = 0.001
-NUMBER_OF_HIDDEN_LAYERS = [10]
-BATCH_SIZE=30
 
 
-# Render parameters
-RENDER=True
-LIVE_REWARD_PLOT= False
