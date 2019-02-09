@@ -17,10 +17,10 @@ pip install -r requirements.txt
 ### Q_learning 
 Off policy method of Deep Q networks which trains a neural network to approximate the value of beeing in different states based on series of **1 Tank**,**2 Tanks** or **6 Tanks**. All Q-learning methods uses a batch learning method.
 
-###Policy gradint:
+### Policy gradint:
 Work in progress
 
-###Tank_Actor_Critic:
+### Tank_Actor_Critic:
 Coming later
 
 #### How to run the different project and update parameters
