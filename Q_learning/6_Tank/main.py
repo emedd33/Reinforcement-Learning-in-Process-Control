@@ -42,7 +42,7 @@ def main():
         if e % MEAN_EPISODE == 0 and e != 0:
             mean_reward = np.mean(all_rewards[-MEAN_EPISODE:])
             all_mean_rewards.append(mean_reward)
-            print("Mean rewards for the last {} of {}/{} episodes : {} explore: {}".format(MEAN_EPISODE,e,EPISODES,mean_reward,round(agent.epsilon,2)))
+            print("Mean rewards for the last {} of {}/{} episodes : {} explore T1: {} explore T6: {}".format(MEAN_EPISODE,e,EPISODES,mean_reward,round(agent.epsilon[0],2),round(agent.epsilon[5],2)))
             if SAVE_ANN_MODEL:
                 if mean_reward > max_mean_reward:
                     for i,model in enumerate(agent.ANN_models):

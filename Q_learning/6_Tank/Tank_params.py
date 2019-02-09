@@ -9,25 +9,25 @@ TANK1_PARAMS = {
 
 TANK1_DIST = {
     'add':True,
-    'nom_flow':0.5,
+    'nom_flow':1,
     'var_flow':0,
-    'max_flow':0.5,
+    'max_flow':0.8,
     'min_flow':0.5,
 }
 # Model parameters Tank 1
 TANK2_PARAMS = {
-    'height':10,
-    'width':3,
+    'height':5,
+    'width':2,
     'pipe_radius':0.5,
     'max_level':0.9,
     'min_level':0.1
 }
 TANK2_DIST = {
-    'add':False,
-    'nom_flow':0.5,
-    'var_flow':0.01,
-    'max_flow':0.7,
-    'min_flow':0.3,
+    'add':True,
+    'nom_flow':0.4,
+    'var_flow':0,
+    'max_flow':0.6,
+    'min_flow':0.2,
 }
 # Model parameters Tank 1
 TANK3_PARAMS = {
@@ -39,9 +39,9 @@ TANK3_PARAMS = {
 }
 
 TANK3_DIST = {
-    'add':False,
+    'add':True,
     'nom_flow':0.5,
-    'var_flow':0.01,
+    'var_flow':0,
     'max_flow':0.7,
     'min_flow':0.3,
 }
@@ -54,11 +54,11 @@ TANK4_PARAMS = {
     'min_level':0.1
 }
 TANK4_DIST = {
-    'add':False,
-    'nom_flow':0.5,
-    'var_flow':0.01,
-    'max_flow':0.7,
-    'min_flow':0.3,
+    'add':True,
+    'nom_flow':0.4,
+    'var_flow':0,
+    'max_flow':0.6,
+    'min_flow':0.2,
 }
 # Model parameters Tank 1
 TANK5_PARAMS = {
@@ -70,9 +70,9 @@ TANK5_PARAMS = {
 }
 
 TANK5_DIST = {
-    'add':False,
+    'add':True,
     'nom_flow':0.5,
-    'var_flow':0.01,
+    'var_flow':0,
     'max_flow':0.7,
     'min_flow':0.3,
 }
@@ -85,9 +85,9 @@ TANK6_PARAMS = {
     'min_level':0.1
 }
 TANK6_DIST = {
-    'add':False,
-    'nom_flow':0.5,
-    'var_flow':0.01,
-    'max_flow':0.7,
-    'min_flow':0.3,
+   'add':True,
+    'nom_flow':0.4,
+    'var_flow':0,
+    'max_flow':0.6,
+    'min_flow':0.2,
 }

@@ -43,7 +43,7 @@ class Agent():
         #Load existing model from saved_models folder
         if LOAD_ANN_MODEL:
             model_name = "/ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL" 
-            model_path = "Tank_Q_learning/models/saved_models" + model_name+ ".h5"
+            model_path = "Q_learning/1_Tank/saved_models" + model_name+ ".h5"
             model = keras.models.load_model(model_path)
             return model
         
@@ -128,7 +128,7 @@ class Agent():
 
         if mean_reward >= max_mean_reward:
                 model_name = "/ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL"
-                model_path = "Tank_Q_learning/models/saved_models" + model_name+ ".h5"
+                model_path = "Q_learning/1_Tank/saved_models" + model_name+ ".h5"
                 self.ANN_model.save(model_path)
                 print("ANN_Model was saved")
                 max_mean_reward = mean_reward

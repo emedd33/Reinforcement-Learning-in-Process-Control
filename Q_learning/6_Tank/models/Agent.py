@@ -20,7 +20,7 @@ class Agent():
         self.action_choices = self._set_action_choices(action_size)
         self.memory = [deque(maxlen=MEMORY_LENGTH)]*n_tanks
         self.gamma = GAMMA    # discount rate
-        self.epsilon = EPSILON if TRAIN_MODEL else EPSILON_MIN # exploration rate
+        self.epsilon = [EPSILON]*N_TANKS if TRAIN_MODEL else [EPSILON_MIN]*N_TANKS # exploration rate
         self.epsilon_min = EPSILON_MIN
         self.epsilon_decay = EPSILON_DECAY
         self.learning_rate = LEARNING_RATE
@@ -75,23 +75,22 @@ class Agent():
                 self.memory[i].append((rem_state, action[i], rem_next_state, reward[i],terminated[i]))
             self.buffer += 1
 
-    def act_greedy(self,states,i):
-        pred_state = states[0][i]
+    def act_greedy(self,state,i):
+        pred_state = state[0][i]
         pred_state = pred_state.reshape(1,len(pred_state))
         pred = self.ANN_models[i].predict(pred_state) 
         choice = np.where(pred[0]==max(pred[0]))[0][0]
         return choice
          
-    def act(self, states):
+    def act(self, state):
         actions = []
-        if np.random.rand() <= self.epsilon: # Exploration 
-            for i in range(self.n_tanks):
-                random_action = random.randint(0,len(self.action_choices)-1)
-                actions.append(random_action)
-            return actions
         for i in range(self.n_tanks):
-            actions.append(self.act_greedy(states,i))
-        return actions # Exploitation
+            if np.random.rand() <= self.epsilon[i]: # Exploration             
+                    random_action = random.randint(0,len(self.action_choices)-1)
+                    actions.append(random_action)
+            else:
+                actions.append(self.act_greedy(state,i))# Exploitation
+        return actions 
 
     def is_ready(self,batch_size):
         if not TRAIN_MODEL:
@@ -125,5 +124,6 @@ class Agent():
         return loss
 
     def decay_exploration(self):
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+        for i in range(self.n_tanks):
+            if self.epsilon[i] > self.epsilon_min:
+                self.epsilon[i] = self.epsilon[i]*(self.epsilon_decay**(self.n_tanks-i))

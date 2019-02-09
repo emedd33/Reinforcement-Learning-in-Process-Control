@@ -3,7 +3,7 @@ EPISODES = 2000
 MEAN_EPISODE=20
 MAX_TIME = 200
 SAVE_ANN_MODEL=False
-LOAD_ANN_MODEL = True
+LOAD_ANN_MODEL = False
 TRAIN_MODEL=False
 # Render parameters, will increase run time when set to True
 RENDER=True
