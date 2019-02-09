@@ -1,10 +1,10 @@
 
-EPISODES = 20000
-MEAN_EPISODE=1
+EPISODES = 2000
+MEAN_EPISODE=20
 MAX_TIME = 200
-SAVE_ANN_MODEL=True
-LOAD_ANN_MODEL = False
-TRAIN_MODEL=True
+SAVE_ANN_MODEL=False
+LOAD_ANN_MODEL = True
+TRAIN_MODEL=False
 # Render parameters, will increase run time when set to True
 RENDER=True
 LIVE_REWARD_PLOT= False 
@@ -22,7 +22,7 @@ EPSILON_MIN = 0.01
 EPSILON_DECAY = 0.95
 LEARNING_RATE = 0.00001
 NUMBER_OF_HIDDEN_LAYERS = [5,5]
-BATCH_SIZE=30
+BATCH_SIZE=100
 
 # Model parameters Tank 1
 INIT_LEVEL=0.5 # initial water level for each episode

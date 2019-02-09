@@ -51,11 +51,11 @@ def main():
             if SAVE_ANN_MODEL:
                 max_mean_reward = agent.save_model(mean_reward,max_mean_reward)
         
-        # Train model
-        if (agent.is_ready(batch_size)):
-            agent.Qreplay(batch_size)
-        
-        if keyboard.is_pressed('ctrl+c'):
+            # Train model
+            if (agent.is_ready(batch_size)):
+                agent.Qreplay(batch_size)
+            
+        if keyboard.is_pressed('ctrl+x'):
             break
         
         if LIVE_REWARD_PLOT:
