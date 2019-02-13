@@ -6,6 +6,7 @@ from params import BATCH_SIZE,EPISODES,MAX_TIME,MEAN_EPISODE,\
     LIVE_REWARD_PLOT,SAVE_ANN_MODEL,RENDER,NUMBER_OF_HIDDEN_LAYERS
 import os
 import matplotlib.pyplot as plt
+plt.style.use('ggplot')
 import numpy as np 
 import keyboard
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
