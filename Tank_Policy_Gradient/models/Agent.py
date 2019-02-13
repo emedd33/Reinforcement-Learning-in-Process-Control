@@ -96,9 +96,10 @@ class Agent():
          
     def act(self, x):
         aprob,h = self.policy_forward(x)
-        z = np.random.normal(aprob,self.epsilon)
-        z = 0 if z < 0 else z
-        z = 1 if z > 1 else z
+        if np.random.rand() <= self.epsilon: # Exploration 
+            z = random.uniform(0,1)
+        else:
+            z=aprob
         self.x.append(x) # observation
         self.h.append(h) # hidden state
         self.dlogps.append(z - aprob)

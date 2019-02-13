@@ -29,8 +29,8 @@ VALVE_POSITIONS= 10 # Number of valve positions
 GAMMA = 0.99    # discount rate
 EPSILON = 1 # exploration rate
 
-EPSILON_MIN = 0.05
-EPSILON_DECAY = 0.95
+EPSILON_MIN = 0
+EPSILON_DECAY = 0.995
 LEARNING_RATE = 1e-2
 DECAY_RATE=0.99
 NUMBER_OF_HIDDEN_LAYERS = [5]
