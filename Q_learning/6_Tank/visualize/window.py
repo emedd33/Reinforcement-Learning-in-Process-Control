@@ -7,7 +7,7 @@ class Window():
         self.WINDOW_HEIGHT=600
         self.WINDOW_WIDTH=1115
         self.screen = pygame.display.set_mode((self.WINDOW_WIDTH,self.WINDOW_HEIGHT))
-        self.background_image = pygame.image.load("Tank_Q_learning_6/visualize/images/6_tanks.png").convert()
+        self.background_image = pygame.image.load("Q_learning/6_Tank/visualize/images/6_tanks.png").convert()
         self.background_image = pygame.transform.scale(self.background_image, (self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
         
         self.clock  = pygame.time.Clock()
