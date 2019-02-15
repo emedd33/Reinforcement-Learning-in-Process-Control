@@ -71,16 +71,20 @@ class Environment():
             if not running:
                 self.running = False
 
-    def get_reward(self,state,terminated):
-        "Calculates the environments reward for the next state"
-
-        if terminated:
-            reward=-10
-        if state[0][0] > 0.25 and state[0][1] < 0.75:
-            reward=1
+    def get_reward(self,h):
+        h = h/self.model.h
+        if h > 0.45 and h < 0.55:
+            return 5
+        if h > 0.5 and h < 0.6:
+            return 4
+        if h > 0.4 and h < 0.7:
+            return 3
+        if h > 0.2 and h < 0.8:
+            return 2
+        if h > 0.1 and h < 0.9:
+            return 1
         else:
-            reward=0
-        return reward
+            return 0
         
     def plot_rewards(self):
         "drawnow plot of the reward"

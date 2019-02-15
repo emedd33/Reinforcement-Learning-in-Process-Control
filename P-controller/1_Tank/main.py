@@ -9,16 +9,20 @@ plt.style.use('ggplot')
 import numpy as np 
 import keyboard
 
-def main():
+def main(kc=0.5):
     environment = Environment()
     controller = P_controller(environment)
-    h = [0.2]
+    h = [5]
     z =[]
     d =[]
-    for i in range(100000):
+    episode_time=100
+    reward = []
+    for i in range(episode_time):
         new_z = controller.get_z(h[-1])
         z.append(new_z)
         new_h = environment.get_next_state(z[-1])
+        new_reward = environment.get_reward(h[-1])
+        reward.append(new_reward)
         if TANK_DIST['add']:
             new_d = environment.model.dist.flow
             d.append(new_d)
@@ -27,16 +31,21 @@ def main():
                 environment.render(z[-1])
         if keyboard.is_pressed('ctrl+x'):
             break
-    plt.subplot(3,1,1)  
-    plt.plot(h,label="h")
-    plt.subplot(3,1,2)
-    plt.plot(z,label="z")
-    plt.subplot(3,1,3)
-    plt.plot(d,label="d")
-    plt.show()
     
+    f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, sharey=False)
+    l1,=ax1.plot(h,color="peru", ) 
+    ax1.set_ylim(2,6)   
+    l2,=ax2.plot(z,color="firebrick")
+    ax2.set_ylim(0,1)
+    l3,=ax3.plot(d, color="dimgray")
 
+    
+    plt.legend([l1, l2, l3],["Tank height", "Valve position", "Disturbance"], )
+    plt.tight_layout()
+    plt.xlabel("Time")
+    plt.show()
+    return np.sum(reward)
 if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")
     print("  Max time in each episode: {}".format(MAX_TIME))
-    main()
+    reward = main()

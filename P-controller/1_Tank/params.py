@@ -6,7 +6,7 @@ SAVE_ANN_MODEL=False
 LOAD_ANN_MODEL = False
 TRAIN_MODEL=True
 # Render parameters, will increase run time when set to True
-RENDER=True
+RENDER=False
 LIVE_REWARD_PLOT= False 
 
 # Agent parameters
@@ -36,7 +36,7 @@ TANK_PARAMS = {
 
 TANK_DIST = {
     'add':True,
-    'nom_flow':1, # 2.7503
+    'nom_flow':2, # 2.7503
     'var_flow':0.1,
     'max_flow':5,
     'min_flow':0,
