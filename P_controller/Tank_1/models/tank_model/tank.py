@@ -1,7 +1,6 @@
 import numpy as np 
 import pygame
-from params import INIT_LEVEL
-from models.tank_model.disturbance import InflowDist
+from P_controller.Tank_1.models.tank_model.disturbance import InflowDist
 class Tank(): 
     "Cylindric tank"
     g=9.81
@@ -13,15 +12,15 @@ class Tank():
         pipe_radius, 
         max_level, 
         min_level, 
+        init_level,
         dist,
         prev_tank=None,
-        level=INIT_LEVEL, # %  
     ):
         self.h = height
         self.r = radius
         self.A = radius**2*np.pi
 
-        self.l = height*level
+        self.l = height*init_level
         self.init_l = self.l
         
         self.max = max_level*height
@@ -55,11 +54,7 @@ class Tank():
         term1 = q_inn/(np.pi*r**2)
         term2 = (q_out)/(np.pi*r**2)
         return term1- term2 # Eq: 1
-
-    def reset(self):
-        "reset tank to initial liquid level"
-        self.l = self.init_l
-
+        
     def get_valve(self,action): 
         "linear valve equation"
         return action

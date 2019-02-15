@@ -1,4 +1,7 @@
-from main import main
+import sys
+# Add the ptdraft folder path to the sys.path list
+sys.path.append('C:/Users/eskil/Google Drive/Skolearbeid/5. klasse/Master')
+from P_controller.Tank_1.main import main
 import matplotlib.pyplot as plt
 
 kc = 0

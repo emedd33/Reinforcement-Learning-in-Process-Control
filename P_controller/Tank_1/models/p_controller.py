@@ -1,10 +1,10 @@
-from params import VALVE_START_POSITION,SS_POSITION
+
 import numpy as np 
 class P_controller():
-    def __init__(self,environment,kc=0.5):
-        self.z_nom = VALVE_START_POSITION
+    def __init__(self,environment,AGENT_PARAMS,kc=0.5):
+        self.z_nom = AGENT_PARAMS['VALVE_START_POSITION']
         self.A = environment.model.r**2*np.pi
-        self.h_set = SS_POSITION*environment.model.h
+        self.h_set = AGENT_PARAMS['SS_POSITION']*environment.model.h
         self.Kc = kc#(-2*self.A)/self.z_nom
 
     def get_z(self,h):
