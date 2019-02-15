@@ -37,7 +37,7 @@ TANK_PARAMS = {
 TANK_DIST = {
     'add':True,
     'nom_flow':2, # 2.7503
-    'var_flow':0.1,
+    'var_flow':0,
     'max_flow':5,
     'min_flow':0,
 }

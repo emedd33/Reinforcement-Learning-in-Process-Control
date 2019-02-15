@@ -15,7 +15,7 @@ def main(kc=0.5):
     h = [5]
     z =[]
     d =[]
-    episode_time=200
+    episode_time=100
     reward = []
     for i in range(episode_time):
         new_z = controller.get_z(h[-1])
@@ -31,7 +31,7 @@ def main(kc=0.5):
                 environment.render(z[-1])
         if keyboard.is_pressed('ctrl+x'):
             break
-    print(np.sum(reward))
+    
     f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, sharey=False)
     l1,=ax1.plot(h,color="peru", ) 
     ax1.set_ylim(2,6)   

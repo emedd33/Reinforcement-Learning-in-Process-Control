@@ -76,15 +76,15 @@ class Environment():
     def get_reward(self,state,terminated):
         if terminated:
             reward =-1
-        # if state[0][0] > 0.45 and state[0][0] < 0.55:
+        # if state > 0.45 and state < 0.55:
         #     return 5
-        # if state[0][0] > 0.4 and state[0][0] < 0.60:
+        # if state > 0.4 and state < 0.60:
         #     return 4
-        # if state[0][0] > 0.3 and state[0][0] < 0.7:
+        # if state > 0.3 and state < 0.7:
         #     return 3
-        # if state[0][0] > 0.2 and state[0][0] < 0.8:
+        # if state > 0.2 and state < 0.8:
         #     return 2
-        # if state[0][0] > 0.1 and state[0][0] < 0.9:
+        # if state > 0.1 and state < 0.9:
         #     return 1
         else:
             reward =1
