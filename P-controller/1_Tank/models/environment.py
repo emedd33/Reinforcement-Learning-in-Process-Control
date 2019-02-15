@@ -49,20 +49,6 @@ class Environment():
         return self.model.l
         
             
-    def reset(self):
-        "Reset the environment to the initial tank level and disturbance"
-
-        state = []
-        self.terminated = False
-        self.model.reset() # reset to initial tank level
-        if self.model.add_dist:
-            self.model.dist.reset() # reset to nominal disturbance
-        init_state = [self.model.init_l/self.model.h,0] #Level plus gradient
-        state.append(init_state)
-        state = np.array(state)
-        state = state.reshape(1,2)
-        return state,state,[]
-
     def render(self,action):
         "Draw the water level of the tank in pygame"
 

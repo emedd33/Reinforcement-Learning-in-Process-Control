@@ -2,8 +2,8 @@ print("#### IMPORTING ####")
 
 from models.environment import Environment
 from models.p_controller import P_controller
-from params import BATCH_SIZE,EPISODES,MAX_TIME,MEAN_EPISODE,\
-    LIVE_REWARD_PLOT,SAVE_ANN_MODEL,RENDER,NUMBER_OF_HIDDEN_LAYERS,TANK_DIST
+from params import EPISODES,MAX_TIME,MEAN_EPISODE,\
+    LIVE_REWARD_PLOT,RENDER,TANK_DIST
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 import numpy as np 
@@ -15,20 +15,22 @@ def main(kc=0.5):
     h = [5]
     z =[]
     d =[]
-    episode_time=200
     reward = []
-    for i in range(episode_time):
+    for i in range(MAX_TIME):
         new_z = controller.get_z(h[-1])
         z.append(new_z)
         new_h = environment.get_next_state(z[-1])
         new_reward = environment.get_reward(h[-1])
         reward.append(new_reward)
+        
         if TANK_DIST['add']:
             new_d = environment.model.dist.flow
             d.append(new_d)
         h.append(new_h)
+        
         if environment.show_rendering:
                 environment.render(z[-1])
+        
         if keyboard.is_pressed('ctrl+x'):
             break
     print(np.sum(reward))
