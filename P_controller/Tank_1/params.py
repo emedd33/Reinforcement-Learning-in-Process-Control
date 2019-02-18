@@ -9,7 +9,10 @@ MAIN_PARAMS = {
 # Agent parameters
 AGENT_PARAMS = {
 'SS_POSITION' :0.5, # steady state set position
-'VALVE_START_POSITION':0.5
+'VALVE_START_POSITION':0.5,
+'ACTION_DELAY':5,
+'INIT_POSITION':0.5,
+'KC':0.1
 }
 
 TANK_PARAMS = {
@@ -23,8 +26,8 @@ TANK_PARAMS = {
 
 TANK_DIST = {
     'add':True,
-    'nom_flow':2, # 2.7503
-    'var_flow':0,
+    'nom_flow':2.75, # 2.7503
+    'var_flow':0.1, 
     'max_flow':5,
     'min_flow':0,
 }

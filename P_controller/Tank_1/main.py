@@ -12,14 +12,16 @@ plt.style.use('ggplot')
 import numpy as np 
 import keyboard
 
-def main(kc=0.5): 
+def main(kc=AGENT_PARAMS['KC']): 
     environment = Environment(TANK_PARAMS,TANK_DIST,MAIN_PARAMS)
-    controller = P_controller(environment,AGENT_PARAMS)
-    h = [5]
-    z =[]
-    d =[]
+    controller = P_controller(environment,AGENT_PARAMS,kc)
+    init_h = TANK_PARAMS['init_level']*TANK_PARAMS['height']
+    h = [init_h]
+    z =[AGENT_PARAMS['INIT_POSITION']]
+    d =[TANK_DIST['nom_flow']]
     reward = []
-    for _ in range(MAIN_PARAMS['Max_time']):
+    max_time = MAIN_PARAMS['Max_time']
+    for _ in range(max_time):
         new_z = controller.get_z(h[-1])
         z.append(new_z)
         new_h = environment.get_next_state(z[-1])
@@ -37,12 +39,14 @@ def main(kc=0.5):
         if keyboard.is_pressed('ctrl+x'):
             break
     print(np.sum(reward))
-    _, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, sharey=False)
-    l1,=ax1.plot(h,color="peru", ) 
-    ax1.set_ylim(2,6)   
-    l2,=ax2.plot(z,color="firebrick")
-    ax2.set_ylim(0,1)
-    l3,=ax3.plot(d, color="dimgray")
+    x_range = range(0,max_time+1)
+    _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
+
+    l1,=ax1.plot(h[:-1],color="peru", ) 
+    ax1.set_ylim(0,10)   
+    l2,=ax2.plot(z[1:],color="firebrick")
+    ax2.set_ylim(0,1.01)
+    l3,=ax3.plot(d[:-1], color="dimgray")
 
     
     plt.legend([l1, l2, l3],["Tank height", "Valve position", "Disturbance"], )

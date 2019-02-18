@@ -58,6 +58,8 @@ class Environment():
 
     def get_reward(self,h):
         h = h/self.model.h
+        reward = (h-0.5)**2
+        return reward
         if h > 0.49 and h < 0.51:
             return 5
         if h > 0.45 and h < 0.55:
