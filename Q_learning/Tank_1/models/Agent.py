@@ -25,12 +25,13 @@ class Agent:
         self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
         self.load_model = AGENT_PARAMS["LOAD_MODEL"]
         self.save_model_bool = AGENT_PARAMS["SAVE_MODEL"]
+        self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
         self.batch_size = AGENT_PARAMS["BATCH_SIZE"]
         self.buffer = 0
         self.buffer_thres = AGENT_PARAMS["BUFFER_THRESH"]
         self.Q_eval, self.Q_next = self._build_ANN(
             self.state_size,
-            AGENT_PARAMS["HIDDEN_LAYER_SIZE"],
+            self.hl_size,
             self.action_size,
             learning_rate=self.learning_rate,
         )
@@ -43,7 +44,16 @@ class Agent:
         return np.array(list(reversed(valve_positions)))
 
     def _build_ANN(self, input_size, hidden_size, action_size, learning_rate):
+        if self.load_model:
+            Q_net = Net(input_size, hidden_size, action_size, learning_rate)
+            model_name = "/Network_" + str(self.hl_size) + "HL"
+            path = "saved_networks" + model_name + ".pt"
+            Q_net.load_state_dict(torch.load(
+                path
+            ))
+            return Q_net, Q_net
         "Creates or loads a ANN valve function approximator"
+
         Q_eval = Net(input_size, hidden_size, action_size, learning_rate)
         Q_next = Net(input_size, hidden_size, action_size, learning_rate)
         return Q_eval, Q_next
@@ -52,12 +62,6 @@ class Agent:
         "Stores instances of each time step"
         if self.train_model:
             next_state = np.array(next_state)
-            # next_state=next_state.reshape(1,next_state.size)
-            # if len(self.memory)> self.memory_size:
-            # self.memory[random.randint(0,self.memory_size)] = [
-            # state, action, reward, next_state,done
-            # ]
-            # else:
             self.memory.append(
                 np.array([state, action, reward, next_state, done])
             )
@@ -115,12 +119,11 @@ class Agent:
         Q_target = Qpred.clone()
         for i, Qnext_a in enumerate(maxA):
             if not terminated[i]:
-                Q_target[i, actions[i]] = rewards[i]
+                Q_target[i, actions[i]] = rewards[i] + self.gamma * torch.max(
+                    Qnext[i, Qnext_a]
+                )
             else:
                 Q_target[i, actions[i]] = rewards[i]
-
-        # + self.gamma*torch.max(Qnext[0,0,:])
-
         loss = self.Q_eval.loss(Qpred, Q_target).to(self.Q_eval.device)
         loss.backward()
 
@@ -137,11 +140,10 @@ class Agent:
         "Save the model given a better model has been fitted"
 
         if mean_reward >= max_mean_reward:
-            pass
-            # model_name = "/ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL"
-            # model_path = "Q_learning/1_Tank/saved_ANN_models" + \
-            # model_name+ ".h5"
-            # self.ANN_model.save(model_path)
-            # print("ANN_Model was saved")
-            # max_mean_reward = mean_reward
+
+            model_name = "/Network_" + str(self.hl_size) + "HL"
+            path = "saved_networks" + model_name + ".pt"
+            torch.save(self.Q_eval.state_dict(), path)
+            print("ANN_Model was saved")
+            max_mean_reward = mean_reward
         return max_mean_reward
