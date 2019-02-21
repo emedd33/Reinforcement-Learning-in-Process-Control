@@ -11,8 +11,8 @@ class Agent():
         self.state_size = AGENT_PARAMS['OBSERVATIONS']
         self.action_size = AGENT_PARAMS['VALVE_POSITIONS']
         self.action_choices = self._get_action_choices(self.action_size)
-        self.memory =[]
         self.memory_size = AGENT_PARAMS['MEMORY_LENGTH']
+        self.memory =deque(maxlen=self.memory_size)
         self.gamma = AGENT_PARAMS['GAMMA'] 
         self.epsilon = AGENT_PARAMS['EPSILON'] if AGENT_PARAMS['TRAIN_MODEL'] else AGENT_PARAMS['EPSILON_MIN'] 
         self.epsilon_min =AGENT_PARAMS['EPSILON_MIN']
@@ -49,11 +49,11 @@ class Agent():
         "Stores instances of each time step"
         if self.train_model:
             next_state=np.array(next_state)
-            next_state=next_state.reshape(1,next_state.size)
-            if len(self.memory)> self.memory_size:
-                self.memory[random.randint(0,self.memory_size)] = [state, action, reward,next_state,done]
-            else:
-                self.memory.append([state, action, reward, next_state,done])
+            # next_state=next_state.reshape(1,next_state.size)
+            # if len(self.memory)> self.memory_size:
+            # self.memory[random.randint(0,self.memory_size)] = [state, action, reward,next_state,done]
+            # else:
+            self.memory.append(np.array([state, action, reward, next_state,done]))
             self.buffer += 1
 
     def act_greedy(self,state):
@@ -82,21 +82,39 @@ class Agent():
             return False
         return True
 
-    def Qreplay(self):
+    def Qreplay(self,e):
         "Train the model to improve the predicted value of consecutive recurring states, Off policy Q-learning with batch training"
-        self.Q_eval.optimizer.zero_grad()
-        memStart = int(np.random.choice(range(len(self.memory)-self.memory_size)))
-        minibatch = np.array(self.memory[memStart:memStart+self.batch_size])
+        
+        self.Q_eval.zero_grad()
+        minibatch = np.array(random.sample(self.memory, self.batch_size))
+        states = np.stack(minibatch[:,0])
+        actions = np.stack(minibatch[:,1])
+        rewards = np.stack(minibatch[:,2])
+        next_states = np.stack(minibatch[:,3])
+        terminated = np.stack(minibatch[:,4])
+        
 
-        Qpred = self.Q_eval.forward(list(minibatch[:,0][:])).to(self.Q_eval.device)
-        Qnext = self.Q_next.forward(list(minibatch[:,3][:])).to(self.Q_next.device) 
+        self.Q_eval.zero_grad()
+        Qpred = self.Q_eval.forward(states).to(self.Q_eval.device)
+        Qnext = self.Q_next.forward(next_states).to(self.Q_next.device) 
 
-        maxA = torch.argmax(Qnext[0,:], dim=1).to(self.Q_eval.device) 
-        rewards = torch.Tensor(list(minibatch[:,2])).to(self.Q_eval.device)        
-        Qtarget = Qpred[0,:]        
-        Qtarget[:,maxA] = rewards # + self.gamma*torch.max(Qnext[0,0,:])
-        loss = self.Q_eval.loss(Qtarget, Qpred).to(self.Q_eval.device)
+        maxA = Qnext.max(1)[1]#.to(self.Q_eval.device) 
+        rewards = torch.tensor(rewards,dtype=torch.float32).to(self.Q_eval.device)
+        Q_target = Qpred.clone()
+        for i,Qnext_a in enumerate(maxA):
+            if not terminated[i]:
+                Q_target[i,actions[i]]=rewards[i]#+self.gamma*torch.max(Qnext[i,Qnext_a])
+            else:
+                Q_target[i,actions[i]]=rewards[i]
+         
+        # + self.gamma*torch.max(Qnext[0,0,:])
+        
+        
+        y_test = Q_target.clone()
+        y_pred = Qpred.clone()
+        loss = self.Q_eval.loss(y_pred, y_test).to(self.Q_eval.device)
         loss.backward()
+        
         self.Q_eval.optimizer.step()
         self.decay_exploration()
 

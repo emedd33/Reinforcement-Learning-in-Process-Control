@@ -10,7 +10,7 @@ class Window():
         self.background_image = pygame.transform.scale(self.background_image, (self.WINDOW_HEIGHT, self.WINDOW_WIDTH))
         self.clock  = pygame.time.Clock()
         self.tank = TankImage(tank,56.5,29)
-        
+
 
     def Draw(self,input_z):
         for event in pygame.event.get():

@@ -54,7 +54,7 @@ def main():
                 max_mean_reward = agent.save_model(mean_reward,max_mean_reward)
             # Train model
             if (agent.is_ready()):
-                agent.Qreplay()
+                agent.Qreplay(e)
             
         if keyboard.is_pressed('ctrl+x'):
             break
@@ -68,9 +68,9 @@ def main():
     print("Max rewards for all episodes: {}".format(np.max(all_rewards))) 
     plt.ioff()
     plt.clf()
-    plt.plot(all_mean_rewards)
-    plt.ylabel('10 Episodic mean rewards')
-    plt.xlabel('Episode')
+    x_range = np.arange(0,e-e%mean_episode,mean_episode)
+    plt.plot(x_range,all_mean_rewards)
+    plt.ylabel('Mean rewards of last {} episodes'.format(mean_episode))
     plt.show()
     
 if __name__ == "__main__":
