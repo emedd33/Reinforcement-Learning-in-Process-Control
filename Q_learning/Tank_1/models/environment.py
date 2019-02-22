@@ -67,7 +67,8 @@ class Environment:
         # state.append(init_state)
         state = np.array(init_state)
         # state = state.reshape(1,2)
-        return state, state, []
+        states = [state]
+        return states, []
 
     def render(self, action):
         "Draw the water level of the tank in pygame"

@@ -1,5 +1,5 @@
 import numpy as np
-from .params import TANK_PARAMS
+from params import TANK_PARAMS
 
 ss_position = TANK_PARAMS["init_level"]
 

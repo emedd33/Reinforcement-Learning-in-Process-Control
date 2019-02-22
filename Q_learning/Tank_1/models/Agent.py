@@ -8,27 +8,34 @@ import random
 class Agent:
     def __init__(self, AGENT_PARAMS):
         "Parameters are set in the params.py file"
-
-        self.state_size = AGENT_PARAMS["OBSERVATIONS"]
-        self.action_size = AGENT_PARAMS["VALVE_POSITIONS"]
-        self.action_choices = self._get_action_choices(self.action_size)
         self.memory_size = AGENT_PARAMS["MEMORY_LENGTH"]
         self.memory = deque(maxlen=self.memory_size)
-        self.gamma = AGENT_PARAMS["GAMMA"]
-        if AGENT_PARAMS["TRAIN_MODEL"]:
-            self.epsilon = AGENT_PARAMS["EPSILON"]
-        else:
-            self.epsilon = AGENT_PARAMS["EPSILON_MIN"]
-        self.epsilon_min = AGENT_PARAMS["EPSILON_MIN"]
-        self.epsilon_decay = AGENT_PARAMS["EPSILON_DECAY"]
-        self.learning_rate = AGENT_PARAMS["LEARNING_RATE"]
-        self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
         self.load_model = AGENT_PARAMS["LOAD_MODEL"]
         self.save_model_bool = AGENT_PARAMS["SAVE_MODEL"]
-        self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
-        self.batch_size = AGENT_PARAMS["BATCH_SIZE"]
+        self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
+
+        self.state_size = AGENT_PARAMS["OBSERVATIONS"]
+        self.action_state = None
+        self.action_size = AGENT_PARAMS["VALVE_POSITIONS"]
+        self.action_choices = self._build_action_choices(self.action_size)
+        self.action = None
+        self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
+        self.action_delay_cnt = self.action_delay
+
+        if self.train_model:
+            self.epsilon = AGENT_PARAMS["EPSILON"]
+        else:
+            self.epsilon = 0
+        self.epsilon_min = AGENT_PARAMS["EPSILON_MIN"]
+        self.epsilon_decay = AGENT_PARAMS["EPSILON_DECAY"]
+        self.gamma = AGENT_PARAMS["GAMMA"]
         self.buffer = 0
         self.buffer_thres = AGENT_PARAMS["BUFFER_THRESH"]
+
+        self.learning_rate = AGENT_PARAMS["LEARNING_RATE"]
+        self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
+        self.batch_size = AGENT_PARAMS["BATCH_SIZE"]
+
         self.Q_eval, self.Q_next = self._build_ANN(
             self.state_size,
             self.hl_size,
@@ -36,7 +43,7 @@ class Agent:
             learning_rate=self.learning_rate,
         )
 
-    def _get_action_choices(self, action_size):
+    def _build_action_choices(self, action_size):
         "Create a list of the valve positions ranging from 0-1"
         valve_positions = []
         for i in range(action_size):
@@ -48,9 +55,7 @@ class Agent:
             Q_net = Net(input_size, hidden_size, action_size, learning_rate)
             model_name = "/Network_" + str(self.hl_size) + "HL"
             path = "saved_networks" + model_name + ".pt"
-            Q_net.load_state_dict(torch.load(
-                path
-            ))
+            Q_net.load_state_dict(torch.load(path))
             return Q_net, Q_net
         "Creates or loads a ANN valve function approximator"
 
@@ -58,14 +63,23 @@ class Agent:
         Q_next = Net(input_size, hidden_size, action_size, learning_rate)
         return Q_eval, Q_next
 
-    def remember(self, state, action, next_state, reward, done):
+    def get_z(self, action):
+        self.action = action
+        z = self.action_choices[action]
+        return z
+
+    def remember(self, state, next_state, reward, done, t):
         "Stores instances of each time step"
         if self.train_model:
-            next_state = np.array(next_state)
-            self.memory.append(
-                np.array([state, action, reward, next_state, done])
-            )
-            self.buffer += 1
+            if self.action_delay_cnt >= self.action_delay and t >= self.action_delay:
+                action_state = state[-self.action_delay-1]
+                self.memory.append(
+                    np.array([
+                        action_state, self.action, reward, next_state, done
+                    ])
+                )
+                self.action_delay_cnt = 0
+                self.buffer += 1
 
     def act_greedy(self, state):
         "Predict the optimal action to take given the current state"
@@ -74,15 +88,21 @@ class Agent:
         action = torch.argmax(choice).item()
         return action
 
-    def act(self, states):
+    def act(self, state):
         """
         Agent uses the state and gives either an
         action of exploration or explotation
         """
-        if np.random.rand() <= self.epsilon:  # Exploration
-            random_action = random.randint(0, self.action_size - 1)
-            return random_action
-        return self.act_greedy(states)  # Exploitation
+        if self.action_delay_cnt >= self.action_delay:
+            if np.random.rand() <= self.epsilon:  # Exploration
+                random_action = random.randint(0, self.action_size - 1)
+                self.action = random_action
+                return self.action
+            self.action = self.act_greedy(state)  # Exploitation
+            return self.action
+        else:
+            self.action_delay_cnt += 1
+            return self.action
 
     def is_ready(self):
         "Check if enough data has been collected"
@@ -135,6 +155,11 @@ class Agent:
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
+    def reset(self, init_state):
+        self.action_state = init_state[0]
+        self.action = None
+        self.action_delay_cnt = self.action_delay
 
     def save_model(self, mean_reward, max_mean_reward):
         "Save the model given a better model has been fitted"
