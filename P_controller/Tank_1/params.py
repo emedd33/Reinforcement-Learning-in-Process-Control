@@ -1,7 +1,7 @@
 MAIN_PARAMS = {
     "Episodes": 1,
     "Mean_episodes": 20,
-    "Max_time": 500,
+    "Max_time": 200,
     "RENDER": False,
     "LIVE_REWARD_PLOT": False,
 }
@@ -27,10 +27,10 @@ TANK_PARAMS = {
 TANK_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0.1,
-    "max_flow": 1.3,
+    "var_flow": 0,
+    "max_flow": 2,
     "min_flow": 0.7,
-    "add_step": False,
+    "add_step": True,
     "step_time": int(MAIN_PARAMS["Max_time"] / 2),
     "step_flow": 2,
 }

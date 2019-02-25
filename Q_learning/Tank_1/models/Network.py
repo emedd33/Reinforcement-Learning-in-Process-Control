@@ -40,8 +40,10 @@ class Net(nn.Module):
         if self.n_hl == 0:
             pass
         elif self.n_hl == 1:
+            out = self.relu(out)
             out = self.hl1(out)
         elif self.n_hl == 2:
+            out = self.relu(out)
             out = self.hl1(out)
             out = self.relu(out)
             out = self.hl2(out)

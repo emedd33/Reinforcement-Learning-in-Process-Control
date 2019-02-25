@@ -36,13 +36,18 @@ def main(kc=AGENT_PARAMS["KC"]):
             break
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
 
-    ax1.plot(h[:-1], color="peru", label="Tank height $[m]$")
+    ax1.plot(h[:-1], color="peru", label="Tank 1")
     ax1.set_ylim(0, 10)
+    ax1.set_ylabel("Level")
     ax1.legend()
-    ax2.plot(z[1:], color="firebrick", label="Valve position $[-]$")
+
+    ax2.plot(z[1:], color="peru", label="Tank 1")
+    ax2.set_ylabel("Valve")
     ax2.legend()
     ax2.set_ylim(0, 1.01)
-    ax3.plot(d[:-1], color="dimgray", label="Disturbance [$m^3/s]$")
+
+    ax3.plot(d[:-1], color="peru", label="Tank 1")
+    ax3.set_ylabel("Disturbance")
     ax3.legend()
 
     # plt.legend([l1, l2, l3], ["Tank height", "Valve position", "Disturbance"])

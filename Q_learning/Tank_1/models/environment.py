@@ -50,8 +50,8 @@ class Environment:
         elif self.tank.level > self.tank.max:
             self.terminated = True
             self.tank.level = self.tank.max
-        # grad = (dldt + 1) / 2
-        next_state = np.array([self.tank.level / self.tank.h])
+        grad = (dldt + 1) / 2
+        next_state = np.array([self.tank.level / self.tank.h, grad])
         # next_state = next_state.reshape(1,2)
         return self.terminated, next_state
 
@@ -63,7 +63,7 @@ class Environment:
         self.tank.reset()  # reset to initial tank level
         if self.tank.add_dist:
             self.tank.dist.reset()  # reset to nominal disturbance
-        init_state = [self.tank.init_l / self.tank.h]  # Level plus gradient
+        init_state = [self.tank.init_l / self.tank.h, 0]  # Level plus gradient
         # state.append(init_state)
         state = np.array(init_state)
         # state = state.reshape(1,2)

@@ -54,8 +54,9 @@ class Agent:
         if self.load_model:
             Q_net = Net(input_size, hidden_size, action_size, learning_rate)
             model_name = "/Network_" + str(self.hl_size) + "HL"
-            path = "saved_networks" + model_name + ".pt"
+            path = "saved_networks/usable_models" + model_name + ".pt"
             Q_net.load_state_dict(torch.load(path))
+            Q_net.eval()
             return Q_net, Q_net
         "Creates or loads a ANN valve function approximator"
 
@@ -71,12 +72,15 @@ class Agent:
     def remember(self, state, next_state, reward, done, t):
         "Stores instances of each time step"
         if self.train_model:
-            if self.action_delay_cnt >= self.action_delay and t >= self.action_delay:
-                action_state = state[-self.action_delay-1]
+            if (
+                self.action_delay_cnt >= self.action_delay
+                and t >= self.action_delay
+            ):
+                action_state = state[-self.action_delay - 1]
                 self.memory.append(
-                    np.array([
-                        action_state, self.action, reward, next_state, done
-                    ])
+                    np.array(
+                        [action_state, self.action, reward, next_state, done]
+                    )
                 )
                 self.action_delay_cnt = 0
                 self.buffer += 1
@@ -166,7 +170,7 @@ class Agent:
 
         if mean_reward >= max_mean_reward:
 
-            model_name = "/Network_" + str(self.hl_size) + "HL"
+            model_name = "/Network_" + str(self.hl_size) + "HL_1"
             path = "saved_networks" + model_name + ".pt"
             torch.save(self.Q_eval.state_dict(), path)
             print("ANN_Model was saved")

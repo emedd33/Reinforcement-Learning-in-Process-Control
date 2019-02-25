@@ -9,18 +9,18 @@ MAIN_PARAMS = {
 AGENT_PARAMS = {
     "SS_POSITION": 0.5,
     "VALVE_START_POSITION": 0.5,
-    "ACTION_DELAY": 2,
+    "ACTION_DELAY": 5,
     "INIT_ACTION": 0,
     "EPSILON_MIN": 0.05,
     "EPSILON_DECAY": 0.95,
-    "LEARNING_RATE": 0.0001,
-    "HIDDEN_LAYER_SIZE": [5, 5],
-    "BATCH_SIZE": 30,
-    "MEMORY_LENGTH": 10000,
-    "OBSERVATIONS": 1,
-    "VALVE_POSITIONS": 5,
+    "LEARNING_RATE": 0.001,
+    "HIDDEN_LAYER_SIZE": [5],
+    "BATCH_SIZE": 10,
+    "MEMORY_LENGTH": 1000,
+    "OBSERVATIONS": 2,
+    "VALVE_POSITIONS": 20,
     "GAMMA": 0,
-    "EPSILON": 1.0,
+    "EPSILON": 1,
     "SAVE_MODEL": True,
     "LOAD_MODEL": False,
     "TRAIN_MODEL": True,
@@ -36,6 +36,6 @@ TANK_PARAMS = {
     "min_level": 0.1,
 }
 
-TANK_DIST = {"add": True, "nom_flow": 1, "var_flow": 0}  # 2.75
-TANK_DIST["max_flow"] = TANK_DIST["nom_flow"] + TANK_DIST["var_flow"] * 3
-TANK_DIST["min_flow"] = TANK_DIST["nom_flow"] - TANK_DIST["var_flow"] * 3
+TANK_DIST = {"add": True, "nom_flow": 1, "var_flow": 0.2}  # 2.75
+TANK_DIST["max_flow"] = TANK_DIST["nom_flow"] + TANK_DIST["var_flow"] * 5
+TANK_DIST["min_flow"] = TANK_DIST["nom_flow"] - TANK_DIST["var_flow"] * 5

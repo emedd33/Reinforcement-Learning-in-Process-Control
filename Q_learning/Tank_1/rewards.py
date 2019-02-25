@@ -20,9 +20,7 @@ def get_reward_2(state, terminated):
     if terminated:
         return -10
     if state[0] > 0.45 and state[0] < 0.55:
-        return 5
-    if state[0] > 0.2 and state[0] < 0.8:
-        return 1
+        return 10
     return 0
 
 

@@ -2,7 +2,8 @@
 # sys.path.append("C:/Users/eskil/Google Drive/Skolearbeid/5. klasse/Master")
 from models.environment import Environment
 from models.Agent import Agent
-from evalv_params import MAIN_PARAMS, AGENT_PARAMS, TANK_PARAMS, TANK_DIST
+from evalv_params import MAIN_PARAMS, AGENT_PARAMS, TANK_DIST
+from params import TANK_PARAMS
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,8 +25,8 @@ def main():
     d = []
     # disturbance = []
     # ================= Running episodes =================#
-    state, next_state, episode_reward = environment.reset()
-    h.append(state)
+    state, episode_reward = environment.reset()
+    h.append(state[-1])
     for _ in range(MAIN_PARAMS["MAX_TIME"]):
         action = agent.act(state)  # get action choice from state
         z = agent.action_choices[
@@ -45,7 +46,7 @@ def main():
         agent.remember(state, action, next_state, reward, terminated)
 
         state = next_state
-        h.append(state)
+        h.append(state[-1])
         if environment.show_rendering:
             environment.render(z)
         if terminated:
