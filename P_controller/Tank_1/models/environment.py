@@ -1,54 +1,56 @@
-from P_controller.Tank_1.models.tank_model.tank import Tank
-from P_controller.Tank_1.models.tank_model.disturbance import InflowDist
-from P_controller.Tank_1.visualize.window import Window
+from models.tank_model.tank import Tank
+from visualize.window import Window
 import matplotlib.pyplot as plt
 from drawnow import drawnow
 
-class Environment():
+
+class Environment:
     "Parameters are set in the params.py file"
-    
-    def __init__(self,TANK_PARAMS,TANK_DIST,MAIN_PARAMS):
-        
+
+    def __init__(self, TANK_PARAMS, TANK_DIST, MAIN_PARAMS):
+
         self.model = Tank(
-            height=TANK_PARAMS['height'],
-            radius=TANK_PARAMS['width'],
-            max_level=TANK_PARAMS['max_level'],
-            min_level=TANK_PARAMS['min_level'],
-            pipe_radius=TANK_PARAMS['pipe_radius'],
-            init_level=TANK_PARAMS['init_level'],
-            dist = TANK_DIST
-            ) 
-        
+            height=TANK_PARAMS["height"],
+            radius=TANK_PARAMS["width"],
+            max_level=TANK_PARAMS["max_level"],
+            min_level=TANK_PARAMS["min_level"],
+            pipe_radius=TANK_PARAMS["pipe_radius"],
+            init_level=TANK_PARAMS["init_level"],
+            dist=TANK_DIST,
+        )
+
         self.running = True
         self.episode = 0
         self.all_rewards = []
         self.terminated = False
 
-        self.show_rendering= MAIN_PARAMS['RENDER']
-        self.live_plot =  MAIN_PARAMS['LIVE_REWARD_PLOT']
-        
+        self.show_rendering = MAIN_PARAMS["RENDER"]
+        self.live_plot = MAIN_PARAMS["LIVE_REWARD_PLOT"]
+
         if self.show_rendering:
             self.window = Window(self.model)
         if self.live_plot:
             plt.ion()  # enable interactivity
             plt.figure(num="Rewards per episode")  # make a figure
 
-    def get_next_state(self,z): 
-        "Calculates the dynamics of the agents action and gives back the next state"
-    
-        dldt = self.model.get_dhdt(z) 
+    def get_next_state(self, z, t):
+        """
+        Calculates the dynamics of the agents action and
+        gives back the next state
+        """
+
+        dldt = self.model.get_dhdt(z, t)
         self.model.change_level(dldt)
         # Check terminate state
-        if self.model.l < self.model.min:
+        if self.model.level < self.model.min:
             self.terminated = True
-            self.model.l = self.model.min
-        elif self.model.l > self.model.max:
+            self.model.level = self.model.min
+        elif self.model.level > self.model.max:
             self.terminated = True
-            self.model.l = self.model.max
-        return self.model.l
-        
-            
-    def render(self,action):
+            self.model.level = self.model.max
+        return self.model.level
+
+    def render(self, action):
         "Draw the water level of the tank in pygame"
 
         if self.render:
@@ -56,9 +58,9 @@ class Environment():
             if not running:
                 self.running = False
 
-    def get_reward(self,h):
-        h = h/self.model.h
-        reward = (h-0.5)**2
+    def get_reward(self, h):
+        h = h / self.model.h
+        reward = (h - 0.5) ** 2
         return reward
         if h > 0.49 and h < 0.51:
             return 5
@@ -72,19 +74,21 @@ class Environment():
             return 1
         else:
             return 0
-        
+
     def plot_rewards(self):
         "drawnow plot of the reward"
 
-        plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))
+        plt.plot(
+            self.all_rewards,
+            label="Exploration rate: {} %".format(self.epsilon * 100),
+        )
         plt.legend()
 
-    def plot(self,all_rewards,epsilon):
+    def plot(self, all_rewards, epsilon):
         "Live plot of the reward"
         self.all_rewards = all_rewards
-        self.epsilon = round(epsilon,4)
+        self.epsilon = round(epsilon, 4)
         try:
             drawnow(self.plot_rewards)
-        except:
+        except KeyboardInterrupt:
             print("Break")
-
