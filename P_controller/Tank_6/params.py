@@ -19,7 +19,7 @@ AGENT2_PARAMS = {
     "VALVE_START_POSITION": 0.5,
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.5,
-    "KC": 0.16,
+    "KC": 0.10,
 }
 
 TANK1_PARAMS = {
@@ -34,10 +34,10 @@ TANK1_PARAMS = {
 TANK1_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0,
-    "max_flow": 2,
+    "var_flow": 0.1,
+    "max_flow": 1.3,
     "min_flow": 0.7,
-    "add_step": True,
+    "add_step": False,
     "step_time": int(MAIN_PARAMS["Max_time"] / 2),
     "step_flow": 2,
 }

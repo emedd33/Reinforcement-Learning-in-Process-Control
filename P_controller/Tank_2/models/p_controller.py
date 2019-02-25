@@ -1,5 +1,5 @@
 class P_controller:
-    def __init__(self, environment, AGENT_PARAMS, i):
+    def __init__(self, environment, AGENT_PARAMS, i, kc):
         self.z_nom = AGENT_PARAMS["VALVE_START_POSITION"]
         # self.A = environment.model.r ** 2 * np.pi
         self.h_set = AGENT_PARAMS["SS_POSITION"] * environment.model[i].h

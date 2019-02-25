@@ -7,17 +7,20 @@ from params import (
     AGENT_PARAMS_LIST,
 )
 import matplotlib.pyplot as plt
-import numpy as np
 import keyboard
+import numpy as np
 
 plt.style.use("ggplot")
 
 
-def main():
+def main(kc=0.16):
     environment = Environment(TANK_PARAMS_LIST, TANK_DIST_LIST, MAIN_PARAMS)
     controllers = []
     for i, AGENT_PARAMS in enumerate(AGENT_PARAMS_LIST):
-        controller = P_controller(environment, AGENT_PARAMS, i)
+        if i == 1:
+            controller = P_controller(environment, AGENT_PARAMS, i, kc)
+        else:
+            controller = P_controller(environment, AGENT_PARAMS, i, kc=0.16)
         controllers.append(controller)
     init_h = []
     for TANK_PARAMS in TANK_PARAMS_LIST:
@@ -33,7 +36,6 @@ def main():
     h = [init_h]
     z = [init_z]
     d = [init_d]
-    reward = []
     max_time = MAIN_PARAMS["Max_time"]
     for t in range(max_time):
         new_z = []
@@ -72,25 +74,25 @@ def main():
     ax1.plot(h[:, 0], color="peru", label="Tank 1")
     ax1.plot(h[:, 1], color="firebrick", label="Tank 2")
     ax1.set_ylabel("Level")
-    ax1.legend()
+    ax1.legend(loc="upper right")
     ax1.set_ylim(0, 10)
 
-    ax2.plot(z[:, 1], color="peru")
-    ax2.plot(z[:, 0], color="firebrick")
-    ax2.legend()
+    ax2.plot(z[:, 1], color="peru", label="Tank 1")
+    ax2.plot(z[:, 0], color="firebrick", label="Tank 2")
+    ax2.legend(loc="upper right")
     ax2.set_ylabel("Valve")
     ax2.set_ylim(0, 1.01)
 
-    ax3.plot(d[:, 0], color="peru")
-    ax3.plot(d[:, 1], color="firebrick")
+    ax3.plot(d[:, 0], color="peru", label="Tank 1")
+    ax3.plot(d[:, 1], color="firebrick", label="Tank 2")
     ax3.set_ylabel("Disturbance")
-    ax3.legend()
+    ax3.legend(loc="upper right")
 
     # plt.legend([l1, l2, l3], ["Tank height", "Valve position", "Disturbance"])
     plt.tight_layout()
     plt.xlabel("Time")
     plt.show()
-    return np.sum(reward)
+    return h
 
 
 if __name__ == "__main__":

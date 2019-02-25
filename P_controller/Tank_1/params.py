@@ -27,10 +27,10 @@ TANK_PARAMS = {
 TANK_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0,
+    "var_flow": 0.1,
     "max_flow": 2,
     "min_flow": 0.7,
-    "add_step": True,
+    "add_step": False,
     "step_time": int(MAIN_PARAMS["Max_time"] / 2),
     "step_flow": 2,
 }
