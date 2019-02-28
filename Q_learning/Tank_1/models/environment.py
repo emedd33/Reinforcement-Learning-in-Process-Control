@@ -34,13 +34,13 @@ class Environment:
             plt.ion()  # enable interactivity
             plt.figure(num="Rewards per episode")  # make a figure
 
-    def get_next_state(self, z, state):
+    def get_next_state(self, z, state, t):
         """
         Calculates the dynamics of the agents action
         and gives back the next state
         """
 
-        dldt = self.tank.get_dhdt(z)
+        dldt = self.tank.get_dhdt(z, t)
         self.tank.change_level(dldt)
 
         # Check terminate state
@@ -50,25 +50,25 @@ class Environment:
         elif self.tank.level > self.tank.max:
             self.terminated = True
             self.tank.level = self.tank.max
-        grad = (dldt + 1) / 2
-        next_state = np.array([self.tank.level / self.tank.h, grad])
+        if len(state) == 2:
+            grad = (dldt + 0.1) / 0.2
+            next_state = np.array([self.tank.level / self.tank.h, grad])
+        else:
+            next_state = np.array([self.tank.level / self.tank.h])
         # next_state = next_state.reshape(1,2)
         return self.terminated, next_state
 
     def reset(self):
         "Reset the environment to the initial tank level and disturbance"
 
-        state = []
         self.terminated = False
         self.tank.reset()  # reset to initial tank level
         if self.tank.add_dist:
             self.tank.dist.reset()  # reset to nominal disturbance
-        init_state = [self.tank.init_l / self.tank.h, 0]  # Level plus gradient
-        # state.append(init_state)
-        state = np.array(init_state)
-        # state = state.reshape(1,2)
-        states = [state]
-        return states, []
+        init_state = np.array(
+            [self.tank.init_l / self.tank.h, 0]
+        )  # Level plus gradient
+        return [init_state], []
 
     def render(self, action):
         "Draw the water level of the tank in pygame"

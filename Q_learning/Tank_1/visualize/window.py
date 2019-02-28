@@ -11,7 +11,7 @@ class Window:
             (self.WINDOW_HEIGHT, self.WINDOW_WIDTH)
         )
         self.background_image = pygame.image.load(
-            "visualize/images/EmptyTank.png"
+            "Q_learning/Tank_1/visualize/images/EmptyTank.png"
         ).convert()
         self.background_image = pygame.transform.scale(
             self.background_image, (self.WINDOW_HEIGHT, self.WINDOW_WIDTH)

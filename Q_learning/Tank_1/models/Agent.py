@@ -13,6 +13,7 @@ class Agent:
         self.load_model = AGENT_PARAMS["LOAD_MODEL"]
         self.save_model_bool = AGENT_PARAMS["SAVE_MODEL"]
         self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
+        self.model_name = AGENT_PARAMS['MODEL_NAME']
 
         self.state_size = AGENT_PARAMS["OBSERVATIONS"]
         self.action_state = None
@@ -53,8 +54,8 @@ class Agent:
     def _build_ANN(self, input_size, hidden_size, action_size, learning_rate):
         if self.load_model:
             Q_net = Net(input_size, hidden_size, action_size, learning_rate)
-            model_name = "/Network_" + str(self.hl_size) + "HL"
-            path = "saved_networks/usable_models" + model_name + ".pt"
+            model_name = self.model_name
+            path = "Q_learning/Tank_1/saved_networks/" + model_name + ".pt"
             Q_net.load_state_dict(torch.load(path))
             Q_net.eval()
             return Q_net, Q_net
@@ -69,20 +70,33 @@ class Agent:
         z = self.action_choices[action]
         return z
 
-    def remember(self, state, next_state, reward, done, t):
+    def remember(self, state, reward, done, t):
         "Stores instances of each time step"
         if self.train_model:
-            if (
+            if done:
+                if len(state) <= self.action_delay+2:
+                    action_state = state[0]
+                else:
+                    action_state_index = -self.action_delay_cnt-2
+                    action_state = state[action_state_index]
+                self.memory.append(
+                    np.array(
+                        [action_state, self.action, reward, state[-1], done]
+                    )
+                )
+                self.action_delay_cnt = -1
+                self.buffer += 1
+            elif (
                 self.action_delay_cnt >= self.action_delay
                 and t >= self.action_delay
             ):
-                action_state = state[-self.action_delay - 1]
+                action_state = state[-self.action_delay-2]
                 self.memory.append(
                     np.array(
-                        [action_state, self.action, reward, next_state, done]
+                        [action_state, self.action, reward, state[-1], done]
                     )
                 )
-                self.action_delay_cnt = 0
+                self.action_delay_cnt = -1
                 self.buffer += 1
 
     def act_greedy(self, state):
@@ -170,8 +184,9 @@ class Agent:
 
         if mean_reward >= max_mean_reward:
 
-            model_name = "/Network_" + str(self.hl_size) + "HL_1"
-            path = "saved_networks" + model_name + ".pt"
+            model_name = "Network_" + str(self.hl_size) + "HL" \
+                # + str(int(mean_reward))
+            path = "Q_learning/Tank_1/saved_networks/" + model_name + ".pt"
             torch.save(self.Q_eval.state_dict(), path)
             print("ANN_Model was saved")
             max_mean_reward = mean_reward

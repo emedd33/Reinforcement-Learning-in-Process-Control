@@ -1,14 +1,12 @@
-# Add the ptdraft folder path to the sys.path list
-# sys.path.append("C:/Users/eskil/Google Drive/Skolearbeid/5. klasse/Master")
-from models.environment import Environment
 from models.Agent import Agent
+from models.environment import Environment
 from evalv_params import MAIN_PARAMS, AGENT_PARAMS, TANK_DIST
 from params import TANK_PARAMS
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
-from rewards import get_reward_2 as get_reward
+from rewards import get_reward_1 as get_reward
 
 plt.style.use("ggplot")
 
@@ -25,16 +23,17 @@ def main():
     d = []
     # disturbance = []
     # ================= Running episodes =================#
+
     state, episode_reward = environment.reset()
-    h.append(state[-1])
-    for _ in range(MAIN_PARAMS["MAX_TIME"]):
-        action = agent.act(state)  # get action choice from state
+    h.append(state[0][0])
+    for t in range(MAIN_PARAMS["MAX_TIME"]):
+        action = agent.act(state[-1])  # get action choice from state
         z = agent.action_choices[
             action
         ]  # convert action choice into valve position
         actions.append(z)
         terminated, next_state = environment.get_next_state(
-            z, state
+            z, state[-1], t
         )  # Calculate next state with action
         d.append(environment.tank.dist.flow)
         reward = get_reward(
@@ -43,10 +42,9 @@ def main():
 
         # Store data
         episode_reward.append(reward)
-        agent.remember(state, action, next_state, reward, terminated)
 
-        state = next_state
-        h.append(state[-1])
+        state.append(next_state)
+        h.append(next_state[0])
         if environment.show_rendering:
             environment.render(z)
         if terminated:

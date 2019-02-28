@@ -37,15 +37,18 @@ class Tank:
                 var_flow=dist["var_flow"],
                 max_flow=dist["max_flow"],
                 min_flow=dist["min_flow"],
+                add_step=dist["add_step"],
+                step_flow=dist["step_flow"],
+                step_time=dist["step_time"],
             )
 
     def change_level(self, dldt):
         self.level += dldt * self.h
 
-    def get_dhdt(self, action):
+    def get_dhdt(self, action, t):
         "Calculates the change in water level"
         if self.add_dist:
-            q_inn = self.dist.get_flow()
+            q_inn = self.dist.get_flow(t)
         else:
             q_inn = 0
 
