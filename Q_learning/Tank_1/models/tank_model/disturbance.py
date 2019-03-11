@@ -27,8 +27,6 @@ class InflowDist:
             self.step_flow = self.flow
             self.step_time = 0
 
-
-
     def get_flow(self, t):
         "Gausian distribution of flow rate"
         if self.add_step:
