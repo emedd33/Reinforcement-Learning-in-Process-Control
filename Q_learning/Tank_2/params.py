@@ -2,7 +2,7 @@ MAIN_PARAMS = {
     "EPISODES": 10000,
     "MEAN_EPISODE": 10,
     "MAX_TIME": 200,
-    "RENDER": False,
+    "RENDER": True,
     "LIVE_REWARD_PLOT": False,
 }
 
@@ -16,7 +16,7 @@ AGENT_PARAMS = {
     "EPSILON_DECAY": 0.995,
     "LEARNING_RATE": 0.0005,
     "HIDDEN_LAYER_SIZE": [10],
-    "BATCH_SIZE": 1,
+    "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "VALVE_POSITIONS": 10,
@@ -31,7 +31,7 @@ AGENT_PARAMS["BUFFER_THRESH"] = AGENT_PARAMS["BATCH_SIZE"] * 1
 
 # Model parameters Tank 1
 TANK1_PARAMS = {
-    "height": 20,
+    "height": 10,
     "init_level": 0.5,
     "width": 10,
     "pipe_radius": 0.5,
@@ -51,7 +51,7 @@ TANK1_DIST = {
 }
 # Model parameters Tank 1
 TANK2_PARAMS = {
-    "height": 20,
+    "height": 10,
     "init_level": 0.5,
     "width": 10,
     "pipe_radius": 0.5,
@@ -59,7 +59,7 @@ TANK2_PARAMS = {
     "min_level": 0.25,
 }
 TANK2_DIST = {
-    "add": True,
+    "add": False,
     "nom_flow": 1,  # 2.7503
     "var_flow": 0.1,
     "max_flow": 2,
