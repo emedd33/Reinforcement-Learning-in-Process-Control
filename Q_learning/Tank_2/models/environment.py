@@ -23,7 +23,7 @@ class Environment:
             self.tanks.append(tank)
         self.n_tanks = len(self.tanks)
         self.running = True
-        self.terminated = False
+        self.terminated = [False] * self.n_tanks
 
         self.show_rendering = MAIN_PARAMS["RENDER"]
         self.live_plot = MAIN_PARAMS["LIVE_REWARD_PLOT"]
@@ -39,39 +39,48 @@ class Environment:
         Calculates the dynamics of the agents action
         and gives back the next state
         """
-
-        dldt = self.tank.get_dhdt(z, t)
-        self.tank.change_level(dldt)
-
-        # Check terminate state
-        if self.tank.level < self.tank.min:
-            self.terminated = True
-            self.tank.level = self.tank.min
-        elif self.tank.level > self.tank.max:
-            self.terminated = True
-            self.tank.level = self.tank.max
-        if self.tank.level > 0.5:
-            above = 1
-        else:
-            above = 0
-        if len(state) == 3:
-            grad = (dldt + 0.1) / 0.2
-            next_state = np.array([self.tank.level / self.tank.h, grad, above])
-        else:
-            next_state = np.array([self.tank.level / self.tank.h, above])
-        # next_state = next_state.reshape(1,2)
+        next_state = []
+        prev_q_out = 0
+        for i in range(self.n_tanks):
+            dldt, prev_q_out = self.tanks[i].get_dhdt(z[i], t, prev_q_out)
+            self.tanks[i].change_level(dldt)
+            z_ = 0 if i == 0 else z[i - 1]
+            # Check terminate state
+            if self.tanks[i].level < self.tanks[i].min:
+                self.terminated[i] = True
+                self.tanks[i].level = self.tanks[i].min
+            elif self.tanks[i].level > self.tanks[i].max:
+                self.terminated[i] = True
+                self.tanks[i].level = self.tanks[i].max
+            if self.tanks[i].level > 0.5:
+                above = 1
+            else:
+                above = 0
+            if len(state[i]) == 4:
+                grad = (dldt + 0.1) / 0.2
+                next_state.append(
+                    np.array(
+                        [self.tanks[i].level / self.tanks[i].h, grad, above, z_]
+                    )
+                )
+            else:
+                next_state.append(
+                    np.array([self.tanks[i].level / self.tanks[i].h, above, z_])
+                )
+            # next_state = next_state.reshape(1,2)
         return self.terminated, next_state
 
     def reset(self):
         "Reset the environment to the initial tank level and disturbance"
-
-        self.terminated = False
-        self.tank.reset()  # reset to initial tank level
-        if self.tank.add_dist:
-            self.tank.dist.reset()  # reset to nominal disturbance
-        init_state = np.array(
-            [self.tank.init_l / self.tank.h, 0, 1]
-        )  # Level plus gradient
+        init_state = []
+        self.terminated = [False] * self.n_tanks
+        for i in range(self.n_tanks):
+            self.tanks[i].reset()  # reset to initial tank level
+            if self.tanks[i].add_dist:
+                self.tanks[i].dist.reset()  # reset to nominal disturbance
+            init_state.append(
+                np.array([self.tanks[i].init_l / self.tanks[i].h, 0, 1, 0])
+            )  # Level plus gradient
         return [init_state], []
 
     def render(self, action):
@@ -81,15 +90,6 @@ class Environment:
             running = self.window.Draw(action)
             if not running:
                 self.running = False
-
-    def get_reward_1(self, state, terminated):
-        "Calculates the environments reward for the next state"
-
-        if terminated:
-            return -10
-        if state[0] > 0.25 and state[0] < 0.75:
-            return 1
-        return 0
 
     def plot_rewards(self):
         "drawnow plot of the reward"

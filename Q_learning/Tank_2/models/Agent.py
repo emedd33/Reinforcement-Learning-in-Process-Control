@@ -15,14 +15,14 @@ class Agent:
         self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
         self.model_name = AGENT_PARAMS["MODEL_NAME"]
 
-        self.n_tanks = AGENT_PARAMS['N_TANKS']
+        self.n_tanks = AGENT_PARAMS["N_TANKS"]
         self.state_size = AGENT_PARAMS["OBSERVATIONS"]
         self.action_state = None
         self.action_size = AGENT_PARAMS["VALVE_POSITIONS"]
         self.action_choices = self._build_action_choices(self.action_size)
-        self.action = None
+        self.actions = None
+        self.action_delay_cnt = [9, 9]
         self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
-        self.action_delay_cnt = self.action_delay
 
         if self.train_model:
             self.epsilon = AGENT_PARAMS["EPSILON"]
@@ -39,7 +39,7 @@ class Agent:
         self.batch_size = AGENT_PARAMS["BATCH_SIZE"]
 
         self.Q_eval, self.Q_next = [], []
-        for i in self.n_tanks:
+        for i in range(self.n_tanks):
             Q_eval_, Q_next_ = self._build_ANN(
                 self.state_size,
                 self.hl_size,
@@ -71,41 +71,62 @@ class Agent:
         return Q_eval, Q_next
 
     def get_z(self, action):
-        self.action = action
-        z = self.action_choices[action]
+        z = []
+        for action in self.actions:
+            z.append(self.action_choices[action])
         return z
 
-    def remember(self, state, reward, done, t):
+    def remember(self, states, reward, terminated, t):
         "Stores instances of each time step"
         if self.train_model:
-            if done:
-                if len(state) <= self.action_delay + 2:
-                    action_state = state[0]
-                else:
-                    action_state_index = -self.action_delay_cnt - 2
-                    action_state = state[action_state_index]
-                self.memory.append(
-                    np.array(
-                        [action_state, self.action, reward, state[-1], done]
+            replay = []
+            for i in range(self.n_tanks):
+                if terminated[i]:
+                    if len(states) <= self.action_delay[i] + 2:
+                        action_state = states[i][0]
+                    else:
+                        action_state_index = -self.action_delay_cnt[i] - 2
+                        action_state = states[action_state_index][i]
+                    replay.append(
+                        np.array(
+                            [
+                                action_state,
+                                self.actions[i],
+                                reward[i],
+                                states[-1][i],
+                                terminated[i],
+                            ]
+                        )
                     )
-                )
-                self.buffer += 1
-            elif (
-                self.action_delay_cnt >= self.action_delay
-                and t >= self.action_delay
-            ):
-                action_state = state[-self.action_delay - 2]
-                self.memory.append(
-                    np.array(
-                        [action_state, self.action, reward, state[-1], done]
+                    self.buffer += 1
+                elif (
+                    self.action_delay_cnt[i] >= self.action_delay[i]
+                    and t >= self.action_delay[i]
+                ):
+                    action_state = states[-self.action_delay[i] - 2][i]
+                    replay.append(
+                        np.array(
+                            [
+                                action_state,
+                                self.actions[i],
+                                reward[i],
+                                states[-1][i],
+                                terminated[i],
+                            ]
+                        )
                     )
-                )
-                self.buffer += 1
+            if True in terminated:
+                self.memory.append(replay)
+            elif not len(replay) == self.n_tanks:
+                return
+            else:
+                self.memory.append(replay)
+            self.buffer += 1
 
-    def act_greedy(self, state):
+    def act_greedy(self, state, i):
         "Predict the optimal action to take given the current state"
 
-        choice = self.Q_eval.forward(state)
+        choice = self.Q_eval[i].forward(state[i])
         action = torch.argmax(choice).item()
         return action
 
@@ -114,19 +135,24 @@ class Agent:
         Agent uses the state and gives either an
         action of exploration or explotation
         """
-        if self.action_delay_cnt >= self.action_delay:
-            self.action_delay_cnt = 0
-            if np.random.rand() <= self.epsilon:  # Exploration
-                random_action = random.randint(0, self.action_size - 1)
-                self.action = random_action
-                return self.action
-            self.action = self.act_greedy(state)  # Exploitation
-            return self.action
-        else:
-            self.action_delay_cnt += 1
-            return self.action
+        actions = []
+        for i in range(self.n_tanks):
+            if self.action_delay_cnt[i] >= self.action_delay[i]:
+                self.action_delay_cnt[i] = 0
+                if np.random.rand() <= self.epsilon:  # Exploration
+                    random_action = random.randint(0, self.action_size - 1)
+                    action = random_action
+                    actions.append(action)
+                else:
+                    action = self.act_greedy(state, i)  # Exploitation
+                    actions.append(action)
+                self.actions = actions
+            else:
+                self.action_delay_cnt[i] += 1
+        return self.actions
 
     def is_ready(self):
+        return False
         "Check if enough data has been collected"
         if not self.train_model:  # Model has been set to not collect data
             return False

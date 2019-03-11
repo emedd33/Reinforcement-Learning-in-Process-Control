@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
 from rewards import get_reward_2 as get_reward
+from rewards import sum_rewards
 
 plt.style.use("ggplot")
 
@@ -30,25 +31,25 @@ def main():
         for e in range(episodes):
             states, episode_reward = environment.reset()  # Reset level in tank
             for t in range(MAIN_PARAMS["MAX_TIME"]):
-                action = agent.act(states[-1])  # get action choice from state
-                z = agent.get_z(action)
+                actions = agent.act(states[-1])  # get action choice from state
+                z = agent.get_z(actions)
 
                 terminated, next_state = environment.get_next_state(
                     z, states[-1], t
                 )  # Calculate next state with action
-                reward = get_reward(
-                    next_state, terminated
+                rewards = sum_rewards(
+                    next_state, terminated, get_reward
                 )  # get reward from transition to next state
 
                 # Store data
-                episode_reward.append(np.sum(reward))
+                episode_reward.append(np.sum(rewards))
 
                 states.append(next_state)
-                agent.remember(states, reward, terminated, t)
+                agent.remember(states, rewards, terminated, t)
 
                 if environment.show_rendering:
                     environment.render(z)
-                if terminated:
+                if True in terminated:
                     break
 
             all_rewards.append(np.sum(np.array(episode_reward)))
