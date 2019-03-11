@@ -1,6 +1,7 @@
 from models.environment import Environment
 from models.p_controller import P_controller
 from params import MAIN_PARAMS, TANK_DIST, TANK_PARAMS, AGENT_PARAMS
+from rewards import get_reward_2 as get_reward
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
@@ -21,7 +22,8 @@ def main(kc=AGENT_PARAMS["KC"]):
         new_z = controller.get_z(h[-1])
         z.append(new_z)
         new_h = environment.get_next_state(z[-1], t)
-        new_reward = environment.get_reward(h[-1])
+        new_reward = get_reward(h[-1] / 10, False)
+        print(new_reward)
         reward.append(new_reward)
 
         if TANK_DIST["add"]:
@@ -61,3 +63,4 @@ if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")
     print("  Max time in each episode: {}".format(MAIN_PARAMS["Max_time"]))
     reward = main()
+    print(reward)

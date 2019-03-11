@@ -58,23 +58,6 @@ class Environment:
             if not running:
                 self.running = False
 
-    def get_reward(self, h):
-        h = h / self.model.h
-        reward = (h - 0.5) ** 2
-        return reward
-        if h > 0.49 and h < 0.51:
-            return 5
-        if h > 0.45 and h < 0.55:
-            return 4
-        if h > 0.4 and h < 0.6:
-            return 3
-        if h > 0.3 and h < 0.7:
-            return 2
-        if h > 0.2 and h < 0.8:
-            return 1
-        else:
-            return 0
-
     def plot_rewards(self):
         "drawnow plot of the reward"
 
