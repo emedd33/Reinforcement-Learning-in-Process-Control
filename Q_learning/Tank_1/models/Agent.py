@@ -13,7 +13,7 @@ class Agent:
         self.load_model = AGENT_PARAMS["LOAD_MODEL"]
         self.save_model_bool = AGENT_PARAMS["SAVE_MODEL"]
         self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
-        self.model_name = AGENT_PARAMS['MODEL_NAME']
+        self.model_name = AGENT_PARAMS["MODEL_NAME"]
 
         self.state_size = AGENT_PARAMS["OBSERVATIONS"]
         self.action_state = None
@@ -74,29 +74,27 @@ class Agent:
         "Stores instances of each time step"
         if self.train_model:
             if done:
-                if len(state) <= self.action_delay+2:
+                if len(state) <= self.action_delay + 2:
                     action_state = state[0]
                 else:
-                    action_state_index = -self.action_delay_cnt-2
+                    action_state_index = -self.action_delay_cnt - 2
                     action_state = state[action_state_index]
                 self.memory.append(
                     np.array(
                         [action_state, self.action, reward, state[-1], done]
                     )
                 )
-                self.action_delay_cnt = -1
                 self.buffer += 1
             elif (
                 self.action_delay_cnt >= self.action_delay
                 and t >= self.action_delay
             ):
-                action_state = state[-self.action_delay-2]
+                action_state = state[-self.action_delay - 2]
                 self.memory.append(
                     np.array(
                         [action_state, self.action, reward, state[-1], done]
                     )
                 )
-                self.action_delay_cnt = -1
                 self.buffer += 1
 
     def act_greedy(self, state):
@@ -112,6 +110,7 @@ class Agent:
         action of exploration or explotation
         """
         if self.action_delay_cnt >= self.action_delay:
+            self.action_delay_cnt = 0
             if np.random.rand() <= self.epsilon:  # Exploration
                 random_action = random.randint(0, self.action_size - 1)
                 self.action = random_action
@@ -184,8 +183,8 @@ class Agent:
 
         if mean_reward >= max_mean_reward:
 
-            model_name = "Network_" + str(self.hl_size) + "HL" \
-                # + str(int(mean_reward))
+            model_name = "Network_" + str(self.hl_size) + "HL"
+            # + str(int(mean_reward))
             path = "Q_learning/Tank_1/saved_networks/" + model_name + ".pt"
             torch.save(self.Q_eval.state_dict(), path)
             print("ANN_Model was saved")

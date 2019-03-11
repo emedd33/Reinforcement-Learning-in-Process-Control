@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
-from rewards import get_reward_3 as get_reward
+from rewards import get_reward_2 as get_reward
 
 plt.style.use("ggplot")
 
@@ -29,14 +29,6 @@ def main():
     try:
         for e in range(episodes):
             states, episode_reward = environment.reset()  # Reset level in tank
-            agent.reset(states)
-            # if e > 500:
-            #     agent.epsilon = 0.5
-            #     if e > 1000:
-            #         agent.epsilon = 0.25
-            #         if e > 2000:
-            #             agent.epsilon = 0.1
-
             for t in range(MAIN_PARAMS["MAX_TIME"]):
                 action = agent.act(states[-1])  # get action choice from state
                 z = agent.get_z(action)
@@ -66,7 +58,8 @@ def main():
                 mean_reward = np.mean(all_rewards[-mean_episode:])
                 all_mean_rewards.append(mean_reward)
                 print(
-                    "rewards the last {} of {}/{} episodes : {} explore: {}".format(
+                    "{} of {}/{} episodes\
+                     reward: {} explore: {}".format(
                         mean_episode,
                         e,
                         episodes,

@@ -9,7 +9,7 @@ AGENT_PARAMS["LOAD_MODEL"] = True
 AGENT_PARAMS["TRAIN_MODEL"] = False
 
 
-AGENT_PARAMS["MODEL_NAME"] = "Network_[5, 5]HL"
+AGENT_PARAMS["MODEL_NAME"] = "Network_[10]HL"
 
 TANK_DIST["add"] = True
 TANK_DIST["add_step"] = True

@@ -9,8 +9,6 @@ def get_reward_1(state, terminated):
 
     if terminated:
         return -10
-    else:
-        return 1
     if state[0] > 0.25 and state[0] < 0.75:
         return 1
     return 0
@@ -21,7 +19,7 @@ def get_reward_2(state, terminated):
 
     if terminated:
         return -10
-    if state[0] > 0.45 and state[0] < 0.55:
+    if state[0] > 0.4 and state[0] < 0.6:
         return 1
     return 0
 
