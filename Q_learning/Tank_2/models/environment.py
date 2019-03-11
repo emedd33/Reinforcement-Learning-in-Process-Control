@@ -29,7 +29,7 @@ class Environment:
         self.live_plot = MAIN_PARAMS["LIVE_REWARD_PLOT"]
 
         if self.show_rendering:
-            self.window = Window(self.tank)
+            self.window = Window(self.tanks)
         if self.live_plot:
             plt.ion()  # enable interactivity
             plt.figure(num="Rewards per episode")  # make a figure

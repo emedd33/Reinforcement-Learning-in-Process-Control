@@ -83,9 +83,8 @@ def main():
                 environment.plot(all_rewards, agent.epsilon)
             if not environment.running:
                 break
-            if agent.epsilon <= agent.epsilon_min:
-                print(len(agent.memory))
-                break
+            # if agent.epsilon <= agent.epsilon_min:
+            #     break
     except KeyboardInterrupt:
         pass
     print("Memory length: {}".format(len(agent.memory)))
