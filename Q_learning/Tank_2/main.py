@@ -17,7 +17,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 def main():
     # ============= Initialize variables and objects ===========#
-    max_mean_reward = 49
+    max_mean_reward = 50 * len(TANK_PARAMS)
     environment = Environment(TANK_PARAMS, TANK_DIST, MAIN_PARAMS)
     agent = Agent(AGENT_PARAMS)
     mean_episode = MAIN_PARAMS["MEAN_EPISODE"]
