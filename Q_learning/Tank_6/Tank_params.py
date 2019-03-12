@@ -28,7 +28,7 @@ TANK2_PARAMS = {
 TANK2_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0.1,
+    "var_flow": 0,
     "max_flow": 2,
     "min_flow": 0.7,
     "add_step": False,
@@ -47,7 +47,7 @@ TANK3_PARAMS = {
 TANK3_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0.1,
+    "var_flow": 0,
     "max_flow": 2,
     "min_flow": 0.7,
     "add_step": False,
@@ -65,7 +65,7 @@ TANK4_PARAMS = {
 TANK4_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0.1,
+    "var_flow": 0,
     "max_flow": 2,
     "min_flow": 0.7,
     "add_step": False,
@@ -84,7 +84,7 @@ TANK5_PARAMS = {
 TANK5_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0.1,
+    "var_flow": 0,
     "max_flow": 2,
     "min_flow": 0.7,
     "add_step": False,
@@ -95,14 +95,14 @@ TANK6_PARAMS = {
     "height": 10,
     "init_level": 0.5,
     "width": 10,
-    "pipe_radius": 0.5,
+    "pipe_radius": 0.6,
     "max_level": 0.75,
     "min_level": 0.25,
 }
 TANK6_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0.1,
+    "var_flow": 0,
     "max_flow": 2,
     "min_flow": 0.7,
     "add_step": False,

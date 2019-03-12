@@ -20,7 +20,6 @@ class Environment:
                 dist=TANK_DIST_LIST[i],
             )
             self.model.append(tank)
-
         self.running = True
         self.episode = 0
         self.all_rewards = []

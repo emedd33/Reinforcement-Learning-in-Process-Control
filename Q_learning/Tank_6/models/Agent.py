@@ -249,7 +249,7 @@ class Agent:
                 model_name = "Network_" + str(self.hl_size) + "HL" + str(i)
                 # + str(int(mean_reward))
                 path = (
-                    "Q_learning/Tank_2/models/saved_networks/"
+                    "Q_learning/Tank_6/models/saved_networks/"
                     + model_name
                     + ".pt"
                 )

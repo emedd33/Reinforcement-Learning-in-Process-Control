@@ -24,7 +24,7 @@ class Environment:
         self.n_tanks = len(self.tanks)
         self.running = True
         self.terminated = [False] * self.n_tanks
-
+        self.q_inn = [0] * (self.n_tanks+1)
         self.show_rendering = MAIN_PARAMS["RENDER"]
         self.live_plot = MAIN_PARAMS["LIVE_REWARD_PLOT"]
 
@@ -43,6 +43,7 @@ class Environment:
         prev_q_out = 0
         for i in range(self.n_tanks):
             dldt, prev_q_out = self.tanks[i].get_dhdt(z[i], t, prev_q_out)
+            self.q_inn[i + 1] = prev_q_out
             self.tanks[i].change_level(dldt)
             z_ = 0 if i == 0 else z[i - 1]
             # Check terminate state

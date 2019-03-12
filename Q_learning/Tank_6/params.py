@@ -16,7 +16,7 @@ from Tank_params import (
 )
 
 MAIN_PARAMS = {
-    "EPISODES": 10000,
+    "EPISODES": 30000,
     "MEAN_EPISODE": 10,
     "MAX_TIME": 200,
     "RENDER": False,
@@ -30,13 +30,13 @@ AGENT_PARAMS = {
     "ACTION_DELAY": [5, 5, 5, 5, 5, 5],
     "INIT_ACTION": 0,
     "EPSILON_MIN": 0.05,
-    "EPSILON_DECAY": [0.9, 0.92, 0.95, 0.97, 0.98, 0.995],
-    "LEARNING_RATE": 0.001,
+    "EPSILON_DECAY": [0.995, 0.996, 0.997, 0.998, 0.998, 0.999],
+    "LEARNING_RATE": 0.0007,
     "HIDDEN_LAYER_SIZE": [10],
-    "BATCH_SIZE": 5,
+    "BATCH_SIZE": 20,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
-    "VALVE_POSITIONS": 3,
+    "VALVE_POSITIONS": 10,
     "GAMMA": 0.9,
     "EPSILON": 1,
     "SAVE_MODEL": True,
@@ -67,3 +67,7 @@ TANK_DIST = [
 
 for DIST in TANK_DIST:
     DIST["step_time"] = int(MAIN_PARAMS["MAX_TIME"] / 2)
+
+for i in range(1, AGENT_PARAMS["N_TANKS"]):
+    TANK_DIST[i]["add"] = False
+    TANK_DIST[i]["var_flow"] = 0
