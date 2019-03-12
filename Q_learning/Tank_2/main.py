@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
-from rewards import get_reward_1 as get_reward
+from rewards import get_reward_2 as get_reward
 from rewards import sum_rewards
 
 plt.style.use("ggplot")
@@ -60,12 +60,13 @@ def main():
                 all_mean_rewards.append(mean_reward)
                 print(
                     "{} of {}/{} episodes\
-                     reward: {} explore: {}".format(
+                     reward: {} exp_1: {} exp_2: {}".format(
                         mean_episode,
                         e,
                         episodes,
                         round(mean_reward, 2),
-                        round(agent.epsilon, 2),
+                        round(agent.epsilon[0], 2),
+                        round(agent.epsilon[1], 2),
                     )
                 )
                 if agent.save_model_bool:

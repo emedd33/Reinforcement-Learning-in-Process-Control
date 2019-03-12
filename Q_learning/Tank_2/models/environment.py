@@ -52,7 +52,7 @@ class Environment:
             elif self.tanks[i].level > self.tanks[i].max:
                 self.terminated[i] = True
                 self.tanks[i].level = self.tanks[i].max
-            if self.tanks[i].level > 0.5:
+            if self.tanks[i].level > 0.5 * self.tanks[i].h:
                 above = 1
             else:
                 above = 0

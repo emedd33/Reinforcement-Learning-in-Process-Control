@@ -25,9 +25,9 @@ class Agent:
         self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
 
         if self.train_model:
-            self.epsilon = AGENT_PARAMS["EPSILON"]
+            self.epsilon = [AGENT_PARAMS["EPSILON"]] * self.n_tanks
         else:
-            self.epsilon = 0
+            self.epsilon = [0] * self.n_tanks
         self.epsilon_min = AGENT_PARAMS["EPSILON_MIN"]
         self.epsilon_decay = AGENT_PARAMS["EPSILON_DECAY"]
         self.gamma = AGENT_PARAMS["GAMMA"]
@@ -57,11 +57,15 @@ class Agent:
             valve_positions.append((i) / (action_size - 1))
         return np.array(list(reversed(valve_positions)))
 
-    def _build_ANN(self, input_size, hidden_size, action_size, learning_rate, index=0):
+    def _build_ANN(
+        self, input_size, hidden_size, action_size, learning_rate, index=0
+    ):
         if self.load_model:
             Q_net = Net(input_size, hidden_size, action_size, learning_rate)
             model_name = self.model_name + str(index)
-            path = "Q_learning/Tank_2/models/saved_networks/" + model_name + ".pt"
+            path = (
+                "Q_learning/Tank_2/models/saved_networks/" + model_name + ".pt"
+            )
             Q_net.load_state_dict(torch.load(path))
             Q_net.eval()
             return Q_net, Q_net
@@ -96,7 +100,8 @@ class Agent:
                                 reward[i],
                                 states[-1][i],
                                 terminated[i],
-                                False
+                                False,
+                                str(i)+"model"
                             ]
                         )
                     )
@@ -115,6 +120,7 @@ class Agent:
                                 states[-1][i],
                                 terminated[i],
                                 False,
+                                str(i)+"model"
                             ]
                         )
                     )
@@ -122,12 +128,13 @@ class Agent:
                     replay.append(
                         np.array(
                             [
-                                [999]*self.state_size,
+                                [999] * self.state_size,
                                 None,
                                 0,
-                                [999]*self.state_size,
+                                [999] * self.state_size,
                                 True,
                                 True,
+                                str(i)+"model"
                             ]
                         )
                     )
@@ -155,16 +162,18 @@ class Agent:
         for i in range(self.n_tanks):
             if self.action_delay_cnt[i] >= self.action_delay[i]:
                 self.action_delay_cnt[i] = 0
-                if np.random.rand() <= self.epsilon:  # Exploration
+
+                if np.random.rand() <= float(self.epsilon[i]):  # Exploration
                     random_action = random.randint(0, self.action_size - 1)
                     action = random_action
                     actions.append(action)
                 else:
                     action = self.act_greedy(state, i)  # Exploitation
                     actions.append(action)
-                self.actions = actions
             else:
+                actions.append(self.actions[i])
                 self.action_delay_cnt[i] += 1
+        self.actions = actions
         return self.actions
 
     def is_ready(self):
@@ -197,7 +206,9 @@ class Agent:
 
             self.Q_eval[j].zero_grad()
             Qpred = self.Q_eval[j].forward(states).to(self.Q_eval[j].device)
-            Qnext = self.Q_next[j].forward(next_states).to(self.Q_next[j].device)
+            Qnext = (
+                self.Q_next[j].forward(next_states).to(self.Q_next[j].device)
+            )
 
             maxA = Qnext.max(1)[1]  # to(self.Q_eval.device)
             rewards = torch.tensor(rewards, dtype=torch.float32).to(
@@ -207,22 +218,23 @@ class Agent:
             Q_target = Qpred.clone()
             for i, Qnext_a in enumerate(maxA):
                 if not terminated[i]:
-                    Q_target[i, actions[i]] = rewards[i] + self.gamma * torch.max(
-                        Qnext[i, Qnext_a]
-                    )
+                    Q_target[i, actions[i]] = rewards[
+                        i
+                    ] + self.gamma * torch.max(Qnext[i, Qnext_a])
                 else:
                     Q_target[i, actions[i]] = rewards[i]
-            loss = self.Q_eval[j].loss(Qpred, Q_target).to(self.Q_eval[j].device)
+            loss = (
+                self.Q_eval[j].loss(Qpred, Q_target).to(self.Q_eval[j].device)
+            )
             loss.backward()
 
             self.Q_eval[j].optimizer.step()
-        self.decay_exploration()
+            self.decay_exploration(j)
 
-    def decay_exploration(self):
+    def decay_exploration(self, j):
         "Lower the epsilon valvue to favour greedy actions"
-
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+        if self.epsilon[j] > self.epsilon_min:
+            self.epsilon[j] = self.epsilon[j]*self.epsilon_decay[j]
 
     def reset(self, init_state):
         self.action_state = init_state[0]
@@ -234,9 +246,13 @@ class Agent:
 
         if mean_reward >= max_mean_reward:
             for i in range(self.n_tanks):
-                model_name = "Network_" + str(self.hl_size) + "HL"+str(i)
+                model_name = "Network_" + str(self.hl_size) + "HL" + str(i)
                 # + str(int(mean_reward))
-                path = "Q_learning/Tank_2/models/saved_networks/" + model_name + ".pt"
+                path = (
+                    "Q_learning/Tank_2/models/saved_networks/"
+                    + model_name
+                    + ".pt"
+                )
                 torch.save(self.Q_eval[i].state_dict(), path)
             print("ANN_Model was saved")
             max_mean_reward = mean_reward
