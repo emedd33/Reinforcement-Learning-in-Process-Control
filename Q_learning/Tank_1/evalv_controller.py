@@ -58,14 +58,26 @@ def main():
             break
     print(np.sum(episode_reward))
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
+    d = np.array(d)
+    h = np.array(h[:-1])
+    z = np.array(actions)
+    h *= 10
 
-    l1, = ax1.plot(h[:-1], color="peru")
-    ax1.set_ylim(0, 1)
-    l2, = ax2.plot(actions[1:], color="firebrick")
+    ax1.plot(h, color="peru", label="Tank 1")
+    ax1.set_ylabel("Level")
+    ax1.legend(loc="upper right")
+    ax1.set_ylim(0, 10)
+
+    ax2.plot(z, color="peru", label="Tank 1")
+    ax2.legend(loc="upper right")
+    ax2.set_ylabel("Valve")
     ax2.set_ylim(0, 1.01)
-    l3, = ax3.plot(d[:-1], color="dimgray")
 
-    plt.legend([l1, l2, l3], ["Tank height", "Valve position", "Disturbance"])
+    ax3.plot(d, color="peru", label="Tank 1")
+    ax3.set_ylabel("Disturbance")
+    ax3.legend(loc="upper right")
+
+    # plt.legend([l1, l2, l3], ["Tank height", "Valve position", "Disturbance"])
     plt.tight_layout()
     plt.xlabel("Time")
     plt.show()
