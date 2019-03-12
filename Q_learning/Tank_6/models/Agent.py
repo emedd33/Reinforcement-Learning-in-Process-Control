@@ -21,7 +21,7 @@ class Agent:
         self.action_size = AGENT_PARAMS["VALVE_POSITIONS"]
         self.action_choices = self._build_action_choices(self.action_size)
         self.actions = None
-        self.action_delay_cnt = [9, 9]
+        self.action_delay_cnt = [9]*self.n_tanks
         self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
 
         if self.train_model:
