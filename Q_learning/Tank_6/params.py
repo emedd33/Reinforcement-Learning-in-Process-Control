@@ -1,37 +1,72 @@
+MAIN_PARAMS = {
+    "EPISODES": 10000,
+    "MEAN_EPISODE": 10,
+    "MAX_TIME": 200,
+    "RENDER": False,
+    "LIVE_REWARD_PLOT": False,
+}
 
-#=============== PARAMETERS ==================#
+AGENT_PARAMS = {
+    "N_TANKS": 2,
+    "SS_POSITION": 0.5,
+    "VALVE_START_POSITION": 0.5,
+    "ACTION_DELAY": [5, 4],
+    "INIT_ACTION": 0,
+    "EPSILON_MIN": 0,
+    "EPSILON_DECAY": [0.95, 0.98],
+    "LEARNING_RATE": 0.001,
+    "HIDDEN_LAYER_SIZE": [10],
+    "BATCH_SIZE": 5,
+    "MEMORY_LENGTH": 10000,
+    "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
+    "VALVE_POSITIONS": 3,
+    "GAMMA": 0.9,
+    "EPSILON": 1,
+    "SAVE_MODEL": True,
+    "LOAD_MODEL": False,
+    "TRAIN_MODEL": True,
+    "MODEL_NAME": "Network_[5]HL108",
+}
+AGENT_PARAMS["BUFFER_THRESH"] = AGENT_PARAMS["BATCH_SIZE"] * 1
 
-EPISODES = 3000
-MEAN_EPISODE=10
-MAX_TIME = 1000
-MAX_OBTAINED_REWARD = 550
-LOAD_ANN_MODEL = False
-LOAD_MODEL_NAME = "580"
-SAVE_ANN_MODEL=False
-TRAIN_MODEL=True
-N_TANKS = 6
+# Model parameters Tank 1
+TANK1_PARAMS = {
+    "height": 10,
+    "init_level": 0.5,
+    "width": 10,
+    "pipe_radius": 0.5,
+    "max_level": 0.75,
+    "min_level": 0.25,
+}
 
-INIT_LEVEL=0.5 # initial water level for each episode
-
-# Choke parameters
-TBCC = 1 # Time before choke change
-
-# Agent parameters
-MEMORY_LENGTH = 1000
-SS_POSITION = 0.5 # steady state set position
-VALVE_START_POSITION=0
-OBSERVATIONS = 3 # Last timestep + gradient of water level + choke position of prev tank
-VALVE_POSITIONS= 10 # Number of valve positions 
-GAMMA = 0.2    # discount rate
-EPSILON = 1  # exploration rate
-
-EPSILON_MIN = 0.0001
-EPSILON_DECAY = 0.95
-LEARNING_RATE = 0.01
-NUMBER_OF_HIDDEN_LAYERS = [5,5]
-BATCH_SIZE=50
-
-
-# Render parameters
-RENDER=True
-LIVE_REWARD_PLOT= False
+TANK1_DIST = {
+    "add": True,
+    "nom_flow": 1,  # 2.7503
+    "var_flow": 0.1,
+    "max_flow": 2,
+    "min_flow": 0.7,
+    "add_step": False,
+    "step_time": int(MAIN_PARAMS["MAX_TIME"] / 2),
+    "step_flow": 2,
+}
+# Model parameters Tank 1
+TANK2_PARAMS = {
+    "height": 10,
+    "init_level": 0.5,
+    "width": 10,
+    "pipe_radius": 0.5,
+    "max_level": 0.75,
+    "min_level": 0.25,
+}
+TANK2_DIST = {
+    "add": False,
+    "nom_flow": 1,  # 2.7503
+    "var_flow": 0.1,
+    "max_flow": 2,
+    "min_flow": 0.7,
+    "add_step": False,
+    "step_time": int(MAIN_PARAMS["MAX_TIME"] / 2),
+    "step_flow": 2,
+}
+TANK_PARAMS = [TANK1_PARAMS, TANK2_PARAMS]
+TANK_DIST = [TANK1_DIST, TANK2_DIST]

@@ -1,94 +1,110 @@
 from models.tank_model.tank import Tank
-from models.tank_model.disturbance import InflowDist
 from visualize.window import Window
 import matplotlib.pyplot as plt
 from drawnow import drawnow
-import numpy as np 
-from params import SS_POSITION,TBCC,OBSERVATIONS,RENDER,LIVE_REWARD_PLOT,N_TANKS
-from models.tank_model.create_tank_models import create 
-class Environment():
-    def __init__(self):
-        self.models = create()
-        self.action_delay= TBCC
-        self.action_delay_counter = -OBSERVATIONS # Does not train on initial settings
-        self.running = True
-        self.episode = 0
-        self.all_rewards = []
-        self.n_tanks = N_TANKS
-        self.terminated = [False]*self.n_tanks
+import numpy as np
 
-        self.show_rendering= RENDER
-        self.live_plot = LIVE_REWARD_PLOT
-        if RENDER:
-            self.window = Window(self.models)
-        if LIVE_REWARD_PLOT:
+
+class Environment:
+    "Parameters are set in the params.py file"
+
+    def __init__(self, TANK_PARAMS, TANK_DIST, MAIN_PARAMS):
+        self.tanks = []
+        for i, PARAMS in enumerate(TANK_PARAMS):
+            tank = Tank(
+                height=PARAMS["height"],
+                radius=PARAMS["width"],
+                max_level=PARAMS["max_level"],
+                min_level=PARAMS["min_level"],
+                pipe_radius=PARAMS["pipe_radius"],
+                init_level=PARAMS["init_level"],
+                dist=TANK_DIST[i],
+            )
+            self.tanks.append(tank)
+        self.n_tanks = len(self.tanks)
+        self.running = True
+        self.terminated = [False] * self.n_tanks
+
+        self.show_rendering = MAIN_PARAMS["RENDER"]
+        self.live_plot = MAIN_PARAMS["LIVE_REWARD_PLOT"]
+
+        if self.show_rendering:
+            self.window = Window(self.tanks)
+        if self.live_plot:
             plt.ion()  # enable interactivity
             plt.figure(num="Rewards per episode")  # make a figure
 
-    def get_next_state(self,z,state): 
-        # models response to input change
-        prev_q_out = 0
+    def get_next_state(self, z, state, t):
+        """
+        Calculates the dynamics of the agents action
+        and gives back the next state
+        """
         next_state = []
-        for i,tank in enumerate(self.models):
-            dldt,prev_q_out = tank.get_dhdt(z[i],prev_q_out) 
-            tank.change_level(dldt)
-
+        prev_q_out = 0
+        for i in range(self.n_tanks):
+            dldt, prev_q_out = self.tanks[i].get_dhdt(z[i], t, prev_q_out)
+            self.tanks[i].change_level(dldt)
+            z_ = 0 if i == 0 else z[i - 1]
             # Check terminate state
-            if tank.l < tank.min:
+            if self.tanks[i].level < self.tanks[i].min:
                 self.terminated[i] = True
-                tank.l = tank.min
-            elif tank.l > tank.max:
+                self.tanks[i].level = self.tanks[i].min
+            elif self.tanks[i].level > self.tanks[i].max:
                 self.terminated[i] = True
-                tank.l = tank.max
-            if i == 0:
-                next_state.append([tank.l/tank.h,(dldt+1)/2,0])
+                self.tanks[i].level = self.tanks[i].max
+            if self.tanks[i].level > 0.5 * self.tanks[i].h:
+                above = 1
             else:
-                next_state.append([tank.l/tank.h,(dldt+1)/2,z[i-1]])
-                
-        next_state = np.array(next_state)
-        next_state = next_state.reshape(1,next_state.shape[0],next_state.shape[1])
+                above = 0
+            if len(state[i]) == 4:
+                grad = (dldt + 0.1) / 0.2
+                next_state.append(
+                    np.array(
+                        [self.tanks[i].level / self.tanks[i].h, grad, above, z_]
+                    )
+                )
+            else:
+                next_state.append(
+                    np.array([self.tanks[i].level / self.tanks[i].h, above, z_])
+                )
+            # next_state = next_state.reshape(1,2)
         return self.terminated, next_state
 
-            
     def reset(self):
-        state = []
-        self.terminated = [False]*self.n_tanks
-        for tank in self.models:
-            tank.reset() # reset to initial tank level
-            if tank.add_dist:
-                tank.dist.reset() # reset to nominal disturbance
-            init_state = [tank.init_l/tank.h,0,0] #Level plus gradient
-            state.append(init_state)
-        state = np.array(state)
-        state = state.reshape(1,state.shape[0],state.shape[1])
-        return state,TBCC,state,[]
+        "Reset the environment to the initial tank level and disturbance"
+        init_state = []
+        self.terminated = [False] * self.n_tanks
+        for i in range(self.n_tanks):
+            self.tanks[i].reset()  # reset to initial tank level
+            if self.tanks[i].add_dist:
+                self.tanks[i].dist.reset()  # reset to nominal disturbance
+            init_state.append(
+                np.array([self.tanks[i].init_l / self.tanks[i].h, 0, 1, 0])
+            )  # Level plus gradient
+        return [init_state], []
 
-    def render(self,action):
-        if RENDER:
+    def render(self, action):
+        "Draw the water level of the tank in pygame"
+
+        if self.show_rendering:
             running = self.window.Draw(action)
             if not running:
                 self.running = False
 
-    def get_reward(self,state,terminated):
-        reward = []
-        for i,sub_state in enumerate(state[0]):
-            if terminated[i]:
-                reward.append(-10)  
-            if sub_state[0] > 0.25 and sub_state[0] < 0.75:
-                reward.append(1)
-            else:
-                reward.append(0)
-        return reward
-        
     def plot_rewards(self):
-        plt.plot(self.all_rewards,label="Exploration rate: {} %".format(self.epsilon*100))
+        "drawnow plot of the reward"
+
+        plt.plot(
+            self.all_rewards,
+            label="Exploration rate: {} %".format(self.epsilon * 100),
+        )
         plt.legend()
 
-    def plot(self,all_rewards,epsilon):
+    def plot(self, all_rewards, epsilon):
+        "Live plot of the reward"
         self.all_rewards = all_rewards
-        self.epsilon = round(epsilon,4)
+        self.epsilon = round(epsilon, 4)
         try:
             drawnow(self.plot_rewards)
-        except:
+        except KeyboardInterrupt:
             print("Break")
-

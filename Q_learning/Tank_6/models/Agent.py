@@ -1,129 +1,259 @@
 from collections import deque
-from tensorflow import keras
-from params import N_TANKS,NUMBER_OF_HIDDEN_LAYERS,OBSERVATIONS,VALVE_POSITIONS,\
-    MEMORY_LENGTH,GAMMA,EPSILON,EPSILON_MIN,EPSILON_DECAY,LEARNING_RATE,LOAD_ANN_MODEL,\
-        LOAD_ANN_MODEL,BATCH_SIZE,TRAIN_MODEL
-
-import numpy as np 
+import torch
+from .Network import Net
+import numpy as np
 import random
-import itertools
-class Agent():
-    def __init__(self,
-            hl_size=NUMBER_OF_HIDDEN_LAYERS,
-            state_size=OBSERVATIONS,
-            action_size=VALVE_POSITIONS,
-            n_tanks = N_TANKS
-        ):
 
-        self.state_size = state_size
-        self.action_size = action_size
-        self.action_choices = self._set_action_choices(action_size)
-        self.memory = [deque(maxlen=MEMORY_LENGTH)]*n_tanks
-        self.gamma = GAMMA    # discount rate
-        self.epsilon = [EPSILON]*N_TANKS if TRAIN_MODEL else [EPSILON_MIN]*N_TANKS # exploration rate
-        self.epsilon_min = EPSILON_MIN
-        self.epsilon_decay = EPSILON_DECAY
-        self.learning_rate = LEARNING_RATE
+
+class Agent:
+    def __init__(self, AGENT_PARAMS):
+        "Parameters are set in the params.py file"
+        self.memory_size = AGENT_PARAMS["MEMORY_LENGTH"]
+        self.memory = deque(maxlen=self.memory_size)
+        self.load_model = AGENT_PARAMS["LOAD_MODEL"]
+        self.save_model_bool = AGENT_PARAMS["SAVE_MODEL"]
+        self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
+        self.model_name = AGENT_PARAMS["MODEL_NAME"]
+
+        self.n_tanks = AGENT_PARAMS["N_TANKS"]
+        self.state_size = AGENT_PARAMS["OBSERVATIONS"]
+        self.action_state = None
+        self.action_size = AGENT_PARAMS["VALVE_POSITIONS"]
+        self.action_choices = self._build_action_choices(self.action_size)
+        self.actions = None
+        self.action_delay_cnt = [9, 9]
+        self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
+
+        if self.train_model:
+            self.epsilon = [AGENT_PARAMS["EPSILON"]] * self.n_tanks
+        else:
+            self.epsilon = [0] * self.n_tanks
+        self.epsilon_min = AGENT_PARAMS["EPSILON_MIN"]
+        self.epsilon_decay = AGENT_PARAMS["EPSILON_DECAY"]
+        self.gamma = AGENT_PARAMS["GAMMA"]
         self.buffer = 0
-        self.buffer_thresh = BATCH_SIZE*4
-        self.n_tanks = N_TANKS
-        self.ANN_models = []
+        self.buffer_thres = AGENT_PARAMS["BUFFER_THRESH"]
+
+        self.learning_rate = AGENT_PARAMS["LEARNING_RATE"]
+        self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
+        self.batch_size = AGENT_PARAMS["BATCH_SIZE"]
+
+        self.Q_eval, self.Q_next = [], []
         for i in range(self.n_tanks):
-            self.ANN_models.append(self._build_ANN(state_size,hl_size,action_size,learning_rate=LEARNING_RATE,id=i))
-        
-    def get_action_choices(self,actions):
-        z = []
-        for i in actions:
-            z.append(self.action_choices[i])
-        return z
-    def _set_action_choices(self,action_size):
-        valve_positions= []
+            Q_eval_, Q_next_ = self._build_ANN(
+                self.state_size,
+                self.hl_size,
+                self.action_size,
+                learning_rate=self.learning_rate,
+                index=i,
+            )
+            self.Q_eval.append(Q_eval_)
+            self.Q_next.append(Q_next_)
+
+    def _build_action_choices(self, action_size):
+        "Create a list of the valve positions ranging from 0-1"
+        valve_positions = []
         for i in range(action_size):
-            valve_positions.append((i)/(action_size-1))
+            valve_positions.append((i) / (action_size - 1))
         return np.array(list(reversed(valve_positions)))
 
-
-    def _build_ANN(self,state_size,hl_size,action_size,learning_rate,id):    
-        # Defining network model
-        if LOAD_ANN_MODEL:
-            model_name = "/ANN_"+ str(NUMBER_OF_HIDDEN_LAYERS)+"HL_" + str(id) 
-            model_path = "Tank_2_Q_learning/models/saved_models" + model_name+ ".h5"
-            model = keras.models.load_model(model_path)
-            return model
-        model = keras.Sequential()
-        try:
-            model.add(keras.layers.Dense(hl_size[0],input_shape=(OBSERVATIONS,),activation='relu'))
-            for i in hl_size:
-                model.add(keras.layers.Dense(i,activation='relu'))
-        except IndexError: # Zero hidden layer
-            model.add(keras.layers.Dense(len(self.action_choices),input_shape=(OBSERVATIONS,),activation='relu'))
-        model.add(keras.layers.Dense(len(self.action_choices)))
-        
-        model.compile(
-            loss='mse',
-            optimizer=keras.optimizers.Adam(lr=learning_rate)
+    def _build_ANN(
+        self, input_size, hidden_size, action_size, learning_rate, index=0
+    ):
+        if self.load_model:
+            Q_net = Net(input_size, hidden_size, action_size, learning_rate)
+            model_name = self.model_name + str(index)
+            path = (
+                "Q_learning/Tank_2/models/saved_networks/" + model_name + ".pt"
             )
-        return model        
+            Q_net.load_state_dict(torch.load(path))
+            Q_net.eval()
+            return Q_net, Q_net
+        "Creates or loads a ANN valve function approximator"
 
-    def remember(self, state, action, next_state,reward,terminated):
-        if TRAIN_MODEL:
+        Q_eval = Net(input_size, hidden_size, action_size, learning_rate)
+        Q_next = Net(input_size, hidden_size, action_size, learning_rate)
+        return Q_eval, Q_next
+
+    def get_z(self, action):
+        z = []
+        for action in self.actions:
+            z.append(self.action_choices[action])
+        return z
+
+    def remember(self, states, reward, terminated, t):
+        "Stores instances of each time step"
+        if self.train_model:
+            replay = []
             for i in range(self.n_tanks):
-                rem_state = state[0][i]
-                rem_state = rem_state.reshape(1,len(rem_state))
-                rem_next_state = next_state[0][i]
-                rem_next_state = rem_next_state.reshape(1,len(rem_next_state))
-                self.memory[i].append((rem_state, action[i], rem_next_state, reward[i],terminated[i]))
+                if terminated[i]:
+                    if len(states) <= self.action_delay[i] + 2:
+                        action_state = states[i][0]
+                    else:
+                        action_state_index = -self.action_delay_cnt[i] - 2
+                        action_state = states[action_state_index][i]
+                    replay.append(
+                        np.array(
+                            [
+                                action_state,
+                                self.actions[i],
+                                reward[i],
+                                states[-1][i],
+                                terminated[i],
+                                False,
+                                str(i)+"model"
+                            ]
+                        )
+                    )
+                    self.buffer += 1
+                elif (
+                    self.action_delay_cnt[i] >= self.action_delay[i]
+                    and t >= self.action_delay[i]
+                ):
+                    action_state = states[-self.action_delay[i] - 2][i]
+                    replay.append(
+                        np.array(
+                            [
+                                action_state,
+                                self.actions[i],
+                                reward[i],
+                                states[-1][i],
+                                terminated[i],
+                                False,
+                                str(i)+"model"
+                            ]
+                        )
+                    )
+                elif True in terminated:
+                    replay.append(
+                        np.array(
+                            [
+                                [999] * self.state_size,
+                                None,
+                                0,
+                                [999] * self.state_size,
+                                True,
+                                True,
+                                str(i)+"model"
+                            ]
+                        )
+                    )
+            if True in terminated:
+                self.memory.append(replay)
+            elif not len(replay) == self.n_tanks:
+                return
+            else:
+                self.memory.append(replay)
             self.buffer += 1
 
-    def act_greedy(self,state,i):
-        pred_state = state[0][i]
-        pred_state = pred_state.reshape(1,len(pred_state))
-        pred = self.ANN_models[i].predict(pred_state) 
-        choice = np.where(pred[0]==max(pred[0]))[0][0]
-        return choice
-         
+    def act_greedy(self, state, i):
+        "Predict the optimal action to take given the current state"
+
+        choice = self.Q_eval[i].forward(state[i])
+        action = torch.argmax(choice).item()
+        return action
+
     def act(self, state):
+        """
+        Agent uses the state and gives either an
+        action of exploration or explotation
+        """
         actions = []
         for i in range(self.n_tanks):
-            if np.random.rand() <= self.epsilon[i]: # Exploration             
-                    random_action = random.randint(0,len(self.action_choices)-1)
-                    actions.append(random_action)
-            else:
-                actions.append(self.act_greedy(state,i))# Exploitation
-        return actions 
+            if self.action_delay_cnt[i] >= self.action_delay[i]:
+                self.action_delay_cnt[i] = 0
 
-    def is_ready(self,batch_size):
-        if not TRAIN_MODEL:
+                if np.random.rand() <= float(self.epsilon[i]):  # Exploration
+                    random_action = random.randint(0, self.action_size - 1)
+                    action = random_action
+                    actions.append(action)
+                else:
+                    action = self.act_greedy(state, i)  # Exploitation
+                    actions.append(action)
+            else:
+                actions.append(self.actions[i])
+                self.action_delay_cnt[i] += 1
+        self.actions = actions
+        return self.actions
+
+    def is_ready(self):
+        "Check if enough data has been collected"
+        if not self.train_model:  # Model has been set to not collect data
             return False
-        if len(self.memory[0])< batch_size:
+        if len(self.memory) < self.batch_size:
             return False
-        if self.buffer < self.buffer_thresh:
+        if self.buffer < self.buffer_thres:
             return False
         return True
 
-    def Qreplay(self, batch_size):
-        loss = []
-        for i in range(self.n_tanks):
-            minibatch = random.sample(self.memory[i], batch_size)
-            states, targets_f = [], []
-            for state, action, next_state,reward,done in minibatch:
-                target = reward
-                if not done:
-                    target = (reward + self.gamma *
-                            np.amax(self.ANN_models[i].predict(next_state)[0]))
-                target_f = self.ANN_models[i].predict(state)
-                target_f[0][action] = target 
-                # Filtering out states and targets for training
-                states.append(state[0])
-                targets_f.append(target_f[0])
-            history = self.ANN_models[i].fit(np.array(states), np.array(targets_f), epochs=1, verbose=0)
-        
-        loss.append(history.history['loss'][0])
-        self.decay_exploration()
-        self.buffer = 0
-        return loss
+    def Qreplay(self, e):
+        """"
+        Train the model to improve the predicted value of consecutive
+        recurring states, Off policy Q-learning with batch training
+        """
+        minibatch = np.array(random.sample(self.memory, self.batch_size))
+        for j in range(self.n_tanks):
+            agent_batch = minibatch[:, j]
+            dummy_data = np.stack(agent_batch[:, 5])
+            dummy_data_index = np.where(dummy_data)[0]
+            agent_batch_comp = np.delete(agent_batch, dummy_data_index, axis=0)
 
-    def decay_exploration(self):
-        for i in range(self.n_tanks):
-            if self.epsilon[i] > self.epsilon_min:
-                self.epsilon[i] = self.epsilon[i]*(self.epsilon_decay**(self.n_tanks-i))
+            states = np.stack(agent_batch_comp[:, 0])
+            actions = np.stack(agent_batch_comp[:, 1])
+            rewards = np.stack(agent_batch_comp[:, 2])
+            next_states = np.stack(agent_batch_comp[:, 3])
+            terminated = np.stack(agent_batch_comp[:, 4])
+
+            self.Q_eval[j].zero_grad()
+            Qpred = self.Q_eval[j].forward(states).to(self.Q_eval[j].device)
+            Qnext = (
+                self.Q_next[j].forward(next_states).to(self.Q_next[j].device)
+            )
+
+            maxA = Qnext.max(1)[1]  # to(self.Q_eval.device)
+            rewards = torch.tensor(rewards, dtype=torch.float32).to(
+                self.Q_eval[j].device
+            )
+
+            Q_target = Qpred.clone()
+            for i, Qnext_a in enumerate(maxA):
+                if not terminated[i]:
+                    Q_target[i, actions[i]] = rewards[
+                        i
+                    ] + self.gamma * torch.max(Qnext[i, Qnext_a])
+                else:
+                    Q_target[i, actions[i]] = rewards[i]
+            loss = (
+                self.Q_eval[j].loss(Qpred, Q_target).to(self.Q_eval[j].device)
+            )
+            loss.backward()
+
+            self.Q_eval[j].optimizer.step()
+            self.decay_exploration(j)
+
+    def decay_exploration(self, j):
+        "Lower the epsilon valvue to favour greedy actions"
+        if self.epsilon[j] > self.epsilon_min:
+            self.epsilon[j] = self.epsilon[j]*self.epsilon_decay[j]
+
+    def reset(self, init_state):
+        self.action_state = init_state[0]
+        self.action = None
+        self.action_delay_cnt = self.action_delay
+
+    def save_model(self, mean_reward, max_mean_reward):
+        "Save the model given a better model has been fitted"
+
+        if mean_reward >= max_mean_reward:
+            for i in range(self.n_tanks):
+                model_name = "Network_" + str(self.hl_size) + "HL" + str(i)
+                # + str(int(mean_reward))
+                path = (
+                    "Q_learning/Tank_2/models/saved_networks/"
+                    + model_name
+                    + ".pt"
+                )
+                torch.save(self.Q_eval[i].state_dict(), path)
+            print("ANN_Model was saved")
+            max_mean_reward = mean_reward
+        return max_mean_reward
