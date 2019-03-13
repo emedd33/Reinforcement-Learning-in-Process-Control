@@ -1,6 +1,7 @@
 from collections import deque
 import torch
-from .Network import Net
+
+# from .Network import Net
 import numpy as np
 import random
 
@@ -19,7 +20,6 @@ class Agent:
         self.state_size = AGENT_PARAMS["OBSERVATIONS"]
         self.action_state = None
         self.action_size = AGENT_PARAMS["VALVE_POSITIONS"]
-        self.action_choices = self._build_action_choices(self.action_size)
         self.actions = None
         self.action_delay_cnt = [9] * self.n_tanks
         self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
@@ -37,51 +37,6 @@ class Agent:
         self.learning_rate = AGENT_PARAMS["LEARNING_RATE"]
         self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
         self.batch_size = AGENT_PARAMS["BATCH_SIZE"]
-
-        self.Q_eval, self.Q_next = [], []
-        for i in range(self.n_tanks):
-            Q_eval_, Q_next_ = self._build_ANN(
-                self.state_size,
-                self.hl_size,
-                self.action_size,
-                learning_rate=self.learning_rate,
-                index=i,
-            )
-            self.Q_eval.append(Q_eval_)
-            self.Q_next.append(Q_next_)
-
-    def _build_action_choices(self, action_size):
-        "Create a list of the valve positions ranging from 0-1"
-        valve_positions = []
-        for i in range(action_size):
-            valve_positions.append((i) / (action_size - 1))
-        return np.array(list(reversed(valve_positions)))
-
-    def _build_ANN(
-        self, input_size, hidden_size, action_size, learning_rate, index=0
-    ):
-        if self.load_model:
-            Q_net = Net(input_size, hidden_size, action_size, learning_rate)
-            model_name = self.model_name
-            path = (
-                "Q_learning/Tank_1/saved_networks/usable_networks/"
-                + model_name
-                + ".pt"
-            )
-            Q_net.load_state_dict(torch.load(path))
-            Q_net.eval()
-            return Q_net, Q_net
-        "Creates or loads a ANN valve function approximator"
-
-        Q_eval = Net(input_size, hidden_size, action_size, learning_rate)
-        Q_next = Net(input_size, hidden_size, action_size, learning_rate)
-        return Q_eval, Q_next
-
-    def get_z(self, action):
-        z = []
-        for action in self.actions:
-            z.append(self.action_choices[action])
-        return z
 
     def remember(self, states, reward, terminated, t):
         "Stores instances of each time step"
@@ -146,13 +101,6 @@ class Agent:
                 self.memory.append(replay)
             self.buffer += 1
 
-    def act_greedy(self, state, i):
-        "Predict the optimal action to take given the current state"
-
-        choice = self.Q_eval[i].forward(state[i])
-        action = torch.argmax(choice).item()
-        return action
-
     def act(self, state):
         """
         Agent uses the state and gives either an
@@ -163,12 +111,14 @@ class Agent:
             if self.action_delay_cnt[i] >= self.action_delay[i]:
                 self.action_delay_cnt[i] = 0
 
-                if np.random.rand() <= float(self.epsilon[i]):  # Exploration
-                    random_action = random.randint(0, self.action_size - 1)
+                if (
+                    True
+                ):  # np.random.rand() <= float(self.epsilon[i]):  # Exploration
+                    random_action = random.uniform(0, 1)
                     action = random_action
                     actions.append(action)
                 else:
-                    action = self.act_greedy(state, i)  # Exploitation
+                    # action = self.act_greedy(state, i)  # Exploitation
                     actions.append(action)
             else:
                 actions.append(self.actions[i])
@@ -191,45 +141,18 @@ class Agent:
         Train the model to improve the predicted value of consecutive
         recurring states, Off policy Q-learning with batch training
         """
-        minibatch = np.array(random.sample(self.memory, self.batch_size))
-        for j in range(self.n_tanks):
-            agent_batch = minibatch[:, j]
-            dummy_data = np.stack(agent_batch[:, 5])
-            dummy_data_index = np.where(dummy_data)[0]
-            agent_batch_comp = np.delete(agent_batch, dummy_data_index, axis=0)
+        # minibatch = np.array(random.sample(self.memory, self.batch_size))
+        # for j in range(self.n_tanks):
+        #     agent_batch = minibatch[:, j]
+        #     dummy_data = np.stack(agent_batch[:, 5])
+        #     dummy_data_index = np.where(dummy_data)[0]
+        #     agent_batch_comp = np.delete(agent_batch, dummy_data_index, axis=0)
 
-            states = np.stack(agent_batch_comp[:, 0])
-            actions = np.stack(agent_batch_comp[:, 1])
-            rewards = np.stack(agent_batch_comp[:, 2])
-            next_states = np.stack(agent_batch_comp[:, 3])
-            terminated = np.stack(agent_batch_comp[:, 4])
-
-            self.Q_eval[j].zero_grad()
-            Qpred = self.Q_eval[j].forward(states).to(self.Q_eval[j].device)
-            Qnext = (
-                self.Q_next[j].forward(next_states).to(self.Q_next[j].device)
-            )
-
-            maxA = Qnext.max(1)[1]  # to(self.Q_eval.device)
-            rewards = torch.tensor(rewards, dtype=torch.float32).to(
-                self.Q_eval[j].device
-            )
-
-            Q_target = Qpred.clone()
-            for i, Qnext_a in enumerate(maxA):
-                if not terminated[i]:
-                    Q_target[i, actions[i]] = rewards[
-                        i
-                    ] + self.gamma * torch.max(Qnext[i, Qnext_a])
-                else:
-                    Q_target[i, actions[i]] = rewards[i]
-            loss = (
-                self.Q_eval[j].loss(Qpred, Q_target).to(self.Q_eval[j].device)
-            )
-            loss.backward()
-
-            self.Q_eval[j].optimizer.step()
-            self.decay_exploration(j)
+        #     states = np.stack(agent_batch_comp[:, 0])
+        #     actions = np.stack(agent_batch_comp[:, 1])
+        #     rewards = np.stack(agent_batch_comp[:, 2])
+        #     next_states = np.stack(agent_batch_comp[:, 3])
+        #     terminated = np.stack(agent_batch_comp[:, 4])
 
     def decay_exploration(self, j):
         "Lower the epsilon valvue to favour greedy actions"

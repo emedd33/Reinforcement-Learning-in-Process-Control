@@ -2,7 +2,7 @@ MAIN_PARAMS = {
     "EPISODES": 10000,
     "MEAN_EPISODE": 10,
     "MAX_TIME": 200,
-    "RENDER": False,
+    "RENDER": True,
     "LIVE_REWARD_PLOT": False,
 }
 

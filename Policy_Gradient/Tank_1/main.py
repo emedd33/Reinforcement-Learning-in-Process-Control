@@ -18,7 +18,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 def main():
     # ============= Initialize variables and objects ===========#
-    max_mean_reward = 50 * len(TANK_PARAMS)
+    max_mean_reward = 100 * len(TANK_PARAMS)
     environment = Environment(TANK_PARAMS, TANK_DIST, MAIN_PARAMS)
     agent = Agent(AGENT_PARAMS)
     mean_episode = MAIN_PARAMS["MEAN_EPISODE"]
@@ -31,8 +31,7 @@ def main():
         for e in range(episodes):
             states, episode_reward = environment.reset()  # Reset level in tank
             for t in range(MAIN_PARAMS["MAX_TIME"]):
-                actions = agent.act(states[-1])  # get action choice from state
-                z = agent.get_z(actions)
+                z = agent.act(states[-1])  # get action choice from state
 
                 terminated, next_state = environment.get_next_state(
                     z, states[-1], t
