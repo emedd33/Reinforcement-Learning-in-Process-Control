@@ -1,143 +1,255 @@
 from collections import deque
-from tensorflow import keras
-from keras import backend as K
-from params import NUMBER_OF_HIDDEN_LAYERS,OBSERVATIONS,VALVE_POSITIONS,MEMORY_LENGTH,\
-    EPSILON,EPSILON_MIN,EPSILON_DECAY,LOAD_ANN_MODEL,GAMMA,LEARNING_RATE,TRAIN_MODEL,\
-        BATCH_SIZE,MEAN_EPISODE,EPISODES,SAVE_ANN_MODEL,DECAY_RATE
-import numpy as np 
+import torch
+from .Network import Net
+import numpy as np
 import random
-import itertools
 
-class Agent():
-    def __init__(self,
-            hl_size=NUMBER_OF_HIDDEN_LAYERS,
-            state_size=1,
-        ): 
-        self.state_size = state_size
-        self.memory = [[],[],[],[],[]]
-        self.gamma = GAMMA    # discount rate
-        self.epsilon = EPSILON if TRAIN_MODEL else EPSILON_MIN # exploration rate
-        self.epsilon_min = EPSILON_MIN
-        self.epsilon_decay = EPSILON_DECAY
-        self.learning_rate = LEARNING_RATE
-        self.decay_rate = DECAY_RATE
 
-        self.model = self._build_model(hl_size)
-        self.h,self.x,self.dlogps,self.drs = [],[],[],[]
-    def _build_model(self,hl_size):
-        model = {}
-        model['W1'] =  np.random.randn(hl_size[0],self.state_size) / np.sqrt(self.state_size)
-        model['W2'] = np.random.randn(hl_size[0]) / np.sqrt(hl_size[0])
-        
-        self.grad_buffer = { k : np.zeros_like(v) for k,v in model.items() } 
-        self.rmsprop_cache = { k : np.zeros_like(v) for k,v in model.items() }
-        return model
-    
-    def policy_forward(self,x):
-        x = x.reshape(1,)
-        h = np.dot(self.model['W1'], x)
-        h[h<0] = 0 
-        logp = np.dot(self.model['W2'], h)    
-        p = self.sigmoid(logp)
-        return p, h 
+class Agent:
+    def __init__(self, AGENT_PARAMS):
+        "Parameters are set in the params.py file"
+        self.memory_size = AGENT_PARAMS["MEMORY_LENGTH"]
+        self.memory = deque(maxlen=self.memory_size)
+        self.load_model = AGENT_PARAMS["LOAD_MODEL"]
+        self.save_model_bool = AGENT_PARAMS["SAVE_MODEL"]
+        self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
+        self.model_name = AGENT_PARAMS["MODEL_NAME"]
 
-    def sigmoid(self,x): 
-        return 1.0 / (1.0 + np.exp(-x)) 
-    
-    def policy_backward(self,eph, epdlogp,epx):
-        """ backward pass. (eph is array of intermediate hidden states) """
-        #recursively compute error derivatives for both layers, this is the chain rule
-        #epdlopgp modulates the gradient with advantage
-        #compute updated derivative with respect to weight 2. It's the parameter hidden states transpose * gradient w/ advantage (then flatten with ravel())
-        dW2 = np.dot(eph.T, epdlogp).ravel()
-        #Compute derivative hidden. It's the outer product of gradient w/ advatange and weight matrix 2 of 2
-        dh = np.outer(epdlogp, self.model['W2'])
-        #apply activation
-        dh[eph <= 0] = 0 # backpro prelu
-        #compute derivative with respect to weight 1 using hidden states transpose and input observation
-        dW1 = np.dot(dh.T, epx)
-        #return both derivatives to update weights
-        return {'W1':dW1, 'W2':dW2}
+        self.n_tanks = AGENT_PARAMS["N_TANKS"]
+        self.state_size = AGENT_PARAMS["OBSERVATIONS"]
+        self.action_state = None
+        self.action_size = AGENT_PARAMS["VALVE_POSITIONS"]
+        self.action_choices = self._build_action_choices(self.action_size)
+        self.actions = None
+        self.action_delay_cnt = [9] * self.n_tanks
+        self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
 
-    def GP_replay(self,episode_number):
-        epx = np.vstack(self.x) #obsveration
-        eph = np.vstack(self.h) #hidden
-        epdlogp = np.vstack(self.dlogps) #gradient
-        epr = np.vstack(self.drs) #reward
-        self.x,self.h,self.dlogps,self.drs = [],[],[],[] # reset array memory
-
-        discounted_epr = self.discount_rewards(epr)
-        discounted_epr -= np.mean(discounted_epr)
-        discounted_epr /= np.std(discounted_epr)
-        epdlogp *= discounted_epr # modulate the gradient with advantage (PG magic happens right here.)
-        grad = self.policy_backward(eph, epdlogp,epx)
-        if episode_number % BATCH_SIZE == 0:
-            for k,v in self.model.items():
-                g = self.grad_buffer[k] # gradient
-                self.rmsprop_cache[k] = self.decay_rate * self.rmsprop_cache[k] + (1 - self.decay_rate) * g**2
-                self.model[k] += self.learning_rate * g / (np.sqrt(self.rmsprop_cache[k]) + 1e-5)
-                self.grad_buffer[k] = np.zeros_like(v) # reset batch gradient buffer
-            self.decay_exploration()    
-        for k in self.model: self.grad_buffer[k] += grad[k]
-    def remember(self, state,z,reward,terminated,adv):
-        if TRAIN_MODEL:
-            reward = self.discount_and_normalize_rewards(reward)
-            data = np.array([state[:-1],z,state[1:],reward,terminated])
-            for i,history in enumerate(data):
-                self.memory[i].extend(history)
-        norm = adv[0]+len(reward)
-        mean_reward = np.mean(reward)
-       
-        adv[1] = (adv[1]/norm)*adv[0]+(mean_reward/norm)*len(reward)
-        adv[0] += len(reward)
-        return adv
-                
-        
-         
-    def act(self, x):
-        aprob,h = self.policy_forward(x)
-        if np.random.rand() <= self.epsilon: # Exploration 
-            z = random.uniform(0,1)
+        if self.train_model:
+            self.epsilon = [AGENT_PARAMS["EPSILON"]] * self.n_tanks
         else:
-            z=aprob
-        self.x.append(x) # observation
-        self.h.append(h) # hidden state
-        self.dlogps.append(z - aprob)
-        return aprob,z
-        
-    def is_ready(self,batch_size):
-        if not TRAIN_MODEL:
+            self.epsilon = [0] * self.n_tanks
+        self.epsilon_min = AGENT_PARAMS["EPSILON_MIN"]
+        self.epsilon_decay = AGENT_PARAMS["EPSILON_DECAY"]
+        self.gamma = AGENT_PARAMS["GAMMA"]
+        self.buffer = 0
+        self.buffer_thres = AGENT_PARAMS["BUFFER_THRESH"]
+
+        self.learning_rate = AGENT_PARAMS["LEARNING_RATE"]
+        self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
+        self.batch_size = AGENT_PARAMS["BATCH_SIZE"]
+
+        self.Q_eval, self.Q_next = [], []
+        for i in range(self.n_tanks):
+            Q_eval_, Q_next_ = self._build_ANN(
+                self.state_size,
+                self.hl_size,
+                self.action_size,
+                learning_rate=self.learning_rate,
+                index=i,
+            )
+            self.Q_eval.append(Q_eval_)
+            self.Q_next.append(Q_next_)
+
+    def _build_action_choices(self, action_size):
+        "Create a list of the valve positions ranging from 0-1"
+        valve_positions = []
+        for i in range(action_size):
+            valve_positions.append((i) / (action_size - 1))
+        return np.array(list(reversed(valve_positions)))
+
+    def _build_ANN(
+        self, input_size, hidden_size, action_size, learning_rate, index=0
+    ):
+        if self.load_model:
+            Q_net = Net(input_size, hidden_size, action_size, learning_rate)
+            model_name = self.model_name
+            path = (
+                "Q_learning/Tank_1/saved_networks/usable_networks/"
+                + model_name
+                + ".pt"
+            )
+            Q_net.load_state_dict(torch.load(path))
+            Q_net.eval()
+            return Q_net, Q_net
+        "Creates or loads a ANN valve function approximator"
+
+        Q_eval = Net(input_size, hidden_size, action_size, learning_rate)
+        Q_next = Net(input_size, hidden_size, action_size, learning_rate)
+        return Q_eval, Q_next
+
+    def get_z(self, action):
+        z = []
+        for action in self.actions:
+            z.append(self.action_choices[action])
+        return z
+
+    def remember(self, states, reward, terminated, t):
+        "Stores instances of each time step"
+        if self.train_model:
+            replay = []
+            for i in range(self.n_tanks):
+                if terminated[i]:
+                    if len(states) <= self.action_delay[i] + 2:
+                        action_state = states[i][0]
+                    else:
+                        action_state_index = -self.action_delay_cnt[i] - 2
+                        action_state = states[action_state_index][i]
+                    replay.append(
+                        np.array(
+                            [
+                                action_state,
+                                self.actions[i],
+                                reward[i],
+                                states[-1][i],
+                                terminated[i],
+                                False,
+                            ]
+                        )
+                    )
+                    self.buffer += 1
+                elif (
+                    self.action_delay_cnt[i] >= self.action_delay[i]
+                    and t >= self.action_delay[i]
+                ):
+                    action_state = states[-self.action_delay[i] - 2][i]
+                    replay.append(
+                        np.array(
+                            [
+                                action_state,
+                                self.actions[i],
+                                reward[i],
+                                states[-1][i],
+                                terminated[i],
+                                False,
+                            ]
+                        )
+                    )
+                elif True in terminated:
+                    replay.append(
+                        np.array(
+                            [
+                                [999] * self.state_size,
+                                None,
+                                0,
+                                [999] * self.state_size,
+                                True,
+                                True,
+                                str(i) + "model",
+                            ]
+                        )
+                    )
+            if True in terminated:
+                self.memory.append(replay)
+            elif not len(replay) == self.n_tanks:
+                return
+            else:
+                self.memory.append(replay)
+            self.buffer += 1
+
+    def act_greedy(self, state, i):
+        "Predict the optimal action to take given the current state"
+
+        choice = self.Q_eval[i].forward(state[i])
+        action = torch.argmax(choice).item()
+        return action
+
+    def act(self, state):
+        """
+        Agent uses the state and gives either an
+        action of exploration or explotation
+        """
+        actions = []
+        for i in range(self.n_tanks):
+            if self.action_delay_cnt[i] >= self.action_delay[i]:
+                self.action_delay_cnt[i] = 0
+
+                if np.random.rand() <= float(self.epsilon[i]):  # Exploration
+                    random_action = random.randint(0, self.action_size - 1)
+                    action = random_action
+                    actions.append(action)
+                else:
+                    action = self.act_greedy(state, i)  # Exploitation
+                    actions.append(action)
+            else:
+                actions.append(self.actions[i])
+                self.action_delay_cnt[i] += 1
+        self.actions = actions
+        return self.actions
+
+    def is_ready(self):
+        "Check if enough data has been collected"
+        if not self.train_model:  # Model has been set to not collect data
             return False
-        if len(self.memory)< batch_size:
+        if len(self.memory) < self.batch_size:
+            return False
+        if self.buffer < self.buffer_thres:
             return False
         return True
-    def discount_rewards(self,r):
-        """ take 1D float array of rewards and compute discounted reward """
-        #initilize discount reward matrix as empty
-        discounted_r = np.zeros_like(r)
-        #to store reward sums
-        running_add = 0
-        #for each reward
-        for t in reversed(range(0, r.size)):
-            #if reward at index t is nonzero, reset the sum, since this was a game boundary (pong specific!)
-            # if r[t] != 0: running_add = 0 
-            #increment the sum 
-            #https://github.com/hunkim/ReinforcementZeroToAll/issues/1
-            running_add = running_add * self.gamma + r[t]
-            #earlier rewards given more value over time 
-            #assign the calculated sum to our discounted reward matrix
-            discounted_r[t] = running_add
-        return discounted_r.astype(float)
 
+    def Qreplay(self, e):
+        """"
+        Train the model to improve the predicted value of consecutive
+        recurring states, Off policy Q-learning with batch training
+        """
+        minibatch = np.array(random.sample(self.memory, self.batch_size))
+        for j in range(self.n_tanks):
+            agent_batch = minibatch[:, j]
+            dummy_data = np.stack(agent_batch[:, 5])
+            dummy_data_index = np.where(dummy_data)[0]
+            agent_batch_comp = np.delete(agent_batch, dummy_data_index, axis=0)
 
-    def decay_exploration(self):
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
-    
-###############################################################
+            states = np.stack(agent_batch_comp[:, 0])
+            actions = np.stack(agent_batch_comp[:, 1])
+            rewards = np.stack(agent_batch_comp[:, 2])
+            next_states = np.stack(agent_batch_comp[:, 3])
+            terminated = np.stack(agent_batch_comp[:, 4])
 
-    def status(self,episode_reward,e):
-        if e % MEAN_EPISODE == 0 and e != 0:
-            mean_reward = np.mean(episode_reward[-10:])
-            print("Mean rewards {}/{} episodes : {} exploration: {}".format(e,EPISODES,mean_reward,round(self.epsilon,2)))
-          
+            self.Q_eval[j].zero_grad()
+            Qpred = self.Q_eval[j].forward(states).to(self.Q_eval[j].device)
+            Qnext = (
+                self.Q_next[j].forward(next_states).to(self.Q_next[j].device)
+            )
+
+            maxA = Qnext.max(1)[1]  # to(self.Q_eval.device)
+            rewards = torch.tensor(rewards, dtype=torch.float32).to(
+                self.Q_eval[j].device
+            )
+
+            Q_target = Qpred.clone()
+            for i, Qnext_a in enumerate(maxA):
+                if not terminated[i]:
+                    Q_target[i, actions[i]] = rewards[
+                        i
+                    ] + self.gamma * torch.max(Qnext[i, Qnext_a])
+                else:
+                    Q_target[i, actions[i]] = rewards[i]
+            loss = (
+                self.Q_eval[j].loss(Qpred, Q_target).to(self.Q_eval[j].device)
+            )
+            loss.backward()
+
+            self.Q_eval[j].optimizer.step()
+            self.decay_exploration(j)
+
+    def decay_exploration(self, j):
+        "Lower the epsilon valvue to favour greedy actions"
+        if self.epsilon[j] > self.epsilon_min:
+            self.epsilon[j] = self.epsilon[j] * self.epsilon_decay[j]
+
+    def reset(self, init_state):
+        self.action_state = init_state[0]
+        self.action = None
+        self.action_delay_cnt = self.action_delay
+
+    def save_model(self, mean_reward, max_mean_reward):
+        "Save the model given a better model has been fitted"
+
+        if mean_reward >= max_mean_reward:
+
+            model_name = "Network_" + str(self.hl_size) + "HL"
+            # + str(int(mean_reward))
+            path = "Q_learning/Tank_1/saved_networks/" + model_name + ".pt"
+            torch.save(self.Q_eval[0].state_dict(), path)
+            print("ANN_Model was saved")
+            max_mean_reward = mean_reward
+        return max_mean_reward
