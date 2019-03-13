@@ -42,7 +42,7 @@ class TankImage:
     choke_range = 167
 
     def __init__(self, tank, left_pos, top_pos):
-        self.tank = tank
+        self.tank = tank[0]
         self.left_pos = left_pos
         self.top_pos = top_pos
 

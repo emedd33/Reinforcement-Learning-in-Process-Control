@@ -1,7 +1,14 @@
 import numpy as np
 from params import TANK_PARAMS
 
-ss_position = TANK_PARAMS["init_level"]
+ss_position = TANK_PARAMS[0]["init_level"]
+
+
+def sum_rewards(states, terminated, get_reward):
+    rewards = []
+    for i in range(len(states)):
+        rewards.append(get_reward(states[i], terminated[i]))
+    return rewards
 
 
 def get_reward_1(state, terminated):

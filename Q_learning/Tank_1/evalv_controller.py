@@ -18,24 +18,23 @@ def main():
     # ============= Initialize variables and objects ===========#
     environment = Environment(TANK_PARAMS, TANK_DIST, MAIN_PARAMS)
     agent = Agent(AGENT_PARAMS)
-    actions = []
+    z = []
     h = []
     d = []
-    # disturbance = []
     # ================= Running episodes =================#
 
     state, episode_reward = environment.reset()
-    h.append(state[0][0])
+    h_ = np.array([state[0][0][0]])
+    h.append(h_)
     for t in range(MAIN_PARAMS["MAX_TIME"]):
         action = agent.act(state[-1])  # get action choice from state
-        z = agent.action_choices[
+        z_ = agent.action_choices[
             action
         ]  # convert action choice into valve position
-        actions.append(z)
+        z.append(np.array(z_))
         terminated, next_state = environment.get_next_state(
-            z, state[-1], t
+            z[-1], state[-1], t
         )  # Calculate next state with action
-        d.append(environment.tank.dist.flow)
         reward = get_reward(
             next_state, terminated
         )  # get reward from transition to next state
@@ -44,12 +43,17 @@ def main():
         episode_reward.append(reward)
 
         state.append(next_state)
-        h.append(next_state[0])
+        h_ = []
+        d_ = []
+        for i in range(agent.n_tanks):
+            d_.append(environment.tanks[i].dist.flow + environment.q_inn[i])
+            h_.append(np.array(next_state[i][0]))
+        d.append(d_)
+        h.append(h_)
         if environment.show_rendering:
-            environment.render(z)
-        if terminated:
+            environment.render(z[-1])
+        if True in terminated:
             break
-        # End for
 
         if keyboard.is_pressed("ctrl+x"):
             break
@@ -57,23 +61,24 @@ def main():
         if not environment.running:
             break
     print(np.sum(episode_reward))
+
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
     d = np.array(d)
     h = np.array(h[:-1])
-    z = np.array(actions)
+    z = np.array(z)
     h *= 10
 
-    ax1.plot(h, color="peru", label="Tank 1")
+    ax1.plot(h[:, 0], color="peru", label="Tank 1")
     ax1.set_ylabel("Level")
     ax1.legend(loc="upper right")
     ax1.set_ylim(0, 10)
 
-    ax2.plot(z, color="peru", label="Tank 1")
+    ax2.plot(z[:, 0], color="peru", label="Tank 1")
     ax2.legend(loc="upper right")
     ax2.set_ylabel("Valve")
-    ax2.set_ylim(0, 1.01)
+    ax2.set_ylim(-0.01, 1.01)
 
-    ax3.plot(d, color="peru", label="Tank 1")
+    ax3.plot(d[:, 0], color="peru", label="Tank 1")
     ax3.set_ylabel("Disturbance")
     ax3.legend(loc="upper right")
 

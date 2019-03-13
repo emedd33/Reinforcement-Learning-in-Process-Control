@@ -7,10 +7,10 @@ AGENT_PARAMS["EPSILON"] = 0
 AGENT_PARAMS["SAVE_MODEL"] = False
 AGENT_PARAMS["LOAD_MODEL"] = True
 AGENT_PARAMS["TRAIN_MODEL"] = False
-
-
 AGENT_PARAMS["MODEL_NAME"] = "Network_[10]HL"
 
-TANK_DIST["add"] = True
-TANK_DIST["add_step"] = True
+for i in range(AGENT_PARAMS["N_TANKS"]):
+    TANK_DIST[i]["add"] = True
+    TANK_DIST[i]["var_flow"] = 0.1
+    TANK_DIST[i]["add_step"] = True
 
