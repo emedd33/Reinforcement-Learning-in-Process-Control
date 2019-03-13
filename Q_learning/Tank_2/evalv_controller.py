@@ -74,8 +74,8 @@ def main():
     ax1.legend(loc="upper right")
     ax1.set_ylim(0, 10)
 
-    ax2.plot(z[:, 1], color="peru", label="Tank 1")
-    ax2.plot(z[:, 0], color="firebrick", label="Tank 2")
+    ax2.plot(z[:, 0], color="peru", label="Tank 1")
+    ax2.plot(z[:, 1], color="firebrick", label="Tank 2")
     ax2.legend(loc="upper right")
     ax2.set_ylabel("Valve")
     ax2.set_ylim(0, 1.01)

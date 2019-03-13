@@ -79,17 +79,17 @@ def main():
         d = np.array(d)
         z = np.array(z)
         ax1.plot(
-            h[:, 0 + i * 3],
+            h[:-1, 0 + i * 3],
             color=colors[0 + i * 3],
             label="Tank {}".format(str(1 + i * 3)),
         )
         ax1.plot(
-            h[:, 1 + i * 3],
+            h[:-1, 1 + i * 3],
             color=colors[1 + i * 3],
             label="Tank {}".format(str(2 + i * 3)),
         )
         ax1.plot(
-            h[:, 2 + i * 3],
+            h[:-1, 2 + i * 3],
             color=colors[2 + i * 3],
             label="Tank {}".format(str(3 + i * 3)),
         )
@@ -98,17 +98,17 @@ def main():
         ax1.set_ylim(0, 10)
 
         ax2.plot(
-            z[:, 0 + i * 3],
+            z[1:, 0 + i * 3],
             color=colors[0 + i * 3],
             label="Tank {}".format(str(1 + i * 3)),
         )
         ax2.plot(
-            z[:, 1 + i * 3],
+            z[1:, 1 + i * 3],
             color=colors[1 + i * 3],
             label="Tank {}".format(str(2 + i * 3)),
         )
         ax2.plot(
-            z[:, 2 + i * 3],
+            z[1:, 2 + i * 3],
             color=colors[2 + i * 3],
             label="Tank {}".format(str(3 + i * 3)),
         )
@@ -117,17 +117,17 @@ def main():
         ax2.set_ylim(0, 1.01)
 
         ax3.plot(
-            d[:, 0 + i * 3],
+            d[:-1, 0 + i * 3],
             color=colors[0 + i * 3],
             label="Tank {}".format(str(1 + i * 3)),
         )
         ax3.plot(
-            d[:, 1 + i * 3],
+            d[:-1, 1 + i * 3],
             color=colors[1 + i * 3],
             label="Tank {}".format(str(2 + i * 3)),
         )
         ax3.plot(
-            d[:, 2 + i * 3],
+            d[:-1, 2 + i * 3],
             color=colors[2 + i * 3],
             label="Tank {}".format(str(3 + i * 3)),
         )
