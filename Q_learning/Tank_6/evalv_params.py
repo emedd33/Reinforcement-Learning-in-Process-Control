@@ -1,4 +1,4 @@
-from params import MAIN_PARAMS, AGENT_PARAMS, TANK_DIST
+from params import MAIN_PARAMS, AGENT_PARAMS
 
 MAIN_PARAMS["RENDER"] = True
 MAIN_PARAMS["LIVE_REWARD_PLOT"] = False
@@ -8,9 +8,4 @@ AGENT_PARAMS["SAVE_MODEL"] = False
 AGENT_PARAMS["LOAD_MODEL"] = True
 AGENT_PARAMS["TRAIN_MODEL"] = False
 AGENT_PARAMS["MODEL_NAME"] = "Network_[10]HL"
-
-# for i in range(1, AGENT_PARAMS["N_TANKS"]):
-#     TANK_DIST[i]["add"] = True
-#     TANK_DIST[i]["var_flow"] =
-#     TANK_DIST[i]["add_step"] = False
 
