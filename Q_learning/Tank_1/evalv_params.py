@@ -12,5 +12,5 @@ AGENT_PARAMS["MODEL_NAME"] = "Network_[10]HL"
 for i in range(AGENT_PARAMS["N_TANKS"]):
     TANK_DIST[i]["add"] = True
     TANK_DIST[i]["var_flow"] = 0.1
-    TANK_DIST[i]["add_step"] = True
+    TANK_DIST[i]["add_step"] = False
 

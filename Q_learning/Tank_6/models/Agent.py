@@ -64,7 +64,7 @@ class Agent:
             Q_net = Net(input_size, hidden_size, action_size, learning_rate)
             model_name = self.model_name + str(index)
             path = (
-                "Q_learning/Tank_2/models/saved_networks/" + model_name + ".pt"
+                "Q_learning/Tank_6/saved_networks/usable_networks/" + model_name + ".pt"
             )
             Q_net.load_state_dict(torch.load(path))
             Q_net.eval()
@@ -249,7 +249,7 @@ class Agent:
                 model_name = "Network_" + str(self.hl_size) + "HL" + str(i)
                 # + str(int(mean_reward))
                 path = (
-                    "Q_learning/Tank_6/models/saved_networks/"
+                    "Q_learning/Tank_6/saved_networks/"
                     + model_name
                     + ".pt"
                 )
