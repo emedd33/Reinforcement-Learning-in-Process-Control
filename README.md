@@ -1,6 +1,5 @@
 # Reinforcement Learning in Process Control [WIP].
-
-<img src="https://github.com/emedd33/Reinforcement-Learning-in-Process-Control/blob/master/Q_learning/1_Tank/visualize/images/DescriptionImage.png" width="500">
+![alt text](DescriptionImage.png)
 
 
 #### Install requirements
