@@ -23,7 +23,6 @@ def main(kc=AGENT_PARAMS["KC"]):
         z.append(new_z)
         new_h = environment.get_next_state(z[-1], t)
         new_reward = get_reward(h[-1] / 10, False)
-        print(new_reward)
         reward.append(new_reward)
 
         if TANK_DIST["add"]:

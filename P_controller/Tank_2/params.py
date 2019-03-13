@@ -36,7 +36,7 @@ TANK1_DIST = {
     "add": True,
     "nom_flow": 1,  # 2.7503
     "var_flow": 0.1,
-    "max_flow": 1.3,
+    "max_flow": 2,
     "min_flow": 0.7,
     "add_step": False,
     "step_time": int(MAIN_PARAMS["Max_time"] / 2),
@@ -53,10 +53,10 @@ TANK2_PARAMS = {
 }
 
 TANK2_DIST = {
-    "add": True,
+    "add": False,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0,
-    "max_flow": 1.3,
+    "var_flow": 0.1,
+    "max_flow": 2,
     "min_flow": 0.7,
     "add_step": False,
     "step_time": int(MAIN_PARAMS["Max_time"] / 2),

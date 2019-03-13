@@ -82,9 +82,6 @@ def main():
                 environment.plot(all_rewards, agent.epsilon)
             if not environment.running:
                 break
-            if agent.epsilon <= agent.epsilon_min:
-                print(len(agent.memory))
-                break
     except KeyboardInterrupt:
         pass
     print("Memory length: {}".format(len(agent.memory)))
@@ -92,7 +89,7 @@ def main():
     print("Max rewards for all episodes: {}".format(np.max(all_rewards)))
     plt.ioff()
     plt.clf()
-    x_range = np.arange(0, e - e % mean_episode, mean_episode)
+    x_range = np.arange(1, e - e % mean_episode, mean_episode)
     plt.plot(x_range, all_mean_rewards)
     plt.ylabel("Mean rewards of last {} episodes".format(mean_episode))
     plt.show()
