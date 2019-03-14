@@ -31,8 +31,8 @@ def main():
         for e in range(episodes):
             states, episode_reward = environment.reset()  # Reset level in tank
             for t in range(MAIN_PARAMS["MAX_TIME"]):
-                z = agent.act(states[-1])  # get action choice from state
-
+                actions = agent.act(states[-1])  # get action choice from state
+                z = agent.get_valve_position(actions)
                 terminated, next_state = environment.get_next_state(
                     z, states[-1], t
                 )  # Calculate next state with action
@@ -71,9 +71,8 @@ def main():
                     max_mean_reward = agent.save_model(
                         mean_reward, max_mean_reward
                     )
-                # Train model
             if agent.is_ready():
-                agent.Qreplay(e)
+                agent.PolicyGradientReplay(e)
 
             if keyboard.is_pressed("ctrl+x"):
                 break
@@ -91,8 +90,9 @@ def main():
     print("Max rewards for all episodes: {}".format(np.max(all_rewards)))
     plt.ioff()
     plt.clf()
-    x_range = np.arange(1, e - e % mean_episode, mean_episode)
+    x_range = np.arange(0, e - e % mean_episode, mean_episode)
     plt.plot(x_range, all_mean_rewards)
+    plt.ylim([0, 200])
     plt.ylabel("Mean rewards of last {} episodes".format(mean_episode))
     plt.show()
 

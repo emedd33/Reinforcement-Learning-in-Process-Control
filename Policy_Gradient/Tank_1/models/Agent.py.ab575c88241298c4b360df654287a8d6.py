@@ -60,7 +60,7 @@ class Agent:
                     self.hl_size,
                     self.learning_rate,
                     self.action_size,
-                )
+                    )
                 model_name = self.model_name
                 path = (
                     "Policy_Gradient/Tank_1/saved_networks/usable_networks/"

@@ -28,9 +28,7 @@ def main():
     h.append(h_)
     for t in range(MAIN_PARAMS["MAX_TIME"]):
         action = agent.act(state[-1])  # get action choice from state
-        z_ = agent.action_choices[
-            action
-        ]  # convert action choice into valve position
+        z_ = agent.get_valve_position(action)
         z.append(np.array(z_))
         terminated, next_state = environment.get_next_state(
             z[-1], state[-1], t
@@ -60,7 +58,6 @@ def main():
 
         if not environment.running:
             break
-    print(np.sum(episode_reward))
 
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
     d = np.array(d)

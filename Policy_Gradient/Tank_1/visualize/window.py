@@ -48,7 +48,7 @@ class TankImage:
 
     def draw(self, screen, z):
         self.draw_level(screen)
-        self.draw_choke(screen, z)
+        self.draw_choke(screen, z[0])
 
     def draw_level(self, screen):
         level_percent = (self.tank.level - self.tank.min) / (
