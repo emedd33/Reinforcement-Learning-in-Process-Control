@@ -14,7 +14,7 @@ class InflowDist:
         step_flow,
         step_time,
         pre_def_dist,
-        max_time=200,
+        max_time,
     ):
         self.var_flow = var_flow
         self.nom_flow = nom_flow
@@ -54,4 +54,4 @@ class InflowDist:
 
     def reset(self):
         "Sets dstubance flow to nominal value"
-        self.flow = self.nom_flow
+        self.flow = [self.nom_flow]
