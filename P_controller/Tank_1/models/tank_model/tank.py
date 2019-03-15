@@ -40,6 +40,8 @@ class Tank:
                 add_step=dist["add_step"],
                 step_flow=dist["step_flow"],
                 step_time=dist["step_time"],
+                pre_def_dist=dist["pre_def_dist"],
+                max_time=dist["max_time"],
             )
 
     def change_level(self, dldt):

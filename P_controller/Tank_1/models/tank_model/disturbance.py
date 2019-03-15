@@ -13,33 +13,44 @@ class InflowDist:
         add_step,
         step_flow,
         step_time,
+        pre_def_dist,
+        max_time=200,
     ):
         self.var_flow = var_flow
         self.nom_flow = nom_flow
         self.min_flow = min_flow
         self.max_flow = max_flow
+        self.max_time = max_time
         self.flow = nom_flow
         self.add_step = add_step
         if self.add_step:
             self.step_flow = step_flow
             self.step_time = step_time
+        self.pre_def_dist = pre_def_dist
+        if self.pre_def_dist:
+            csv_name = "disturbance_" + str(self.max_time) + ".csv"
+            self.flow = np.genfromtxt(csv_name, delimiter=",")
 
     def get_flow(self, t):
         "Gausian distribution of flow rate"
-        if self.add_step:
-            if t > self.step_time:
-                self.flow = self.step_flow
-                self.add_step = False
-        new_flow = np.random.normal(self.flow, self.var_flow)
-        if new_flow > self.max_flow:
-            self.flow = self.max_flow
-            return self.flow
-        elif new_flow < self.min_flow:
-            self.flow = self.min_flow
-            return self.flow
+        if self.pre_def_dist:
+            return self.flow[t]
         else:
-            self.flow = new_flow
-            return self.flow
+            if self.add_step:
+                if t > self.step_time:
+                    self.flow = self.step_flow
+                    self.max_flow = self.step_flow
+                    self.add_step = False
+            new_flow = np.random.normal(self.flow, self.var_flow)
+            if new_flow > self.max_flow:
+                self.flow = self.max_flow
+                return self.flow
+            elif new_flow < self.min_flow:
+                self.flow = self.min_flow
+                return self.flow
+            else:
+                self.flow = new_flow
+                return self.flow
 
     def reset(self):
         "Sets dstubance flow to nominal value"
