@@ -56,7 +56,7 @@ def main(kc=0.16):
         new_d = []
         for i, TANK_DIST in enumerate(TANK_DIST_LIST):
             if TANK_DIST["add"]:
-                new_d_ = environment.model[i].dist.flow
+                new_d_ = environment.model[i].dist.flow[t]
                 new_d.append(new_d_ + q_out[i])
             else:
                 new_d.append(q_out[i])

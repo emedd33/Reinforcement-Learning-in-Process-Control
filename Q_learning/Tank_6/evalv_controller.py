@@ -47,7 +47,7 @@ def main():
         d_ = []
         for i in range(agent.n_tanks):
             if environment.tanks[i].add_dist:
-                d_.append(environment.tanks[i].dist.flow + environment.q_inn[i])
+                d_.append(environment.tanks[i].dist.flow[t] + environment.q_inn[i])
             else:
                 d_.append(environment.q_inn[i])
             h_.append(np.array(next_state[i][0]) * environment.tanks[i].h)

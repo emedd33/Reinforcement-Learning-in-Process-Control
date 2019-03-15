@@ -28,9 +28,7 @@ def main():
     h.append(h_)
     for t in range(MAIN_PARAMS["MAX_TIME"]):
         action = agent.act(state[-1])  # get action choice from state
-        z_ = agent.action_choices[
-            action
-        ]  # convert action choice into valve position
+        z_ = agent.get_valve_position(action)
         z.append(np.array(z_))
         terminated, next_state = environment.get_next_state(
             z[-1], state[-1], t
@@ -46,9 +44,7 @@ def main():
         h_ = []
         d_ = []
         for i in range(agent.n_tanks):
-            d_.append(
-                environment.tanks[i].dist.flow[t - 1] + environment.q_inn[i]
-            )
+            d_.append(environment.tanks[i].dist.flow[t] + environment.q_inn[i])
             h_.append(np.array(next_state[i][0]))
         d.append(d_)
         h.append(h_)

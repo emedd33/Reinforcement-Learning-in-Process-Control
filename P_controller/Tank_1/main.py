@@ -26,7 +26,7 @@ def main(kc=AGENT_PARAMS["KC"]):
         reward.append(new_reward)
 
         if TANK_DIST["add"]:
-            new_d = environment.model.dist.flow
+            new_d = environment.model.dist.flow[t]
             d.append(new_d)
         h.append(new_h)
 
