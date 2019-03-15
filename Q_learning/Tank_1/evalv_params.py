@@ -11,4 +11,3 @@ AGENT_PARAMS["MODEL_NAME"] = "Network_[10]HL"
 
 for i in range(AGENT_PARAMS["N_TANKS"]):
     TANK_DIST[i]["pre_def_dist"] = True
-
