@@ -10,4 +10,3 @@ AGENT_PARAMS["TRAIN_MODEL"] = False
 AGENT_PARAMS["MODEL_NAME"] = "Network_[10]HL"
 
 TANK_DIST[0]["pre_def_dist"] = True
-
