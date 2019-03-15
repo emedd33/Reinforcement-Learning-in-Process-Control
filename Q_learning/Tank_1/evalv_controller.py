@@ -46,7 +46,9 @@ def main():
         h_ = []
         d_ = []
         for i in range(agent.n_tanks):
-            d_.append(environment.tanks[i].dist.flow + environment.q_inn[i])
+            d_.append(
+                environment.tanks[i].dist.flow[t - 1] + environment.q_inn[i]
+            )
             h_.append(np.array(next_state[i][0]))
         d.append(d_)
         h.append(h_)
@@ -60,7 +62,6 @@ def main():
 
         if not environment.running:
             break
-    print(np.sum(episode_reward))
 
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
     d = np.array(d)

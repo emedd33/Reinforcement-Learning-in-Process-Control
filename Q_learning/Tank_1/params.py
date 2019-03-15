@@ -41,13 +41,15 @@ TANK1_PARAMS = {
 
 TANK1_DIST = {
     "add": True,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
     "var_flow": 0.1,
-    "max_flow": 2,
+    "max_flow": 1.5,
     "min_flow": 0.7,
     "add_step": False,
     "step_time": int(MAIN_PARAMS["MAX_TIME"] / 2),
     "step_flow": 2,
+    "max_time": MAIN_PARAMS["MAX_TIME"],
 }
 
 TANK_PARAMS = [TANK1_PARAMS]

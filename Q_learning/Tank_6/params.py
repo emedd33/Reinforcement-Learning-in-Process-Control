@@ -67,7 +67,7 @@ TANK_DIST = [
 
 for DIST in TANK_DIST:
     DIST["step_time"] = int(MAIN_PARAMS["MAX_TIME"] / 2)
+    DIST["max_time"] = MAIN_PARAMS["MAX_TIME"]
 
 for i in range(1, AGENT_PARAMS["N_TANKS"]):
     TANK_DIST[i]["add"] = False
-    TANK_DIST[i]["var_flow"] = 0

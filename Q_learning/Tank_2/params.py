@@ -41,13 +41,15 @@ TANK1_PARAMS = {
 
 TANK1_DIST = {
     "add": True,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0.1,
-    "max_flow": 2,
-    "min_flow": 0.7,
+    "var_flow": 0.05,
+    "max_flow": 1.5,
+    "min_flow": 0.5,
     "add_step": False,
     "step_time": int(MAIN_PARAMS["MAX_TIME"] / 2),
     "step_flow": 2,
+    "max_time": MAIN_PARAMS["MAX_TIME"],
 }
 # Model parameters Tank 1
 TANK2_PARAMS = {
@@ -60,13 +62,15 @@ TANK2_PARAMS = {
 }
 TANK2_DIST = {
     "add": False,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0.1,
+    "var_flow": 0.05,
     "max_flow": 2,
-    "min_flow": 0.7,
+    "min_flow": 0.5,
     "add_step": False,
     "step_time": int(MAIN_PARAMS["MAX_TIME"] / 2),
     "step_flow": 2,
+    "max_time": MAIN_PARAMS["MAX_TIME"],
 }
 TANK_PARAMS = [TANK1_PARAMS, TANK2_PARAMS]
 TANK_DIST = [TANK1_DIST, TANK2_DIST]

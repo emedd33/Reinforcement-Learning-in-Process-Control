@@ -9,9 +9,10 @@ TANK1_PARAMS = {
 
 TANK1_DIST = {
     "add": True,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
     "var_flow": 0.1,
-    "max_flow": 2,
+    "max_flow": 1.5,
     "min_flow": 0.7,
     "add_step": False,
     "step_flow": 2,
@@ -26,10 +27,11 @@ TANK2_PARAMS = {
     "min_level": 0.25,
 }
 TANK2_DIST = {
-    "add": True,
+    "add": False,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0,
-    "max_flow": 2,
+    "var_flow": 0.1,
+    "max_flow": 1.5,
     "min_flow": 0.7,
     "add_step": False,
     "step_flow": 2,
@@ -45,10 +47,11 @@ TANK3_PARAMS = {
 }
 
 TANK3_DIST = {
-    "add": True,
+    "add": False,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0,
-    "max_flow": 2,
+    "var_flow": 0.1,
+    "max_flow": 1.5,
     "min_flow": 0.7,
     "add_step": False,
     "step_flow": 2,
@@ -63,10 +66,11 @@ TANK4_PARAMS = {
     "min_level": 0.25,
 }
 TANK4_DIST = {
-    "add": True,
+    "add": False,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0,
-    "max_flow": 2,
+    "var_flow": 0.1,
+    "max_flow": 1.5,
     "min_flow": 0.7,
     "add_step": False,
     "step_flow": 2,
@@ -82,10 +86,11 @@ TANK5_PARAMS = {
 }
 
 TANK5_DIST = {
-    "add": True,
+    "add": False,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0,
-    "max_flow": 2,
+    "var_flow": 0.1,
+    "max_flow": 1.5,
     "min_flow": 0.7,
     "add_step": False,
     "step_flow": 2,
@@ -100,10 +105,11 @@ TANK6_PARAMS = {
     "min_level": 0.25,
 }
 TANK6_DIST = {
-    "add": True,
+    "add": False,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
-    "var_flow": 0,
-    "max_flow": 2,
+    "var_flow": 0.1,
+    "max_flow": 1.5,
     "min_flow": 0.7,
     "add_step": False,
     "step_flow": 2,
