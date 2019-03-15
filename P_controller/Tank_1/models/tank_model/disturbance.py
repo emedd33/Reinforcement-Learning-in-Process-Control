@@ -21,7 +21,7 @@ class InflowDist:
         self.min_flow = min_flow
         self.max_flow = max_flow
         self.max_time = max_time
-        self.flow = nom_flow
+        self.flow = [nom_flow]
         self.add_step = add_step
         if self.add_step:
             self.step_flow = step_flow
@@ -38,19 +38,19 @@ class InflowDist:
         else:
             if self.add_step:
                 if t > self.step_time:
-                    self.flow = self.step_flow
+                    self.flow.append(self.step_flow)
                     self.max_flow = self.step_flow
                     self.add_step = False
-            new_flow = np.random.normal(self.flow, self.var_flow)
+            new_flow = np.random.normal(self.flow[-1], self.var_flow)
             if new_flow > self.max_flow:
-                self.flow = self.max_flow
-                return self.flow
+                self.flow.append(self.max_flow)
+                return self.flow[-1]
             elif new_flow < self.min_flow:
-                self.flow = self.min_flow
-                return self.flow
+                self.flow.append(self.min_flow)
+                return self.flow[-1]
             else:
-                self.flow = new_flow
-                return self.flow
+                self.flow.append(new_flow)
+                return self.flow[-1]
 
     def reset(self):
         "Sets dstubance flow to nominal value"
