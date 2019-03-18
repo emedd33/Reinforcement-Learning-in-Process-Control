@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.distributions import Bernoulli
+import numpy as np
 
 # from IPython.core.debugger import set_trace
 

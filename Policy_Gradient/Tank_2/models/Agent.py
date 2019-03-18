@@ -3,6 +3,7 @@ import torch
 
 from .Network import Net
 import numpy as np
+import random
 
 
 class Agent:
@@ -173,6 +174,16 @@ class Agent:
         #     range(self.action_size), 1, p=action_tensor.data.numpy()
         # )
         return action
+
+    # def get_valve_position(self, actions):
+    #     z = []
+    #     for action in actions:
+    #         z_ = self.action_choices[action]
+    #         z_ = np.random.normal(z_, self.valvpos_uncertainty)
+    #         z_ = 0 if z_ < 0 else z_
+    #         z_ = 1 if z_ > 1 else z_
+    #         z.append(z_)
+    #     return z
 
     def is_ready(self):
         "Check if enough data has been collected"
