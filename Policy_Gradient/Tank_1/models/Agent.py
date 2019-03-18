@@ -157,7 +157,7 @@ class Agent:
                 action = self.act_greedy(state, i)  # Exploitation
                 actions.append(action)
             else:
-                actions.append(self.actions[i])
+                actions = self.actions
                 self.action_delay_cnt[i] += 1
         self.actions = actions
         return self.actions
