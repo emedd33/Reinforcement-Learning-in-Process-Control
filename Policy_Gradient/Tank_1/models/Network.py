@@ -7,12 +7,12 @@ import numpy as np
 
 
 class Net(nn.Module):
-    def __init__(self, input_size, hidden_size, learning_rate, action_size):
+    def __init__(self, input_size, hidden_size, learning_rate, action_size=1):
         super(Net, self).__init__()
         self.action_size = action_size
         self.n_hl = len(hidden_size)
         self.relu = nn.ReLU()
-        self.sigmoid = nn.Softmax()
+        self.sigmoid = nn.Sigmoid()
         if self.n_hl == 0:  # No hidden layer
             self.input = nn.Linear(input_size, action_size)
             self.hl1 = None
@@ -61,7 +61,7 @@ class Net(nn.Module):
             reward = rewards[i]
 
             probs = self.forward(state)
-            m = Bernoulli(probs[actions[i]])
+            m = Bernoulli(probs)
             loss = (
                 -m.log_prob(actions[i]) * reward
             )  # Negtive score function x reward

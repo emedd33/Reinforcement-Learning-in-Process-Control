@@ -27,8 +27,7 @@ def main():
     h_ = np.array([state[0][0][0]])
     h.append(h_)
     for t in range(MAIN_PARAMS["MAX_TIME"]):
-        action = agent.act(state[-1])  # get action choice from state
-        z_ = agent.get_valve_position(action)
+        z_ = agent.act(state[-1])  # get action choice from state
         z.append(np.array(z_))
         terminated, next_state = environment.get_next_state(
             z[-1], state[-1], t

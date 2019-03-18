@@ -20,7 +20,7 @@ class Agent:
         self.state_size = AGENT_PARAMS["OBSERVATIONS"]
         self.action_state = None
         self.actions = None
-        self.action_size = AGENT_PARAMS["VALVE_POSITIONS"]
+        self.z_variance = AGENT_PARAMS["Z_VARIANCE"]
         self.action_delay_cnt = [9] * self.n_tanks
         self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
 
@@ -29,7 +29,7 @@ class Agent:
         else:
             self.epsilon = [0] * self.n_tanks
 
-        self.action_choices = self._build_action_choices(self.action_size)
+        # self.action_choices = self._build_action_choices(self.action_size)
         self.valvpos_uncertainty = AGENT_PARAMS["VALVEPOS_UNCERTAINTY"]
         self.epsilon_min = AGENT_PARAMS["EPSILON_MIN"]
         self.epsilon_decay = AGENT_PARAMS["EPSILON_DECAY"]
@@ -59,7 +59,6 @@ class Agent:
                     self.state_size,
                     self.hl_size,
                     self.learning_rate,
-                    self.action_size,
                 )
                 model_name = self.model_name
                 path = (
@@ -75,7 +74,6 @@ class Agent:
                     self.state_size,
                     self.hl_size,
                     self.learning_rate,
-                    self.action_size,
                 )
                 networks.append(network)
         return networks
@@ -153,13 +151,12 @@ class Agent:
             if self.action_delay_cnt[i] >= self.action_delay[i]:
                 self.action_delay_cnt[i] = 0
 
-                if np.random.rand() <= float(self.epsilon[i]):  # Exploration
-                    random_action = random.randint(0, self.action_size - 1)
-                    action = random_action
-                    actions.append(action)
-                else:
-                    action = self.act_greedy(state, i)  # Exploitation
-                    actions.append(action)
+                # if np.random.rand() <= float(self.epsilon[i]):  # Exploration
+                #     random_action = random.uniform(0, 1)
+                #     actions.append(random_action)
+                # else:
+                action = self.act_greedy(state, i)  # Exploitation
+                actions.append(action)
             else:
                 actions.append(self.actions[i])
                 self.action_delay_cnt[i] += 1
@@ -170,20 +167,23 @@ class Agent:
         "Predict the optimal action to take given the current state"
 
         action_tensor = self.networks[i].forward(state[i])
-        action = np.random.choice(
-            range(self.action_size), 1, p=action_tensor.data.numpy()
-        )
-        return action.item()
+        action = np.random.normal(action_tensor.item(), self.z_variance)
+        action = 0 if action < 0 else action
+        action = 1 if action > 1 else action
+        # action = np.random.choice(
+        #     range(self.action_size), 1, p=action_tensor.data.numpy()
+        # )
+        return action
 
-    def get_valve_position(self, actions):
-        z = []
-        for action in actions:
-            z_ = self.action_choices[action]
-            z_ = np.random.normal(z_, self.valvpos_uncertainty)
-            z_ = 0 if z_ < 0 else z_
-            z_ = 1 if z_ > 1 else z_
-            z.append(z_)
-        return z
+    # def get_valve_position(self, actions):
+    #     z = []
+    #     for action in actions:
+    #         z_ = self.action_choices[action]
+    #         z_ = np.random.normal(z_, self.valvpos_uncertainty)
+    #         z_ = 0 if z_ < 0 else z_
+    #         z_ = 1 if z_ > 1 else z_
+    #         z.append(z_)
+    #     return z
 
     def is_ready(self):
         "Check if enough data has been collected"

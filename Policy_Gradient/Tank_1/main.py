@@ -31,8 +31,8 @@ def main():
         for e in range(episodes):
             states, episode_reward = environment.reset()  # Reset level in tank
             for t in range(MAIN_PARAMS["MAX_TIME"]):
-                actions = agent.act(states[-1])  # get action choice from state
-                z = agent.get_valve_position(actions)
+                z = agent.act(states[-1])  # get action choice from state
+                # z = agent.get_valve_position(actions)
                 terminated, next_state = environment.get_next_state(
                     z, states[-1], t
                 )  # Calculate next state with action
@@ -92,7 +92,6 @@ def main():
     plt.clf()
     x_range = np.arange(0, e - e % mean_episode, mean_episode)
     plt.plot(x_range, all_mean_rewards)
-    plt.ylim([0, 200])
     plt.ylabel("Mean rewards of last {} episodes".format(mean_episode))
     plt.show()
 

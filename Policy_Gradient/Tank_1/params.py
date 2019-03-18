@@ -18,11 +18,11 @@ AGENT_PARAMS = {
     "LEARNING_RATE": 0.001,
     "HIDDEN_LAYER_SIZE": [5, 5],
     "BATCH_SIZE": 5,
-    "VALVE_POSITIONS": 10,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
     "EPSILON": 1,
+    "Z_VARIANCE": 0.025,
     "SAVE_MODEL": True,
     "LOAD_MODEL": False,
     "TRAIN_MODEL": True,
