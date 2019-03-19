@@ -1,9 +1,7 @@
 from collections import deque
 import torch
-
 from .Network import Net
 import numpy as np
-import random
 
 
 class Agent:
@@ -62,7 +60,7 @@ class Agent:
                 )
                 model_name = self.model_name
                 path = (
-                    "Policy_Gradient/Tank_1/saved_networks/usable_networks/"
+                    "Policy_Gradient/Tank_2/saved_networks/usable_networks/"
                     + model_name
                     + ".pt"
                 )
@@ -98,6 +96,7 @@ class Agent:
                                 states[-1][i],
                                 terminated[i],
                                 False,
+                                str(i)+"model"
                             ]
                         )
                     )
@@ -116,6 +115,7 @@ class Agent:
                                 states[-1][i],
                                 terminated[i],
                                 False,
+                                str(i)+"model"
                             ]
                         )
                     )
@@ -129,7 +129,7 @@ class Agent:
                                 [999] * self.state_size,
                                 True,
                                 True,
-                                str(i) + "model",
+                                str(i)+"model"
                             ]
                         )
                     )
@@ -151,14 +151,14 @@ class Agent:
             if self.action_delay_cnt[i] >= self.action_delay[i]:
                 self.action_delay_cnt[i] = 0
 
-                # if np.random.rand() <= float(self.epsilon[i]):  # Exploration
-                #     random_action = random.uniform(0, 1)
-                #     actions.append(random_action)
-                # else:
-                action = self.act_greedy(state, i)  # Exploitation
-                actions.append(action)
+                if np.random.rand() <= float(self.epsilon[i]):  # Exploration
+                    random_action = np.random.uniform(0, 1)
+                    actions.append(random_action)
+                else:
+                    action = self.act_greedy(state, i)  # Exploitation
+                    actions.append(action)
             else:
-                actions.append(self.actions[i])
+                actions = self.actions
                 self.action_delay_cnt[i] += 1
         self.actions = actions
         return self.actions
@@ -170,20 +170,7 @@ class Agent:
         action = np.random.normal(action_tensor.item(), self.z_variance)
         action = 0 if action < 0 else action
         action = 1 if action > 1 else action
-        # action = np.random.choice(
-        #     range(self.action_size), 1, p=action_tensor.data.numpy()
-        # )
         return action
-
-    # def get_valve_position(self, actions):
-    #     z = []
-    #     for action in actions:
-    #         z_ = self.action_choices[action]
-    #         z_ = np.random.normal(z_, self.valvpos_uncertainty)
-    #         z_ = 0 if z_ < 0 else z_
-    #         z_ = 1 if z_ > 1 else z_
-    #         z.append(z_)
-    #     return z
 
     def is_ready(self):
         "Check if enough data has been collected"
@@ -219,13 +206,17 @@ class Agent:
             reward_mean = np.mean(rewards)
             reward_std = np.std(rewards)
             for i in range(batch_size):
-                rewards[i] = (rewards[i] - reward_mean) / reward_std
+                if reward_std != 0:
+                    rewards[i] = (rewards[i] - reward_mean) / reward_std
+                else:
+                    rewards[i] = (rewards[i] - reward_mean)
 
             self.networks[j].backward(
                 states, actions, rewards, dummy_data_index
             )
-        self.mean_reward_memory.append(disc_rewards)
-        self.decay_exploration(j)
+            self.mean_reward_memory.append(disc_rewards)
+            self.decay_exploration(j)
+        self.memory.clear()
 
     def discount_rewards(self, reward):
         """ computes discounted reward """
@@ -254,7 +245,7 @@ class Agent:
 
             model_name = "Network_" + str(self.hl_size) + "HL"
             # + str(int(mean_reward))
-            path = "Policy_Gradient/Tank_1/saved_networks/" + model_name + ".pt"
+            path = "Policy_Gradient/Tank_2/saved_networks/" + model_name + ".pt"
             torch.save(self.networks[0].state_dict(), path)
             print("ANN_Model was saved")
             max_mean_reward = mean_reward

@@ -24,7 +24,7 @@ def main():
     # ================= Running episodes =================#
 
     state, episode_reward = environment.reset()
-    h_ = np.array([state[0][0][0]])
+    h_ = np.array([state[0][0][0], state[0][1][0]])
     h.append(h_)
     for t in range(MAIN_PARAMS["MAX_TIME"]):
         z_ = agent.act(state[-1])  # get action choice from state
@@ -57,6 +57,7 @@ def main():
 
         if not environment.running:
             break
+    print(np.sum(episode_reward))
 
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
     d = np.array(d)
@@ -64,17 +65,20 @@ def main():
     z = np.array(z)
     h *= 10
 
-    ax1.plot(h[:, 0], color="peru", label="Tank 1")
+    ax1.plot(h[:-1, 0], color="peru", label="Tank 1")
+    ax1.plot(h[:-1, 1], color="firebrick", label="Tank 2")
     ax1.set_ylabel("Level")
     ax1.legend(loc="upper right")
     ax1.set_ylim(0, 10)
 
-    ax2.plot(z[:, 0], color="peru", label="Tank 1")
+    ax2.plot(z[1:, 0], color="peru", label="Tank 1")
+    ax2.plot(z[1:, 1], color="firebrick", label="Tank 2")
     ax2.legend(loc="upper right")
     ax2.set_ylabel("Valve")
-    ax2.set_ylim(-0.01, 1.01)
+    ax2.set_ylim(0, 1.01)
 
     ax3.plot(d[:, 0], color="peru", label="Tank 1")
+    ax3.plot(d[:, 1], color="firebrick", label="Tank 2")
     ax3.set_ylabel("Disturbance")
     ax3.legend(loc="upper right")
 
