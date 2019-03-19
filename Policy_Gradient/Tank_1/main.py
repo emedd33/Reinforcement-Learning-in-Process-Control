@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
-from rewards import get_reward_2 as get_reward
+from rewards import get_reward_SSE as get_reward
 from rewards import sum_rewards
 
 plt.style.use("ggplot")
@@ -18,7 +18,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 def main():
     # ============= Initialize variables and objects ===========#
-    max_mean_reward = 100 * len(TANK_PARAMS)
+    max_mean_reward = -1
     environment = Environment(TANK_PARAMS, TANK_DIST, MAIN_PARAMS)
     agent = Agent(AGENT_PARAMS)
     mean_episode = MAIN_PARAMS["MEAN_EPISODE"]

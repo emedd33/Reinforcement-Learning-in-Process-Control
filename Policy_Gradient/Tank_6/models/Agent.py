@@ -194,7 +194,6 @@ class Agent:
             agent_batch = minibatch[:, j]
             dummy_data = np.stack(agent_batch[:, 5])
             dummy_data_index = np.where(dummy_data)[0]
-
             states = np.stack(agent_batch[:, 0])
             actions = np.stack(agent_batch[:, 1])
             rewards = np.stack(agent_batch[:, 2])

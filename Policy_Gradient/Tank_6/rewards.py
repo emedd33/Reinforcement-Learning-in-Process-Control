@@ -52,4 +52,4 @@ def get_reward_SSE(state, terminated):
 
     if terminated:
         return -10
-    return (ss_position - state[0]) ** 2
+    return -(ss_position - state[0]) ** 2

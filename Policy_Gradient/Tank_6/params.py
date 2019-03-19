@@ -16,10 +16,10 @@ from Tank_params import (
 )
 
 MAIN_PARAMS = {
-    "EPISODES": 3000,
+    "EPISODES": 30000,
     "MEAN_EPISODE": 5,
     "MAX_TIME": 200,
-    "RENDER": False,
+    "RENDER": True,
     "LIVE_REWARD_PLOT": False,
 }
 
@@ -30,15 +30,16 @@ AGENT_PARAMS = {
     "ACTION_DELAY": [5, 4, 5, 4, 5, 4],
     "INIT_ACTION": 0,
     "EPSILON_MIN": 0.05,
+    "VALVEPOS_UNCERTAINTY": 0.02,
     "EPSILON_DECAY": [0.995, 0.996, 0.997, 0.998, 0.998, 0.999],
     "LEARNING_RATE": 0.001,
     "HIDDEN_LAYER_SIZE": [10],
     "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
-    "GAMMA": 0.5,
+    "GAMMA": 0.2,
     "EPSILON": 0.05,
-    "Z_VARIANCE": 0.05,
+    "Z_VARIANCE": 0.08,
     "SAVE_MODEL": True,
     "LOAD_MODEL": False,
     "TRAIN_MODEL": True,
