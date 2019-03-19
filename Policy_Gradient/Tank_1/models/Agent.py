@@ -1,6 +1,5 @@
 from collections import deque
 import torch
-
 from .Network import Net
 import numpy as np
 
@@ -18,7 +17,7 @@ class Agent:
         self.n_tanks = AGENT_PARAMS["N_TANKS"]
         self.state_size = AGENT_PARAMS["OBSERVATIONS"]
         self.action_state = None
-        self.actions = None
+        self.actions = [AGENT_PARAMS['INIT_ACTION']]*self.n_tanks
         self.z_variance = AGENT_PARAMS["Z_VARIANCE"]
         self.action_delay_cnt = [9] * self.n_tanks
         self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
@@ -61,7 +60,7 @@ class Agent:
                 )
                 model_name = self.model_name
                 path = (
-                    "Policy_Gradient/Tank_1/saved_networks/usable_networks/"
+                    "Policy_Gradient/Tank_1/saved_networks/"
                     + model_name
                     + ".pt"
                 )
@@ -150,12 +149,12 @@ class Agent:
             if self.action_delay_cnt[i] >= self.action_delay[i]:
                 self.action_delay_cnt[i] = 0
 
-                # if np.random.rand() <= float(self.epsilon[i]):  # Exploration
-                #     random_action = random.uniform(0, 1)
-                #     actions.append(random_action)
-                # else:
-                action = self.act_greedy(state, i)  # Exploitation
-                actions.append(action)
+                if np.random.rand() <= float(self.epsilon[i]):  # Exploration
+                    random_action = np.random.uniform(0, 1)
+                    actions.append(random_action)
+                else:
+                    action = self.act_greedy(state, i)  # Exploitation
+                    actions.append(action)
             else:
                 actions = self.actions
                 self.action_delay_cnt[i] += 1
@@ -169,9 +168,6 @@ class Agent:
         action = np.random.normal(action_tensor.item(), self.z_variance)
         action = 0 if action < 0 else action
         action = 1 if action > 1 else action
-        # action = np.random.choice(
-        #     range(self.action_size), 1, p=action_tensor.data.numpy()
-        # )
         return action
 
     def is_ready(self):
@@ -208,13 +204,17 @@ class Agent:
             reward_mean = np.mean(rewards)
             reward_std = np.std(rewards)
             for i in range(batch_size):
-                rewards[i] = (rewards[i] - reward_mean) / reward_std
+                if reward_std != 0:
+                    rewards[i] = (rewards[i] - reward_mean) / reward_std
+                else:
+                    rewards[i] = (rewards[i] - reward_mean)
 
             self.networks[j].backward(
                 states, actions, rewards, dummy_data_index
             )
-        self.mean_reward_memory.append(disc_rewards)
-        self.decay_exploration(j)
+            self.mean_reward_memory.append(disc_rewards)
+            self.decay_exploration(j)
+        self.memory.clear()
 
     def discount_rewards(self, reward):
         """ computes discounted reward """

@@ -3,6 +3,7 @@ from visualize.window import Window
 import matplotlib.pyplot as plt
 from drawnow import drawnow
 import numpy as np
+import math
 
 
 class Environment:

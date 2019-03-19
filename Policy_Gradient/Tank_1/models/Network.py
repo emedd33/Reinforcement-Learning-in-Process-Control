@@ -38,18 +38,18 @@ class Net(nn.Module):
 
     def forward(self, state):
         x = torch.tensor(state, dtype=torch.float32).to(self.device)
-        out = self.input(x)
+        out_init = self.input(x)
         if self.n_hl == 0:
-            pass
+            out_final = out_init
         elif self.n_hl == 1:
             # out = self.relu(out)
-            out = self.hl1(out)
+            out_final = self.hl1(out_init)
         elif self.n_hl == 2:
             # out = self.relu(out)
-            out = self.hl1(out)
-            out = self.relu(out)
-            out = self.hl2(out)
-        out = self.sigmoid(out)
+            out_1 = self.hl1(out_init)
+            out_2 = self.relu(out_1)
+            out_final = self.hl2(out_2)
+        out = self.sigmoid(out_final)
         return out
 
     def backward(self, states, actions, rewards, dummy_index):

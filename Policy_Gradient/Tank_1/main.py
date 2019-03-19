@@ -32,7 +32,7 @@ def main():
             states, episode_reward = environment.reset()  # Reset level in tank
             for t in range(MAIN_PARAMS["MAX_TIME"]):
                 z = agent.act(states[-1])  # get action choice from state
-                # z = agent.get_valve_position(actions)
+
                 terminated, next_state = environment.get_next_state(
                     z, states[-1], t
                 )  # Calculate next state with action
