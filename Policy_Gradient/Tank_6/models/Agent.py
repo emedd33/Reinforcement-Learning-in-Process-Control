@@ -241,11 +241,15 @@ class Agent:
         "Save the model given a better model has been fitted"
 
         if mean_reward >= max_mean_reward:
-
-            model_name = "Network_" + str(self.hl_size) + "HL"
-            # + str(int(mean_reward))
-            path = "Policy_Gradient/Tank_2/saved_networks/" + model_name + ".pt"
-            torch.save(self.networks[0].state_dict(), path)
+            for i in range(self.n_tanks):
+                model_name = "Network_" + str(self.hl_size) + "HL" + str(i)
+                # + str(int(mean_reward))
+                path = (
+                    "Policy_Gradient/Tank_6/saved_networks/"
+                    + model_name
+                    + ".pt"
+                )
+                torch.save(self.networks[i].state_dict(), path)
             print("ANN_Model was saved")
             max_mean_reward = mean_reward
         return max_mean_reward
