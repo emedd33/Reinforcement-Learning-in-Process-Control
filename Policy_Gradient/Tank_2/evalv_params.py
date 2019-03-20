@@ -10,8 +10,12 @@ AGENT_PARAMS["TRAIN_MODEL"] = False
 AGENT_PARAMS["MODEL_NAME"] = "Network_[10]HL"
 
 
-for i in range(AGENT_PARAMS["N_TANKS"]):
+for i in range(1, AGENT_PARAMS["N_TANKS"]):
     TANK_DIST[i]["add"] = True
+    TANK_DIST[i]["add_step"] = False
+    TANK_DIST[i]["pre_def_dist"] = False
+    TANK_DIST[i]["nom_flow"] = 0
     TANK_DIST[i]["var_flow"] = 0
-    TANK_DIST[i]["add_step"] = True
-    TANK_DIST[i]["pre_def_dist"] = True
+    TANK_DIST[i]["min_flow"] = 0
+
+TANK_DIST[0]["pre_def_dist"] = True
