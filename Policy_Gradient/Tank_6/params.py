@@ -16,7 +16,7 @@ from Tank_params import (
 )
 
 MAIN_PARAMS = {
-    "EPISODES": 30000,
+    "EPISODES": 50000,
     "MEAN_EPISODE": 5,
     "MAX_TIME": 200,
     "RENDER": True,
@@ -27,23 +27,23 @@ AGENT_PARAMS = {
     "N_TANKS": 6,
     "SS_POSITION": 0.5,
     "VALVE_START_POSITION": 0.5,
-    "ACTION_DELAY": [5, 4, 5, 4, 5, 4],
+    "ACTION_DELAY": [5, 5, 5, 5, 5, 5],
     "INIT_ACTION": 0,
     "EPSILON_MIN": 0.05,
     "VALVEPOS_UNCERTAINTY": 0.02,
     "EPSILON_DECAY": [0.995, 0.996, 0.997, 0.998, 0.998, 0.999],
-    "LEARNING_RATE": 0.001,
-    "HIDDEN_LAYER_SIZE": [10],
+    "LEARNING_RATE": 0.0001,
+    "HIDDEN_LAYER_SIZE": [5, 5],
     "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
-    "GAMMA": 0.2,
+    "GAMMA": 0.5,
     "EPSILON": 0.05,
-    "Z_VARIANCE": 0.08,
+    "Z_VARIANCE": 0.05,
     "SAVE_MODEL": True,
-    "LOAD_MODEL": False,
+    "LOAD_MODEL": True,
     "TRAIN_MODEL": True,
-    "MODEL_NAME": "",
+    "MODEL_NAME": "Network_[5, 5]HL",
 }
 AGENT_PARAMS["BUFFER_THRESH"] = AGENT_PARAMS["BATCH_SIZE"] * 1
 

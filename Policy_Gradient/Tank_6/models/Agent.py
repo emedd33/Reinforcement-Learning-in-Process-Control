@@ -58,9 +58,9 @@ class Agent:
                     self.hl_size,
                     self.learning_rate,
                 )
-                model_name = self.model_name
+                model_name = self.model_name + str(i)
                 path = (
-                    "Policy_Gradient/Tank_2/saved_networks/usable_networks/"
+                    "Policy_Gradient/Tank_6/saved_networks/"
                     + model_name
                     + ".pt"
                 )
@@ -194,6 +194,7 @@ class Agent:
             agent_batch = minibatch[:, j]
             dummy_data = np.stack(agent_batch[:, 5])
             dummy_data_index = np.where(dummy_data)[0]
+
             states = np.stack(agent_batch[:, 0])
             actions = np.stack(agent_batch[:, 1])
             rewards = np.stack(agent_batch[:, 2])
@@ -253,3 +254,4 @@ class Agent:
             print("ANN_Model was saved")
             max_mean_reward = mean_reward
         return max_mean_reward
+

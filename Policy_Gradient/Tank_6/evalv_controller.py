@@ -24,7 +24,7 @@ def main():
     # ================= Running episodes =================#
 
     state, episode_reward = environment.reset()
-    h_ = np.array([state[0][0][0], state[0][1][0]])
+    h_ = np.array([state[0][i][0] for i in range(6)])
     h.append(h_)
     for t in range(MAIN_PARAMS["MAX_TIME"]):
         z_ = agent.act(state[-1])  # get action choice from state
@@ -43,7 +43,10 @@ def main():
         h_ = []
         d_ = []
         for i in range(agent.n_tanks):
-            d_.append(environment.tanks[i].dist.flow[t] + environment.q_inn[i])
+            try:
+                d_.append(environment.tanks[i].dist.flow[t] + environment.q_inn[i])
+            except AttributeError:
+                d_.append(environment.q_inn[i])
             h_.append(np.array(next_state[i][0]))
         d.append(d_)
         h.append(h_)
@@ -57,35 +60,78 @@ def main():
 
         if not environment.running:
             break
-    print(np.sum(episode_reward))
-
-    _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
+    colors = [
+        "peru",
+        "firebrick",
+        "darkslategray",
+        "darkviolet",
+        "mediumseagreen",
+        "darkcyan",
+    ]
+    h = np.array(h)*10
     d = np.array(d)
-    h = np.array(h[:-1])
     z = np.array(z)
-    h *= 10
+    for i in range(2):
+        _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
+        ax1.plot(
+            h[1:-1, 0 + i * 3],
+            color=colors[0 + i * 3],
+            label="Tank {}".format(str(1 + i * 3)),
+        )
+        ax1.plot(
+            h[1:-1, 1 + i * 3],
+            color=colors[1 + i * 3],
+            label="Tank {}".format(str(2 + i * 3)),
+        )
+        ax1.plot(
+            h[1:-1, 2 + i * 3],
+            color=colors[2 + i * 3],
+            label="Tank {}".format(str(3 + i * 3)),
+        )
+        ax1.set_ylabel("Level")
+        ax1.legend(loc="upper right")
+        ax1.set_ylim(0, 10)
 
-    ax1.plot(h[:-1, 0], color="peru", label="Tank 1")
-    ax1.plot(h[:-1, 1], color="firebrick", label="Tank 2")
-    ax1.set_ylabel("Level")
-    ax1.legend(loc="upper right")
-    ax1.set_ylim(0, 10)
+        ax2.plot(
+            z[1:, 0 + i * 3],
+            color=colors[0 + i * 3],
+            label="Tank {}".format(str(1 + i * 3)),
+        )
+        ax2.plot(
+            z[1:, 1 + i * 3],
+            color=colors[1 + i * 3],
+            label="Tank {}".format(str(2 + i * 3)),
+        )
+        ax2.plot(
+            z[1:, 2 + i * 3],
+            color=colors[2 + i * 3],
+            label="Tank {}".format(str(3 + i * 3)),
+        )
+        ax2.set_ylabel("Valve")
+        ax2.legend(loc="upper right")
+        ax2.set_ylim(0, 1.01)
 
-    ax2.plot(z[1:, 0], color="peru", label="Tank 1")
-    ax2.plot(z[1:, 1], color="firebrick", label="Tank 2")
-    ax2.legend(loc="upper right")
-    ax2.set_ylabel("Valve")
-    ax2.set_ylim(0, 1.01)
+        ax3.plot(
+            d[1:-1, 0 + i * 3],
+            color=colors[0 + i * 3],
+            label="Tank {}".format(str(1 + i * 3)),
+        )
+        ax3.plot(
+            d[1:-1, 1 + i * 3],
+            color=colors[1 + i * 3],
+            label="Tank {}".format(str(2 + i * 3)),
+        )
+        ax3.plot(
+            d[1:-1, 2 + i * 3],
+            color=colors[2 + i * 3],
+            label="Tank {}".format(str(3 + i * 3)),
+        )
+        ax3.set_ylabel("Disturbance")
+        ax3.legend(loc="upper right")
 
-    ax3.plot(d[:, 0], color="peru", label="Tank 1")
-    ax3.plot(d[:, 1], color="firebrick", label="Tank 2")
-    ax3.set_ylabel("Disturbance")
-    ax3.legend(loc="upper right")
-
-    # plt.legend([l1, l2, l3], ["Tank height", "Valve position", "Disturbance"])
-    plt.tight_layout()
-    plt.xlabel("Time")
-    plt.show()
+        plt.tight_layout()
+        plt.xlabel("Time")
+        plt.show()
 
 
 if __name__ == "__main__":
