@@ -17,10 +17,8 @@ pip install -r requirements.txt
 Off policy method of Deep Q networks which trains a neural network to approximate the value of beeing in different states based on series of **1 Tank**, **2 Tanks** or **6 Tanks**. All Q-learning methods uses a batch learning method. For 2_Tank and 6_Tank, multiple agents are implemented where each agent have included the the action of the previous tanks agent as state input.
 
 ### Policy gradint:
-Work in progress
+REINFORCE Monte Carlo with base line. **1 Tank**, **2 Tanks** or **6 Tanks**. All methods uses a batch learning method. For 2_Tank and 6_Tank, multiple agents are implemented where each agent have included the the action of the previous tanks agent as state input.
 
-### Tank_Actor_Critic:
-Coming later
 
 #### How to run the different project and update parameters
 Run main.py in each project. The different project are independent on each other.
