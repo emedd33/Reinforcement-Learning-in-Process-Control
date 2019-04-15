@@ -59,12 +59,12 @@ def main():
                 all_mean_rewards.append(mean_reward)
                 print(
                     "{} of {}/{} episodes\
-                     reward: {} exp: {}".format(
+                     reward: {} base_line: {}".format(
                         mean_episode,
                         e,
                         episodes,
                         round(mean_reward, 2),
-                        round(agent.epsilon[0], 2),
+                        round(np.mean(agent.base_line), 2),
                     )
                 )
                 if agent.save_model_bool:

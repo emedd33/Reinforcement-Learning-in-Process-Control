@@ -23,6 +23,7 @@ AGENT_PARAMS = {
     "GAMMA": 0.5,
     "EPSILON": 1,
     "Z_VARIANCE": 0.05,
+    "BASE_LINE_MEAN_REWARDS": 20,
     "SAVE_MODEL": True,
     "LOAD_MODEL": False,
     "TRAIN_MODEL": True,

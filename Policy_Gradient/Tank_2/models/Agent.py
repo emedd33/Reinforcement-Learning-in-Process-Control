@@ -34,6 +34,7 @@ class Agent:
         self.gamma = AGENT_PARAMS["GAMMA"]
         self.buffer = 0
         self.buffer_thres = AGENT_PARAMS["BUFFER_THRESH"]
+        self.base_line = deque(maxlen=AGENT_PARAMS["BASE_LINE_MEAN_REWARDS"])
 
         self.learning_rate = AGENT_PARAMS["LEARNING_RATE"]
         self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
@@ -205,11 +206,13 @@ class Agent:
             disc_rewards.append(rewards)
             reward_mean = np.mean(rewards)
             reward_std = np.std(rewards)
+            self.base_line.append(reward_mean)
             for i in range(batch_size):
                 if reward_std != 0:
-                    rewards[i] = (rewards[i] - reward_mean) / reward_std
+                    rewards[i] = (rewards[i] - np.mean(self.base_line)) / reward_std
                 else:
-                    rewards[i] = (rewards[i] - reward_mean)
+                    rewards[i] = (rewards[i] - np.mean(self.base_line))
+
 
             self.networks[j].backward(
                 states, actions, rewards, dummy_data_index

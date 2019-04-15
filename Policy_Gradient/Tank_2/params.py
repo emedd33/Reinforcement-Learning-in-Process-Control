@@ -2,7 +2,7 @@ MAIN_PARAMS = {
     "EPISODES": 30000,
     "MEAN_EPISODE": 5,
     "MAX_TIME": 200,
-    "RENDER": False,
+    "RENDER": True,
     "LIVE_REWARD_PLOT": False,
 }
 
@@ -16,12 +16,13 @@ AGENT_PARAMS = {
     "VALVEPOS_UNCERTAINTY": 0.02,
     "EPSILON_DECAY": [0.99, 0.992],
     "LEARNING_RATE": 0.0001,
-    "HIDDEN_LAYER_SIZE": [10],
+    "HIDDEN_LAYER_SIZE": [5, 5],
     "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.5,
     "EPSILON": 0,
+    "BASE_LINE_MEAN_REWARDS": 20,
     "Z_VARIANCE": 0.05,
     "SAVE_MODEL": True,
     "LOAD_MODEL": False,
