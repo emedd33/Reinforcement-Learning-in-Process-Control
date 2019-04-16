@@ -9,7 +9,7 @@ MAIN_PARAMS = {
 # Agent parameters
 AGENT_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
-    "VALVE_START_POSITION": 0.5,
+    "VALVE_START_POSITION": 0.2,
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.5,
     "KC": 0.16,
