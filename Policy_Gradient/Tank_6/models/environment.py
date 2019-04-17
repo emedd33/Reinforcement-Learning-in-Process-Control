@@ -58,6 +58,7 @@ class Environment:
                 above = 1
             else:
                 above = 0
+            z_ = 0
             if len(state[i]) == 4:
                 grad = (dldt + 0.1) / 0.2
                 next_state.append(

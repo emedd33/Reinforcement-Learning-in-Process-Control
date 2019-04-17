@@ -19,9 +19,9 @@ TANK1_DIST = {
 }
 # Model parameters Tank 1
 TANK2_PARAMS = {
-    "height": 10,
+    "height": 8,
     "init_level": 0.5,
-    "width": 10,
+    "width": 3,
     "pipe_radius": 0.5,
     "max_level": 0.75,
     "min_level": 0.25,
@@ -40,7 +40,7 @@ TANK2_DIST = {
 TANK3_PARAMS = {
     "height": 10,
     "init_level": 0.5,
-    "width": 10,
+    "width": 8,
     "pipe_radius": 0.5,
     "max_level": 0.75,
     "min_level": 0.25,
@@ -60,7 +60,7 @@ TANK3_DIST = {
 TANK4_PARAMS = {
     "height": 10,
     "init_level": 0.5,
-    "width": 10,
+    "width": 7,
     "pipe_radius": 0.5,
     "max_level": 0.75,
     "min_level": 0.25,
@@ -79,7 +79,7 @@ TANK4_DIST = {
 TANK5_PARAMS = {
     "height": 10,
     "init_level": 0.5,
-    "width": 10,
+    "width": 9,
     "pipe_radius": 0.5,
     "max_level": 0.75,
     "min_level": 0.25,
@@ -99,7 +99,7 @@ TANK5_DIST = {
 TANK6_PARAMS = {
     "height": 10,
     "init_level": 0.5,
-    "width": 10,
+    "width": 8,
     "pipe_radius": 0.6,
     "max_level": 0.75,
     "min_level": 0.25,

@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
-from rewards import get_reward_2 as get_reward
+from rewards import get_reward_1 as get_reward
 from rewards import sum_rewards
 
 plt.style.use("ggplot")
@@ -18,18 +18,19 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 def main():
     # ============= Initialize variables and objects ===========#
-    max_mean_reward = 100 * len(TANK_PARAMS)
+    max_mean_reward = 50
     environment = Environment(TANK_PARAMS, TANK_DIST, MAIN_PARAMS)
     agent = Agent(AGENT_PARAMS)
     mean_episode = MAIN_PARAMS["MEAN_EPISODE"]
     episodes = MAIN_PARAMS["EPISODES"]
     all_rewards = []
     all_mean_rewards = []
-
+    t_mean = []
     # ================= Running episodes =================#
     try:
         for e in range(episodes):
             states, episode_reward = environment.reset()  # Reset level in tank
+
             for t in range(MAIN_PARAMS["MAX_TIME"]):
                 z = agent.act(states[-1])  # get action choice from state
 
@@ -39,9 +40,10 @@ def main():
                 rewards = sum_rewards(
                     next_state, terminated, get_reward
                 )  # get reward from transition to next state
-
+                rewards.append(np.sum(rewards))
                 # Store data
-                episode_reward.append(np.sum(rewards))
+
+                episode_reward.append(rewards)
 
                 states.append(next_state)
                 agent.remember(states, rewards, terminated, t)
@@ -50,28 +52,29 @@ def main():
                     environment.render(z)
                 if True in terminated:
                     break
-
-            all_rewards.append(np.sum(np.array(episode_reward)))
+            episode_reward = np.array(episode_reward)
+            episode_total_reward = []
+            t_mean.append(t)
+            for i in range(environment.n_tanks + 1):
+                episode_total_reward.append(sum(episode_reward[:, i]))
+            all_rewards.append(episode_total_reward)
 
             # Print mean reward and save better models
             if e % mean_episode == 0 and e != 0:
-                mean_reward = np.mean(all_rewards[-mean_episode:])
-                all_mean_rewards.append(mean_reward)
+                mean_reward = np.array(all_rewards[-mean_episode:])
+                mean_r = []
+                t_mean = int(np.mean(t_mean))
+                for i in range(environment.n_tanks + 1):
+                    mean_r.append(np.mean(mean_reward[:, i]))
+                all_mean_rewards.append(mean_r)
                 print(
-                    "{} of {}/{} episodes\
-                     reward: {} base_line: {}".format(
-                        mean_episode,
-                        e,
-                        episodes,
-                        round(mean_reward, 2),
-                        round(np.mean(agent.base_line), 2),
-                    )
+                    f"{mean_episode} of {e}/{episodes} episodes ### timestep {t_mean} ### tot reward: {mean_r[-1]}  ### r1: {mean_r[0]} r2: {mean_r[1]}, r3: {mean_r[2]} r4: {mean_r[3]}, r5: {mean_r[4]} r6: {mean_r[5]}"
                 )
+                t_mean = []
                 if agent.save_model_bool:
-                    max_mean_reward = agent.save_model(
-                        mean_reward, max_mean_reward
-                    )
-
+                    if mean_r[-1] >= max_mean_reward:
+                        agent.save_model()
+                        max_mean_reward = mean_r[-1]
             agent.PolicyGradientReplay(e)
 
             if keyboard.is_pressed("ctrl+x"):
@@ -91,8 +94,20 @@ def main():
     plt.ioff()
     plt.clf()
     x_range = np.arange(0, e - e % mean_episode, mean_episode)
-    plt.plot(x_range, all_mean_rewards)
+    all_mean_rewards = np.array(all_mean_rewards)
+    labels = [
+        "Tank 1",
+        "Tank 2",
+        "Tank 3",
+        "Tank 4",
+        "Tank 5",
+        "Tank 6",
+        "Total",
+    ]
+    for i in range(environment.n_tanks + 1):
+        plt.plot(x_range, all_mean_rewards[:, i], label=labels[i])
     plt.ylabel("Mean rewards of last {} episodes".format(mean_episode))
+    plt.legend()
     plt.show()
 
 

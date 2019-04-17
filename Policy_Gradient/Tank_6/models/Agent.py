@@ -22,10 +22,7 @@ class Agent:
         self.action_delay_cnt = [9] * self.n_tanks
         self.action_delay = AGENT_PARAMS["ACTION_DELAY"]
 
-        if self.train_model:
-            self.epsilon = [AGENT_PARAMS["EPSILON"]] * self.n_tanks
-        else:
-            self.epsilon = [0] * self.n_tanks
+        self.epsilon = AGENT_PARAMS["EPSILON"]
 
         # self.action_choices = self._build_action_choices(self.action_size)
         self.valvpos_uncertainty = AGENT_PARAMS["VALVEPOS_UNCERTAINTY"]
@@ -34,7 +31,8 @@ class Agent:
         self.gamma = AGENT_PARAMS["GAMMA"]
         self.buffer = 0
         self.buffer_thres = AGENT_PARAMS["BUFFER_THRESH"]
-        self.base_line = deque(maxlen=AGENT_PARAMS["BASE_LINE_MEAN_REWARDS"])
+        self.base_line = [deque(maxlen=AGENT_PARAMS["BASE_LINE_MEAN_REWARDS"])]*self.n_tanks
+
         self.learning_rate = AGENT_PARAMS["LEARNING_RATE"]
         self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
         self.batch_size = AGENT_PARAMS["BATCH_SIZE"]
@@ -52,15 +50,15 @@ class Agent:
     def _build_network(self):
         networks = []
         for i in range(self.n_tanks):
-            if self.load_model:
+            if self.load_model[i]:
                 network = Net(
                     self.state_size,
-                    self.hl_size,
+                    self.hl_size[i],
                     self.learning_rate,
                 )
-                model_name = self.model_name + str(i)
+                model_name = self.model_name[i] + str(i)
                 path = (
-                    "Policy_Gradient/Tank_6/saved_networks/"
+                    "Policy_Gradient/Tank_6/saved_networks/training_networks/"
                     + model_name
                     + ".pt"
                 )
@@ -70,7 +68,7 @@ class Agent:
             else:
                 network = Net(
                     self.state_size,
-                    self.hl_size,
+                    self.hl_size[i],
                     self.learning_rate,
                 )
                 networks.append(network)
@@ -78,68 +76,75 @@ class Agent:
 
     def remember(self, states, reward, terminated, t):
         "Stores instances of each time step"
-        if self.train_model:
-            replay = []
-            for i in range(self.n_tanks):
-                if terminated[i]:
-                    if len(states) <= self.action_delay[i] + 2:
-                        action_state = states[i][0]
-                    else:
-                        action_state_index = -self.action_delay_cnt[i] - 2
-                        action_state = states[action_state_index][i]
-                    replay.append(
-                        np.array(
-                            [
-                                action_state,
-                                self.actions[i],
-                                reward[i],
-                                states[-1][i],
-                                terminated[i],
-                                False,
-                                str(i)+"model"
-                            ]
-                        )
+
+        replay = []
+        for i in range(self.n_tanks):
+
+            if terminated[i]:
+                if len(states) <= self.action_delay[i] + 2:
+                    action_state = states[i][0]
+                else:
+                    action_state_index = -self.action_delay_cnt[i] - 2
+                    action_state = states[action_state_index][i]
+                replay.append(
+                    np.array(
+                        [
+                            action_state,
+                            self.actions[i],
+                            reward[i],
+                            states[-1][i],
+                            terminated[i],
+                            False,
+                            str(i)+"model"
+                        ]
                     )
-                    self.buffer += 1
-                elif (
-                    self.action_delay_cnt[i] >= self.action_delay[i]
-                    and t >= self.action_delay[i]
-                ):
-                    action_state = states[-self.action_delay[i] - 2][i]
-                    replay.append(
-                        np.array(
-                            [
-                                action_state,
-                                self.actions[i],
-                                reward[i],
-                                states[-1][i],
-                                terminated[i],
-                                False,
-                                str(i)+"model"
-                            ]
-                        )
+                )
+                self.buffer += 1
+            elif (
+                self.action_delay_cnt[i] >= self.action_delay[i]
+                and t >= self.action_delay[i]
+            ):
+                action_state = states[-self.action_delay[i] - 2][i]
+                replay.append(
+                    np.array(
+                        [
+                            action_state,
+                            self.actions[i],
+                            reward[i],
+                            states[-1][i],
+                            terminated[i],
+                            False,
+                            str(i)+"model"
+                        ]
                     )
-                elif True in terminated:
-                    replay.append(
-                        np.array(
-                            [
-                                [999] * self.state_size,
-                                None,
-                                0,
-                                [999] * self.state_size,
-                                True,
-                                True,
-                                str(i)+"model"
-                            ]
-                        )
+                )
+            elif True in terminated:
+
+                action_state_index = -self.action_delay_cnt[i] - 2
+                try:
+                    action_state = states[action_state_index][i]
+                except IndexError:
+                    action_state = states[0][i]
+                replay.append(
+                    np.array(
+                        [
+                            action_state,
+                            self.actions[i],
+                            reward[i],
+                            states[-1][i],
+                            terminated[i],
+                            False,
+                            str(i)+"model"
+                        ]
                     )
-            if True in terminated:
-                self.memory.append(replay)
-            elif not len(replay) == self.n_tanks:
-                return
-            else:
-                self.memory.append(replay)
-            self.buffer += 1
+                )
+        if True in terminated:
+            self.memory.append(replay)
+        elif not len(replay) == self.n_tanks:
+            return
+        else:
+            self.memory.append(replay)
+        self.buffer += 1
 
     def act(self, state):
         """
@@ -167,7 +172,7 @@ class Agent:
         "Predict the optimal action to take given the current state"
 
         action_tensor = self.networks[i].forward(state[i])
-        action = np.random.normal(action_tensor.item(), self.z_variance)
+        action = np.random.normal(action_tensor.item(), self.z_variance[i])
         action = 0 if action < 0 else action
         action = 1 if action > 1 else action
         return action
@@ -191,44 +196,49 @@ class Agent:
         batch_size = len(minibatch[:, 0])
         disc_rewards = []
         for j in range(self.n_tanks):
-            agent_batch = minibatch[:, j]
-            dummy_data = np.stack(agent_batch[:, 5])
-            dummy_data_index = np.where(dummy_data)[0]
+            if self.train_model[j]:
+                agent_batch = minibatch[:, j]
+                dummy_data = np.stack(agent_batch[:, 5])
+                dummy_data_index = np.where(dummy_data)[0]
 
-            states = np.stack(agent_batch[:, 0])
-            actions = np.stack(agent_batch[:, 1])
-            rewards = np.stack(agent_batch[:, 2])
+                states = np.stack(agent_batch[:, 0])
+                actions = np.stack(agent_batch[:, 1])
+                rewards = np.stack(agent_batch[:, 2])
+                # next_states = np.stack(agent_batch[:, 3])
+                # terminated = np.stack(agent_batch[:, 4])
 
-            rewards = self.discount_rewards(rewards)
-            disc_rewards.append(rewards)
-            reward_mean = np.mean(rewards)
-            reward_std = np.std(rewards)
-            self.base_line.append(reward_mean)
-            for i in range(batch_size):
-                if reward_std != 0:
-                    rewards[i] = (rewards[i] - np.mean(self.base_line)) / reward_std
-                else:
-                    rewards[i] = (rewards[i] - np.mean(self.base_line))
-            self.networks[j].backward(
-                states, actions, rewards, dummy_data_index
-            )
+                rewards_ = self.discount_rewards(rewards)
+                disc_rewards.append(rewards_)
+                reward_mean = np.mean(rewards_)
+                reward_std = np.std(rewards_)
+                self.base_line[j].append(reward_mean)
+                for i in range(batch_size):
+                    if reward_std != 0:
+                        rewards_[i] = (rewards_[i] - np.mean(self.base_line[j]))/reward_std
+                    else:
+                        rewards_[i] = (rewards_[i] - reward_mean)
+
+                self.networks[j].backward(
+                    states, actions, rewards_, dummy_data_index
+                )
+                self.decay_exploration(j)
             self.mean_reward_memory.append(disc_rewards)
-            self.decay_exploration(j)
+
         self.memory.clear()
 
     def discount_rewards(self, reward):
         """ computes discounted reward """
-        discounted_r = np.zeros_like(reward)
+        discounted_r = [0]*len(reward)
         running_add = 0
-        for t in reversed(range(0, reward.size)):
-            running_add = running_add * self.gamma + reward[t]
+        for j in reversed(range(0, reward.size)):
+            running_add = running_add * self.gamma + reward[j]
 
-            discounted_r[t] = running_add
-        return discounted_r.astype(float)
+            discounted_r[j] = running_add
+        return np.array(discounted_r)
 
     def decay_exploration(self, j):
         "Lower the epsilon valvue to favour greedy actions"
-        if self.epsilon[j] > self.epsilon_min:
+        if self.epsilon[j] > self.epsilon_min[j]:
             self.epsilon[j] = self.epsilon[j] * self.epsilon_decay[j]
 
     def reset(self, init_state):
@@ -236,20 +246,16 @@ class Agent:
         self.action = None
         self.action_delay_cnt = self.action_delay
 
-    def save_model(self, mean_reward, max_mean_reward):
+    def save_model(self):
         "Save the model given a better model has been fitted"
-
-        if mean_reward >= max_mean_reward:
-            for i in range(self.n_tanks):
-                model_name = "Network_" + str(self.hl_size) + "HL" + str(i)
-                # + str(int(mean_reward))
-                path = (
-                    "Policy_Gradient/Tank_6/saved_networks/"
-                    + model_name
-                    + ".pt"
-                )
-                torch.save(self.networks[i].state_dict(), path)
-            print("ANN_Model was saved")
-            max_mean_reward = mean_reward
-        return max_mean_reward
+        for i in range(self.n_tanks):
+            model_name = "Network_" + str(self.hl_size[i]) + "HL" + str(i)
+            # + str(int(mean_reward))
+            path = (
+                "Policy_Gradient/Tank_6/saved_networks/training_networks/"
+                + model_name
+                + ".pt"
+            )
+            torch.save(self.networks[i].state_dict(), path)
+        print("ANN_Model was saved")
 

@@ -6,7 +6,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
-from rewards import get_reward_1 as get_reward
+from rewards import sum_rewards
+from rewards import get_reward_2 as get_reward
 
 plt.style.use("ggplot")
 
@@ -28,23 +29,26 @@ def main():
     h.append(h_)
     for t in range(MAIN_PARAMS["MAX_TIME"]):
         z_ = agent.act(state[-1])  # get action choice from state
+        # z_ = [0.2] * 6
         z.append(np.array(z_))
         terminated, next_state = environment.get_next_state(
             z[-1], state[-1], t
         )  # Calculate next state with action
-        reward = get_reward(
-            next_state, terminated
+        reward = sum_rewards(
+            next_state, terminated, get_reward
         )  # get reward from transition to next state
 
         # Store data
-        episode_reward.append(reward)
+        episode_reward.append(sum(reward))
 
         state.append(next_state)
         h_ = []
         d_ = []
         for i in range(agent.n_tanks):
             try:
-                d_.append(environment.tanks[i].dist.flow[t] + environment.q_inn[i])
+                d_.append(
+                    environment.tanks[i].dist.flow[t] + environment.q_inn[i]
+                )
             except AttributeError:
                 d_.append(environment.q_inn[i])
             h_.append(np.array(next_state[i][0]))
@@ -68,7 +72,8 @@ def main():
         "mediumseagreen",
         "darkcyan",
     ]
-    h = np.array(h)*10
+    print(f"reward: {np.sum(episode_reward)}")
+    h = np.array(h) * 10
     d = np.array(d)
     z = np.array(z)
     for i in range(2):
