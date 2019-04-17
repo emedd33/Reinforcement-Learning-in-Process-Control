@@ -175,10 +175,10 @@ class Agent:
         "Check if enough data has been collected"
         if not self.train_model:  # Model has been set to not collect data
             return False
-        if len(self.memory) < self.batch_size:
-            return False
-        if self.buffer < self.buffer_thres:
-            return False
+        # if len(self.memory) < self.batch_size:
+        #     return False
+        # if self.buffer < self.buffer_thres:
+        #     return False
         return True
 
     def PolicyGradientReplay(self, e):
@@ -210,7 +210,7 @@ class Agent:
                 if reward_std != 0:
                     rewards[i] = (rewards[i] - np.mean(self.base_line))/reward_std
                 else:
-                    rewards[i] = (rewards[i] - np.mean(self.base_line))
+                    rewards[i] = (rewards[i] - reward_mean)
 
             self.networks[j].backward(
                 states, actions, rewards, dummy_data_index
@@ -221,13 +221,13 @@ class Agent:
 
     def discount_rewards(self, reward):
         """ computes discounted reward """
-        discounted_r = np.zeros_like(reward)
+        discounted_r = [0]*len(reward)
         running_add = 0
-        for t in reversed(range(0, reward.size)):
-            running_add = running_add * self.gamma + reward[t]
+        for j in reversed(range(0, reward.size)):
+            running_add = running_add * self.gamma + reward[j]
 
-            discounted_r[t] = running_add
-        return discounted_r.astype(float)
+            discounted_r[j] = running_add
+        return np.array(discounted_r)
 
     def decay_exploration(self, j):
         "Lower the epsilon valvue to favour greedy actions"

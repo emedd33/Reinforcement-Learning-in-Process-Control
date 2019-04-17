@@ -60,6 +60,7 @@ def main():
 
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
     d = np.array(d)
+    np.savetxt("dist.csv", d, delimiter=",")
     h = np.array(h[:-1])
     z = np.array(z)
     h *= 10

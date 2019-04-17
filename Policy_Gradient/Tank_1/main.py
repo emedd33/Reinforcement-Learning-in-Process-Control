@@ -18,7 +18,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 def main():
     # ============= Initialize variables and objects ===========#
-    max_mean_reward = 100
+    max_mean_reward = 150
     environment = Environment(TANK_PARAMS, TANK_DIST, MAIN_PARAMS)
     agent = Agent(AGENT_PARAMS)
     mean_episode = MAIN_PARAMS["MEAN_EPISODE"]
@@ -65,7 +65,7 @@ def main():
                         episodes,
                         round(mean_reward, 2),
                         round(agent.epsilon[0], 2),
-                        round(np.mean(agent.base_line),2)
+                        round(np.mean(agent.base_line), 2),
                     )
                 )
                 if agent.save_model_bool:
