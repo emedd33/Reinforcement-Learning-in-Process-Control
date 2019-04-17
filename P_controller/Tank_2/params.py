@@ -9,7 +9,7 @@ MAIN_PARAMS = {
 # Agent parameters
 AGENT1_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
-    "VALVE_START_POSITION": 0.5,
+    "VALVE_START_POSITION": 0.2,
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.5,
     "KC": 0.16,
@@ -17,16 +17,16 @@ AGENT1_PARAMS = {
 
 AGENT2_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
-    "VALVE_START_POSITION": 0.5,
+    "VALVE_START_POSITION": 0.2,
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.5,
-    "KC": 0.10,
+    "KC": 0.16,
 }
 
 TANK1_PARAMS = {
     "height": 10,
     "init_level": 0.5,
-    "width": 3,
+    "width": 10,
     "pipe_radius": 0.5,
     "max_level": 0.9,
     "min_level": 0.1,

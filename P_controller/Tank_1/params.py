@@ -18,7 +18,7 @@ AGENT_PARAMS = {
 TANK_PARAMS = {
     "height": 10,
     "init_level": 0.5,
-    "width": 3,
+    "width": 10,
     "pipe_radius": 0.5,
     "max_level": 0.9,
     "min_level": 0.1,
@@ -26,7 +26,7 @@ TANK_PARAMS = {
 
 TANK_DIST = {
     "add": True,
-    "pre_def_dist": False,
+    "pre_def_dist": True,
     "nom_flow": 1,  # 2.7503
     "var_flow": 0.1,
     "max_flow": 1.5,

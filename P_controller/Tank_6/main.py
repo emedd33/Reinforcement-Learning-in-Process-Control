@@ -9,6 +9,9 @@ from params import (
 import matplotlib.pyplot as plt
 import numpy as np
 import keyboard
+from rewards import sum_rewards
+from rewards import get_reward_2 as get_reward
+
 
 plt.style.use("ggplot")
 
@@ -35,6 +38,7 @@ def main():
     d = [init_d]
     reward = []
     max_time = MAIN_PARAMS["Max_time"]
+    episode_reward=[]
     for t in range(max_time):
         new_z = []
         new_h = []
@@ -51,6 +55,10 @@ def main():
         h.append(new_h)
         # new_reward = environment.get_reward(h[-1])
         # reward.append(new_reward)
+        reward = sum_rewards(
+            [new_h], [False], get_reward
+        )  # get reward from transition to next state
+        episode_reward.append(reward)
         new_d = []
         for i, TANK_DIST in enumerate(TANK_DIST_LIST):
             if TANK_DIST["add"]:
@@ -65,6 +73,7 @@ def main():
 
         if keyboard.is_pressed("ctrl+x"):
             break
+    print(f"reward: {np.sum(episode_reward)}")
     colors = [
         "peru",
         "firebrick",
@@ -117,17 +126,17 @@ def main():
         ax2.set_ylim(0, 1.01)
 
         ax3.plot(
-            d[:-1, 0 + i * 3],
+            d[2:, 0 + i * 3],
             color=colors[0 + i * 3],
             label="Tank {}".format(str(1 + i * 3)),
         )
         ax3.plot(
-            d[:-1, 1 + i * 3],
+            d[2:, 1 + i * 3],
             color=colors[1 + i * 3],
             label="Tank {}".format(str(2 + i * 3)),
         )
         ax3.plot(
-            d[:-1, 2 + i * 3],
+            d[2:, 2 + i * 3],
             color=colors[2 + i * 3],
             label="Tank {}".format(str(3 + i * 3)),
         )
