@@ -4,10 +4,10 @@ from params import TANK_PARAMS
 ss_position = TANK_PARAMS[0]["init_level"]
 
 
-def sum_rewards(states, terminated, get_reward):
+def sum_rewards(states, terminated, get_reward, t):
     rewards = []
     for i in range(len(states)):
-        rewards.append(get_reward(states[i], terminated[i]))
+        rewards.append(get_reward(states[i], terminated[i], t))
     return rewards
 
 
@@ -21,7 +21,7 @@ def get_reward_1(state, terminated):
     return 0
 
 
-def get_reward_2(state, terminated):
+def get_reward_2(state, terminated, t):
     "Calculates the environments reward for the next state"
     if terminated:
         return -10
