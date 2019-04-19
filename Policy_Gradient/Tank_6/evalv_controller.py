@@ -133,6 +133,7 @@ def main():
         )
         ax3.set_ylabel("Disturbance")
         ax3.legend(loc="upper right")
+        ax3.set_ylim(0, 4)
 
         plt.tight_layout()
         plt.xlabel("Time")

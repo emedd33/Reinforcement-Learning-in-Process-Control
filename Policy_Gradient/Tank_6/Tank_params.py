@@ -9,7 +9,7 @@ TANK1_PARAMS = {
 
 TANK1_DIST = {
     "add": True,
-    "pre_def_dist": True,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
     "var_flow": 0.1,
     "max_flow": 2,
@@ -21,7 +21,7 @@ TANK1_DIST = {
 TANK2_PARAMS = {
     "height": 8,
     "init_level": 0.5,
-    "width": 3,
+    "width": 8,
     "pipe_radius": 0.5,
     "max_level": 0.75,
     "min_level": 0.25,

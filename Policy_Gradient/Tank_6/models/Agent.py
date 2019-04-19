@@ -10,9 +10,12 @@ class Agent:
         self.memory = deque(maxlen=AGENT_PARAMS["MEMORY_LENGTH"])
 
         self.load_model = AGENT_PARAMS["LOAD_MODEL"]
-        self.save_model_bool = AGENT_PARAMS["SAVE_MODEL"]
+        self.model_name = AGENT_PARAMS["LOAD_MODEL_NAME"]
+        self.save_model = AGENT_PARAMS["SAVE_MODEL"]
         self.train_model = AGENT_PARAMS["TRAIN_MODEL"]
-        self.model_name = AGENT_PARAMS["MODEL_NAME"]
+
+        self.load_model_path = AGENT_PARAMS['LOAD_MODEL_PATH']
+        self.save_model_path = AGENT_PARAMS['SAVE_MODEL_PATH']
 
         self.n_tanks = AGENT_PARAMS["N_TANKS"]
         self.state_size = AGENT_PARAMS["OBSERVATIONS"]
@@ -29,9 +32,10 @@ class Agent:
         self.epsilon_min = AGENT_PARAMS["EPSILON_MIN"]
         self.epsilon_decay = AGENT_PARAMS["EPSILON_DECAY"]
         self.gamma = AGENT_PARAMS["GAMMA"]
-        self.buffer = 0
-        self.buffer_thres = AGENT_PARAMS["BUFFER_THRESH"]
-        self.base_line = [deque(maxlen=AGENT_PARAMS["BASE_LINE_MEAN_REWARDS"])]*self.n_tanks
+
+        self.base_line = [
+            deque(maxlen=AGENT_PARAMS["BASE_LINE_LENGTH"])
+        ] * self.n_tanks
 
         self.learning_rate = AGENT_PARAMS["LEARNING_RATE"]
         self.hl_size = AGENT_PARAMS["HIDDEN_LAYER_SIZE"]
@@ -52,13 +56,11 @@ class Agent:
         for i in range(self.n_tanks):
             if self.load_model[i]:
                 network = Net(
-                    self.state_size,
-                    self.hl_size[i],
-                    self.learning_rate,
+                    self.state_size, self.hl_size[i], self.learning_rate
                 )
                 model_name = self.model_name[i] + str(i)
                 path = (
-                    "Policy_Gradient/Tank_6/saved_networks/training_networks/"
+                    self.load_model_path
                     + model_name
                     + ".pt"
                 )
@@ -67,9 +69,7 @@ class Agent:
                 networks.append(network)
             else:
                 network = Net(
-                    self.state_size,
-                    self.hl_size[i],
-                    self.learning_rate,
+                    self.state_size, self.hl_size[i], self.learning_rate
                 )
                 networks.append(network)
         return networks
@@ -95,11 +95,11 @@ class Agent:
                             states[-1][i],
                             terminated[i],
                             False,
-                            str(i)+"model"
+                            str(i) + "model",
                         ]
                     )
                 )
-                self.buffer += 1
+
             elif (
                 self.action_delay_cnt[i] >= self.action_delay[i]
                 and t >= self.action_delay[i]
@@ -114,7 +114,7 @@ class Agent:
                             states[-1][i],
                             terminated[i],
                             False,
-                            str(i)+"model"
+                            str(i) + "model",
                         ]
                     )
                 )
@@ -134,7 +134,7 @@ class Agent:
                             states[-1][i],
                             terminated[i],
                             False,
-                            str(i)+"model"
+                            str(i) + "model",
                         ]
                     )
                 )
@@ -144,7 +144,6 @@ class Agent:
             return
         else:
             self.memory.append(replay)
-        self.buffer += 1
 
     def act(self, state):
         """
@@ -177,16 +176,6 @@ class Agent:
         action = 1 if action > 1 else action
         return action
 
-    def is_ready(self):
-        "Check if enough data has been collected"
-        if not self.train_model:  # Model has been set to not collect data
-            return False
-        if len(self.memory) < self.batch_size:
-            return False
-        if self.buffer < self.buffer_thres:
-            return False
-        return True
-
     def PolicyGradientReplay(self, e):
         """"
         Train the model to improve the predicted value of consecutive
@@ -214,9 +203,11 @@ class Agent:
                 self.base_line[j].append(reward_mean)
                 for i in range(batch_size):
                     if reward_std != 0:
-                        rewards_[i] = (rewards_[i] - np.mean(self.base_line[j]))/reward_std
+                        rewards_[i] = (
+                            rewards_[i] - np.mean(self.base_line[j])
+                        ) / reward_std
                     else:
-                        rewards_[i] = (rewards_[i] - reward_mean)
+                        rewards_[i] = rewards_[i] - reward_mean
 
                 self.networks[j].backward(
                     states, actions, rewards_, dummy_data_index
@@ -228,7 +219,7 @@ class Agent:
 
     def discount_rewards(self, reward):
         """ computes discounted reward """
-        discounted_r = [0]*len(reward)
+        discounted_r = [0] * len(reward)
         running_add = 0
         for j in reversed(range(0, reward.size)):
             running_add = running_add * self.gamma + reward[j]
@@ -246,16 +237,16 @@ class Agent:
         self.action = None
         self.action_delay_cnt = self.action_delay
 
-    def save_model(self):
+    def save_trained_model(self):
         "Save the model given a better model has been fitted"
         for i in range(self.n_tanks):
-            model_name = "Network_" + str(self.hl_size[i]) + "HL" + str(i)
-            # + str(int(mean_reward))
-            path = (
-                "Policy_Gradient/Tank_6/saved_networks/training_networks/"
-                + model_name
-                + ".pt"
-            )
-            torch.save(self.networks[i].state_dict(), path)
+            if self.save_model[i]:
+                model_name = "Network_" + str(self.hl_size[i]) + "HL" + str(i)
+                # + str(int(mean_reward))
+                path = (
+                    self.save_model_path
+                    + model_name
+                    + ".pt"
+                )
+                torch.save(self.networks[i].state_dict(), path)
         print("ANN_Model was saved")
-

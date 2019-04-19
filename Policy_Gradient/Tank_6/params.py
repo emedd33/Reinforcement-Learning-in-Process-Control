@@ -16,11 +16,12 @@ from Tank_params import (
 )
 
 MAIN_PARAMS = {
-    "EPISODES": 500000,
-    "MEAN_EPISODE": 10,
+    "EPISODES": 3000,
+    "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
     "RENDER": False,
     "LIVE_REWARD_PLOT": False,
+    "MAX_MEAN_REWARD": 600,  # minimum reward before saving model
 }
 
 AGENT_PARAMS = {
@@ -30,21 +31,21 @@ AGENT_PARAMS = {
     "ACTION_DELAY": [5, 5, 5, 5, 5, 5],
     "INIT_ACTION": 0.3,
     "VALVEPOS_UNCERTAINTY": 0,
-    "EPSILON_DECAY": [0.9995, 0.9995, 0.9995, 0.9995, 0.9995, 0.9995],
-    "LEARNING_RATE": 0.0005,
+    "EPSILON_DECAY": [0, 0, 0, 0, 0, 0],
+    "LEARNING_RATE": 0.001,
     "HIDDEN_LAYER_SIZE": [[5, 5], [5, 5], [5, 5], [5, 5], [5, 5], [5, 5]],
     "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
-    "EPSILON": [0, 0, 0, 0, 0, 0],
-    "EPSILON_MIN": [0, 0, 0, 0, 0, 0],
-    "BASE_LINE_MEAN_REWARDS": 100,
-    "Z_VARIANCE": [0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+    "EPSILON": [0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
+    "EPSILON_MIN": [0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
+    "BASE_LINE_LENGTH": 1,
+    "Z_VARIANCE": [0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
     "SAVE_MODEL": [True, True, True, True, True, True],
     "LOAD_MODEL": [False, False, False, False, False, False],
     "TRAIN_MODEL": [True, True, True, True, True, True],
-    "MODEL_NAME": [
+    "LOAD_MODEL_NAME": [
         "Network_[5, 5]HL",
         "Network_[5, 5]HL",
         "Network_[5, 5]HL",
@@ -52,8 +53,9 @@ AGENT_PARAMS = {
         "Network_[5, 5]HL",
         "Network_[5, 5]HL",
     ],
+    "LOAD_MODEL_PATH": "Policy_Gradient/Tank_6/saved_networks/training_networks/",
+    "SAVE_MODEL_PATH": "Policy_Gradient/Tank_6/saved_networks/training_networks/",
 }
-AGENT_PARAMS["BUFFER_THRESH"] = AGENT_PARAMS["BATCH_SIZE"] * 1
 
 # Model parameters Tank 1
 

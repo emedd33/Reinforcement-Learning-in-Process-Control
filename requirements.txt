@@ -3,7 +3,6 @@ attrs==18.2.0
 black==18.9b0
 Click==7.0
 cycler==0.10.0
-drawnow==0.72.0
 entrypoints==0.3
 flake8==3.7.7
 keyboard==0.13.2
