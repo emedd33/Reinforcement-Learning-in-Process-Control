@@ -20,7 +20,6 @@ MAIN_PARAMS = {
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
     "RENDER": False,
-    "LIVE_REWARD_PLOT": False,
     "MAX_MEAN_REWARD": 600,  # minimum reward before saving model
 }
 

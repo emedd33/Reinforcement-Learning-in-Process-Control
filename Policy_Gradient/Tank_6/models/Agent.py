@@ -27,7 +27,6 @@ class Agent:
 
         self.epsilon = AGENT_PARAMS["EPSILON"]
 
-        # self.action_choices = self._build_action_choices(self.action_size)
         self.valvpos_uncertainty = AGENT_PARAMS["VALVEPOS_UNCERTAINTY"]
         self.epsilon_min = AGENT_PARAMS["EPSILON_MIN"]
         self.epsilon_decay = AGENT_PARAMS["EPSILON_DECAY"]
@@ -193,8 +192,6 @@ class Agent:
                 states = np.stack(agent_batch[:, 0])
                 actions = np.stack(agent_batch[:, 1])
                 rewards = np.stack(agent_batch[:, 2])
-                # next_states = np.stack(agent_batch[:, 3])
-                # terminated = np.stack(agent_batch[:, 4])
 
                 rewards_ = self.discount_rewards(rewards)
                 disc_rewards.append(rewards_)
@@ -242,7 +239,7 @@ class Agent:
         for i in range(self.n_tanks):
             if self.save_model[i]:
                 model_name = "Network_" + str(self.hl_size[i]) + "HL" + str(i)
-                # + str(int(mean_reward))
+
                 path = (
                     self.save_model_path
                     + model_name
