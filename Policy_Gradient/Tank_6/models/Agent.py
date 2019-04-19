@@ -55,7 +55,7 @@ class Agent:
         for i in range(self.n_tanks):
             if self.load_model[i]:
                 network = Net(
-                    self.state_size, self.hl_size[i], self.learning_rate
+                    self.state_size, self.hl_size[i], self.learning_rate[i]
                 )
                 model_name = self.model_name[i] + str(i)
                 path = (
@@ -68,7 +68,7 @@ class Agent:
                 networks.append(network)
             else:
                 network = Net(
-                    self.state_size, self.hl_size[i], self.learning_rate
+                    self.state_size, self.hl_size[i], self.learning_rate[i]
                 )
                 networks.append(network)
         return networks

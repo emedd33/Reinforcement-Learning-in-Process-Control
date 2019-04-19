@@ -31,7 +31,7 @@ AGENT_PARAMS = {
     "INIT_ACTION": 0.3,
     "VALVEPOS_UNCERTAINTY": 0,
     "EPSILON_DECAY": [0, 0, 0, 0, 0, 0],
-    "LEARNING_RATE": 0.001,
+    "LEARNING_RATE": [0.001, 0.001, 0.001, 0.001, 0.001, 0.001],
     "HIDDEN_LAYER_SIZE": [[5, 5], [5, 5], [5, 5], [5, 5], [5, 5], [5, 5]],
     "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,

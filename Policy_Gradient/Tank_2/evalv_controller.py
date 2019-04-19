@@ -79,6 +79,7 @@ def main():
 
     ax3.plot(d[:, 0], color="peru", label="Tank 1")
     ax3.plot(d[:, 1], color="firebrick", label="Tank 2")
+    ax3.set_ylim(0, 4)
     ax3.set_ylabel("Disturbance")
     ax3.legend(loc="upper right")
 
