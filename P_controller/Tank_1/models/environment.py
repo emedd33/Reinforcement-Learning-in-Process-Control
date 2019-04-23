@@ -1,8 +1,6 @@
 from models.tank_model.tank import Tank
 from visualize.window import Window
 import matplotlib.pyplot as plt
-from drawnow import drawnow
-
 
 class Environment:
     "Parameters are set in the params.py file"
@@ -66,12 +64,3 @@ class Environment:
             label="Exploration rate: {} %".format(self.epsilon * 100),
         )
         plt.legend()
-
-    def plot(self, all_rewards, epsilon):
-        "Live plot of the reward"
-        self.all_rewards = all_rewards
-        self.epsilon = round(epsilon, 4)
-        try:
-            drawnow(self.plot_rewards)
-        except KeyboardInterrupt:
-            print("Break")

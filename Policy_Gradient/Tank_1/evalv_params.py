@@ -7,6 +7,6 @@ AGENT_PARAMS["Z_VARIANCE"] = [0.01]
 AGENT_PARAMS["SAVE_MODEL"] = [False]
 AGENT_PARAMS["LOAD_MODEL"] = [True]
 AGENT_PARAMS["TRAIN_MODEL"] = [False]
-AGENT_PARAMS["MODEL_NAME"] = ["Network_[5, 5]HL0"]
+AGENT_PARAMS["LOAD_MODEL_NAME"] = ["Network_[5, 5]HL0"]
 
 TANK_DIST[0]["pre_def_dist"] = True

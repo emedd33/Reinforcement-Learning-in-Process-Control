@@ -1,10 +1,9 @@
 from models.environment import Environment
 from models.p_controller import P_controller
 from params import MAIN_PARAMS, TANK_DIST, TANK_PARAMS, AGENT_PARAMS
-from rewards import get_reward_2 as get_reward
+from rewards import get_reward_3 as get_reward
 import matplotlib.pyplot as plt
 import numpy as np
-import keyboard
 
 plt.style.use("ggplot")
 
@@ -22,7 +21,7 @@ def main(kc=AGENT_PARAMS["KC"]):
         new_z = controller.get_z(h[-1])
         z.append(new_z)
         new_h = environment.get_next_state(z[-1], t)
-        new_reward = get_reward(h[-1] / 10, False)
+        new_reward = get_reward([h[-1] / 10], False)
         reward.append(new_reward)
 
         if TANK_DIST["add"]:
@@ -33,8 +32,7 @@ def main(kc=AGENT_PARAMS["KC"]):
         if environment.show_rendering:
             environment.render(z[-1])
 
-        if keyboard.is_pressed("ctrl+x"):
-            break
+
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
 
     ax1.plot(h[:-1], color="peru", label="Tank 1")

@@ -24,7 +24,7 @@ class Window:
             if event.type == pygame.QUIT:
                 return False
         self.screen.blit(self.background_image, [0, 0])
-        self.tank.draw(self.screen, input_z)
+        self.tank.draw(self.screen, input_z[0])
 
         pygame.display.flip()
         return True
