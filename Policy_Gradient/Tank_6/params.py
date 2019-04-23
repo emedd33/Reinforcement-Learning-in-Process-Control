@@ -52,7 +52,7 @@ AGENT_PARAMS = {
         "Network_[5, 5]HL",
         "Network_[5, 5]HL",
     ],
-    "LOAD_MODEL_PATH": "Policy_Gradient/Tank_6/saved_networks/training_networks/",
+    "LOAD_MODEL_PATH": "Policy_Gradient/Tank_6/saved_networks/usable_networks/2/",
     "SAVE_MODEL_PATH": "Policy_Gradient/Tank_6/saved_networks/training_networks/",
 }
 
