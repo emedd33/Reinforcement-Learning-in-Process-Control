@@ -35,7 +35,9 @@ def main():
         terminated, next_state = environment.get_next_state(
             z[-1], state[-1], t
         )  # Calculate next state with action
-        reward = sum_rewards(next_state, terminated, get_reward)  # get reward from transition to next state
+        reward = sum_rewards(
+            next_state, terminated, get_reward
+        )  # get reward from transition to next state
         # Store data
         episode_reward.append(reward)
 

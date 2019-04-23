@@ -5,8 +5,8 @@ from params import TANK_PARAMS
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-import keyboard
-from rewards import get_reward_1 as get_reward
+from rewards import sum_rewards
+from rewards import get_reward_2 as get_reward
 
 plt.style.use("ggplot")
 
@@ -35,10 +35,9 @@ def main():
         terminated, next_state = environment.get_next_state(
             z[-1], state[-1], t
         )  # Calculate next state with action
-        reward = get_reward(
-            next_state, terminated
+        reward = sum_rewards(
+            next_state, terminated, get_reward
         )  # get reward from transition to next state
-
         # Store data
         episode_reward.append(reward)
 
@@ -46,11 +45,10 @@ def main():
         h_ = []
         d_ = []
         for i in range(agent.n_tanks):
-            if environment.tanks[i].add_dist:
-                d_.append(environment.tanks[i].dist.flow[t] + environment.q_inn[i])
-            else:
-                d_.append(environment.q_inn[i])
-            h_.append(np.array(next_state[i][0]) * environment.tanks[i].h)
+            d_.append(
+                environment.tanks[i].dist.flow[t - 1] + environment.q_inn[i]
+            )
+            h_.append(np.array(next_state[i][0]))
         d.append(d_)
         h.append(h_)
         if environment.show_rendering:
@@ -58,12 +56,8 @@ def main():
         if True in terminated:
             break
 
-        if keyboard.is_pressed("ctrl+x"):
-            break
-
         if not environment.running:
             break
-
     colors = [
         "peru",
         "firebrick",
@@ -72,7 +66,8 @@ def main():
         "mediumseagreen",
         "darkcyan",
     ]
-    h = np.array(h)
+    print(f"reward: {np.sum(episode_reward)}")
+    h = np.array(h) * 10
     d = np.array(d)
     z = np.array(z)
     for i in range(2):
@@ -132,6 +127,7 @@ def main():
         )
         ax3.set_ylabel("Disturbance")
         ax3.legend(loc="upper right")
+        ax3.set_ylim(0, 4)
 
         plt.tight_layout()
         plt.xlabel("Time")
