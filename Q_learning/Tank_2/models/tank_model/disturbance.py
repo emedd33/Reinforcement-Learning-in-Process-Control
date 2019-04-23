@@ -54,4 +54,5 @@ class InflowDist:
 
     def reset(self):
         "Sets dstubance flow to nominal value"
-        self.flow = [self.nom_flow]
+        if not self.pre_def_dist:
+            self.flow = [self.nom_flow]

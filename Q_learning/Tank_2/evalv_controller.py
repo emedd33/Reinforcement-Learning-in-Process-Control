@@ -5,8 +5,8 @@ from params import TANK_PARAMS
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-import keyboard
-from rewards import get_reward_1 as get_reward
+from rewards import get_reward_3 as get_reward
+from rewards import sum_rewards
 
 plt.style.use("ggplot")
 
@@ -35,10 +35,7 @@ def main():
         terminated, next_state = environment.get_next_state(
             z[-1], state[-1], t
         )  # Calculate next state with action
-        reward = get_reward(
-            next_state, terminated
-        )  # get reward from transition to next state
-
+        reward = sum_rewards(next_state, terminated, get_reward)  # get reward from transition to next state
         # Store data
         episode_reward.append(reward)
 
@@ -46,16 +43,15 @@ def main():
         h_ = []
         d_ = []
         for i in range(agent.n_tanks):
-            d_.append(environment.tanks[i].dist.flow[t] + environment.q_inn[i])
+            d_.append(
+                environment.tanks[i].dist.flow[t - 1] + environment.q_inn[i]
+            )
             h_.append(np.array(next_state[i][0]))
         d.append(d_)
         h.append(h_)
         if environment.show_rendering:
             environment.render(z[-1])
         if True in terminated:
-            break
-
-        if keyboard.is_pressed("ctrl+x"):
             break
 
         if not environment.running:
@@ -82,6 +78,7 @@ def main():
 
     ax3.plot(d[:, 0], color="peru", label="Tank 1")
     ax3.plot(d[:, 1], color="firebrick", label="Tank 2")
+    ax3.set_ylim(0, 4)
     ax3.set_ylabel("Disturbance")
     ax3.legend(loc="upper right")
 
