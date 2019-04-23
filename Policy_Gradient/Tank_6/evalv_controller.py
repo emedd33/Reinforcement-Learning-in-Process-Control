@@ -58,7 +58,6 @@ def main():
         if True in terminated:
             break
 
-
         if not environment.running:
             break
     colors = [
