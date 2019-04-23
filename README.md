@@ -12,6 +12,7 @@ Run the following to install requirements for the project.
 ```shell
 pip install -r requirements.txt
 ```
+requirements.txt does not include pytorch version. Go to (https://pytorch.org/get-started/locally/) and install your correct pytorch version
 ## The different projects
 ### Off policy value method (DQN):
 Off policy method of Deep Q networks which trains a neural network to approximate the value of beeing in different states based on series of **1 Tank**, **2 Tanks** or **6 Tanks**. All Q-learning methods uses a batch learning method. For 2_Tank and 6_Tank, multiple agents are implemented where each agent have included the the action of the previous tanks agent as state input.
