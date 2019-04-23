@@ -3,7 +3,7 @@ MAIN_PARAMS = {
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
     "RENDER": False,
-    "MAX_MEAN_REWARD": 399.9,  # minimum reward before saving model
+    "MAX_MEAN_REWARD": 200,  # minimum reward before saving model
 }
 
 AGENT_PARAMS = {
