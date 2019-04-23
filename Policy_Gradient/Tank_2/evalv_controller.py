@@ -5,8 +5,7 @@ from params import TANK_PARAMS
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-import keyboard
-from rewards import get_reward_1 as get_reward
+from rewards import get_reward_2 as get_reward
 
 plt.style.use("ggplot")
 
@@ -50,9 +49,6 @@ def main():
         if environment.show_rendering:
             environment.render(z[-1])
         if True in terminated:
-            break
-
-        if keyboard.is_pressed("ctrl+x"):
             break
 
         if not environment.running:

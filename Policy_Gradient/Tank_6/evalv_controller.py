@@ -5,7 +5,6 @@ from params import TANK_PARAMS
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-import keyboard
 from rewards import sum_rewards
 from rewards import get_reward_2 as get_reward
 
@@ -59,8 +58,6 @@ def main():
         if True in terminated:
             break
 
-        if keyboard.is_pressed("ctrl+x"):
-            break
 
         if not environment.running:
             break

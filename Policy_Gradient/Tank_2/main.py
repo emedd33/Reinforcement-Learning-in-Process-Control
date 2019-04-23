@@ -62,7 +62,7 @@ def main():
                     mean_r.append(np.mean(mean_reward[:, i]))
                 all_mean_rewards.append(mean_r)
                 print(
-                    f"Mean {mean_episode} of {e}/{episodes} episodes ### timestep {t_mean} ### tot reward: {mean_r[-1]}  ### r1: {mean_r[0]} r2: {mean_r[1]}"
+                    f"Mean {mean_episode} of {e}/{episodes} episodes ### timestep {t_mean+1} ### tot reward: {mean_r[-1]}  ### r1: {mean_r[0]} r2: {mean_r[1]}"
                 )
                 t_mean = []
                 if mean_r[-1] >= max_mean_reward:
@@ -80,7 +80,7 @@ def main():
     print("Max rewards for all episodes: {}".format(np.max(all_rewards)))
 
     all_mean_rewards = np.array(all_mean_rewards)
-    labels = ["Tank 1", "Tank 2", "Tank 6"]
+    labels = ["Tank 1", "Tank 2"]
 
     for i in range(environment.n_tanks):
         plt.plot(all_mean_rewards[:, i], label=labels[i])

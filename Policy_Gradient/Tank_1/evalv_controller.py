@@ -5,8 +5,8 @@ from params import TANK_PARAMS
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-import keyboard
-from rewards import get_reward_1 as get_reward
+from rewards import get_reward_2 as get_reward
+from rewards import sum_rewards
 
 plt.style.use("ggplot")
 
@@ -32,10 +32,7 @@ def main():
         terminated, next_state = environment.get_next_state(
             z[-1], state[-1], t
         )  # Calculate next state with action
-        reward = get_reward(
-            next_state, terminated
-        )  # get reward from transition to next state
-
+        reward = sum_rewards(next_state, terminated, get_reward)  # get reward from transition to next state
         # Store data
         episode_reward.append(reward)
 
@@ -52,30 +49,28 @@ def main():
         if True in terminated:
             break
 
-        if keyboard.is_pressed("ctrl+x"):
-            break
-
         if not environment.running:
             break
+    print(np.sum(episode_reward))
 
     _, (ax1, ax2, ax3) = plt.subplots(3, sharex=False, sharey=False)
     d = np.array(d)
-    np.savetxt("dist.csv", d, delimiter=",")
     h = np.array(h[:-1])
     z = np.array(z)
     h *= 10
 
-    ax1.plot(h[:, 0], color="peru", label="Tank 1")
+    ax1.plot(h[:-1, 0], color="peru", label="Tank 1")
     ax1.set_ylabel("Level")
     ax1.legend(loc="upper right")
     ax1.set_ylim(0, 10)
 
-    ax2.plot(z[:, 0], color="peru", label="Tank 1")
+    ax2.plot(z[1:, 0], color="peru", label="Tank 1")
     ax2.legend(loc="upper right")
     ax2.set_ylabel("Valve")
-    ax2.set_ylim(-0.01, 1.01)
+    ax2.set_ylim(0, 1.01)
 
     ax3.plot(d[:, 0], color="peru", label="Tank 1")
+    ax3.set_ylim(0, 4)
     ax3.set_ylabel("Disturbance")
     ax3.legend(loc="upper right")
 
@@ -87,5 +82,5 @@ def main():
 
 if __name__ == "__main__":
     print("#### SIMULATION EVALUATION STARTED ####")
-    print("  Max time in each episode: {}".format(MAIN_PARAMS["MAX_TIME"]))
+    print("Max time in each episode: {}".format(MAIN_PARAMS["MAX_TIME"]))
     main()
