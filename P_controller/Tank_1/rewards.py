@@ -1,10 +1,7 @@
-import numpy as np
-
-
 def sum_rewards(states, terminated, get_reward):
     rewards = []
     for i in range(len(states)):
-        rewards.append(get_reward(states[i], terminated[i]))
+        rewards.append(get_reward([states[i] / 10], terminated[0]))
     return rewards
 
 
@@ -30,18 +27,18 @@ def get_reward_2(state, terminated):
 def get_reward_3(state, terminated):
     "Calculates the environments reward for the next state"
     if terminated:
-        return -10
-    if state[0] > 0.45 and state[0] < 0.55:
+        return -1
+    if state[0] > 0.4 and state[0] < 0.6:
         return 1
     return 0
 
 
-def get_reward_ABS(state, terminated):
-    "Calculates the environments reward for the next state"
+# def get_reward_ABS(state, terminated):
+#     "Calculates the environments reward for the next state"
 
-    if terminated:
-        return -10
-    return np.absolute(0.5 - state[0])
+#     if terminated:
+#         return -10
+#     return np.absolute(ss_position - state[0])
 
 
 def get_reward_SSE(state, terminated):
@@ -49,4 +46,4 @@ def get_reward_SSE(state, terminated):
 
     if terminated:
         return -10
-    return (0.5 - state[0]) ** 2
+    return -(0.5 - state[0]) ** 2

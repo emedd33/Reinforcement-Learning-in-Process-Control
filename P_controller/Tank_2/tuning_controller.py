@@ -2,6 +2,7 @@ from main import main
 import matplotlib.pyplot as plt
 from params import TANK1_DIST, AGENT_PARAMS_LIST
 import numpy as np
+import sys
 
 TANK1_DIST["pre_def_dist"] = False
 
@@ -32,9 +33,16 @@ def tune_controllers(tank_number=0):
             max_reward = rewards[-1]
             max_reward_kc = kc_app[-1]
         kc += kc_inc
-        print(f"Current kc iteration: {round(kc, 2)}")
-    print(f"Simulation Done for tank {tank_number+1}")
-    print(max_reward, " with kc = ", max_reward_kc)
+        sys.stdout.write(
+            "\r"
+            + "Tank "
+            + str(tank_number + 1)
+            + ": Current kc iteration: "
+            + str(round(kc, 2))
+        )
+        sys.stdout.flush()
+    print(f"\nSimulation Done for tank {tank_number+1}")
+    print("Max reward: ", max_reward, " with kc = ", round(max_reward_kc, 2))
     all_max_reward_values.append(rewards)
     all_max_rewards.append([max_reward_kc, max_reward])
     all_kc_app.append(kc_app)
@@ -48,6 +56,7 @@ for i in range(2):
 _, (ax1, ax2) = plt.subplots(2, sharex=False, sharey=False)
 ax1.plot(all_kc_app[0], all_max_reward_values[0], color="peru", label="Tank 1")
 ax1.set_ylabel("SSE")
+ax1.set_xlabel("KC")
 ax1.set_ylim(-1, 0)
 ax1.legend(loc="upper right")
 
@@ -57,7 +66,10 @@ ax2.plot(
 ax2.legend(loc="upper right")
 ax2.set_ylabel("SSE")
 ax2.set_ylim(-1, 0)
+ax2.set_xlabel("KC")
 
 plt.tight_layout()
-ax2.set_xlabel("KC")
+
 plt.show()
+print(f"Best KC for Tank 1 was {round(all_max_rewards[0][0], 2)}")
+print(f"Best KC for Tank 2 was {round(all_max_rewards[1][0], 2)}")

@@ -22,8 +22,8 @@ class Tank:
         self.r = radius
         self.A = radius ** 2 * np.pi
 
-        self.level = height * init_level
-        self.init_l = self.level
+        self.init_l = height * init_level
+        self.level = self.init_l
 
         self.max = max_level * height
         self.min = min_level * height
@@ -47,19 +47,24 @@ class Tank:
     def change_level(self, dldt):
         self.level += dldt * self.h
 
-    def get_dhdt(self, action, t):
+    def get_dhdt(self, action, t, prev_q_out):
         "Calculates the change in water level"
         if self.add_dist:
-            q_inn = self.dist.get_flow(t)
+            q_inn = self.dist.get_flow(t) + prev_q_out
         else:
-            q_inn = 0
+            q_inn = prev_q_out
 
         f, A_pipe, g, l, delta_p, rho, r = self.get_params(action)
         q_out = f * A_pipe * np.sqrt(1 * g * l + delta_p / rho)
 
         term1 = q_inn / (np.pi * r ** 2)
         term2 = (q_out) / (np.pi * r ** 2)
-        return term1 - term2  # Eq: 1
+        new_level = term1 - term2  # Eq: 1
+        return new_level, q_out
+
+    def reset(self):
+        "reset tank to initial liquid level"
+        self.level = self.init_l
 
     def get_valve(self, action):
         "linear valve equation"
