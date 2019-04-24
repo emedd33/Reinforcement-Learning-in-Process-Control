@@ -7,7 +7,6 @@ AGENT_PARAMS["EPSILON"] = [0]
 AGENT_PARAMS["SAVE_MODEL"] = [False]
 AGENT_PARAMS["LOAD_MODEL"] = [True]
 AGENT_PARAMS["TRAIN_MODEL"] = [False]
-AGENT_PARAMS["LOAD_MODEL_NAME"] = ["Network_[1]HL0"]
 
 
 TANK_DIST[0]["pre_def_dist"] = True

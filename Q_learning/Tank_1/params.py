@@ -3,7 +3,7 @@ MAIN_PARAMS = {
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
     "RENDER": False,
-    "MAX_MEAN_REWARD": 20,  # minimum reward before saving model
+    "MAX_MEAN_REWARD": 10,  # minimum reward before saving model
 }
 
 AGENT_PARAMS = {
@@ -17,7 +17,7 @@ AGENT_PARAMS = {
     "EPSILON_MIN": [0.05],
     "EPSILON_DECAY": [0.995],
     "LEARNING_RATE": [0.0001],
-    "HIDDEN_LAYER_SIZE": [[1]],
+    "HIDDEN_LAYER_SIZE": [[5, 5]],
     "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
