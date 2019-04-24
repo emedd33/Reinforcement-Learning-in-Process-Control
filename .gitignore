@@ -5,7 +5,7 @@
 *pygame_testing_env/
 *visualize/figures/
 *saved_networks/
-!saved_networks/training_networks/.gitignore
+
 *saved_models/
 *.idea/
 *venv*
@@ -74,4 +74,5 @@ docs/_build/
 target/
 
 # Other
+.gitignore
 .vscode/
