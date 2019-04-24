@@ -26,7 +26,7 @@ AGENT_PARAMS = {
     "LOAD_MODEL": [False],
     "TRAIN_MODEL": [True],
     "LOAD_MODEL_NAME": ["Network_[5, 5]HL0"],
-    "LOAD_MODEL_PATH": "Q_learning/Tank_1/saved_networks/training_networks/",
+    "LOAD_MODEL_PATH": "Q_learning/Tank_1/saved_networks/usable_networks/",
     "SAVE_MODEL_PATH": "Q_learning/Tank_1/saved_networks/training_networks/",
 }
 

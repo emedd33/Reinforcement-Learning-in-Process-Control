@@ -59,14 +59,23 @@ class Agent:
         self, input_size, hidden_size, action_size, learning_rate, i
     ):
         if self.load_model[i]:
-            Q_net = Net(input_size, hidden_size[i], action_size, learning_rate[i])
-
             path = (
                 self.load_model_path
                 + self.model_name[i]
                 + ".pt"
             )
-            Q_net.load_state_dict(torch.load(path))
+            pytorch_path = torch.load(path)
+            n_hl = (len(pytorch_path)-3)
+            if n_hl == 0:  # zero hidden later
+                h_size = []
+            elif n_hl == 1:  # 1 hidden layer
+                h_size = [len(pytorch_path['input.weight'])]
+            elif n_hl == 3:  # 2 hidden layers
+                h_size = [len(pytorch_path['input.weight']), len(pytorch_path['hl1.bias'])]
+            else:
+                raise ValueError
+            Q_net = Net(input_size, h_size, action_size, learning_rate[i])
+            Q_net.load_state_dict(pytorch_path)
             Q_net.eval()
             return Q_net, Q_net
         "Creates or loads a ANN valve function approximator"

@@ -50,7 +50,7 @@ AGENT_PARAMS = {
         "Network_[5, 5]HL4",
         "Network_[5, 5]HL5",
     ],
-    "LOAD_MODEL_PATH": "Q_learning/Tank_6/saved_networks/training_networks/",
+    "LOAD_MODEL_PATH": "Q_learning/Tank_6/saved_networks/usable_networks/",
     "SAVE_MODEL_PATH": "Q_learning/Tank_6/saved_networks/training_networks/",
 }
 

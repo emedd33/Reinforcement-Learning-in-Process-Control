@@ -65,12 +65,12 @@ class Agent:
                 + ".pt"
             )
             pytorch_path = torch.load(path)
-            n_hl = len(pytorch_path)-3
-            if n_hl == 0:
+            n_hl = (len(pytorch_path)-3)
+            if n_hl == 0:  # zero hidden later
                 h_size = []
-            elif n_hl == 1:
+            elif n_hl == 1:  # 1 hidden layer
                 h_size = [len(pytorch_path['input.weight'])]
-            elif n_hl == 2:
+            elif n_hl == 3:  # 2 hidden layers
                 h_size = [len(pytorch_path['input.weight']), len(pytorch_path['hl1.bias'])]
             else:
                 raise ValueError
