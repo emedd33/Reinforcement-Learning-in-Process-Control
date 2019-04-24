@@ -4,7 +4,7 @@ import numpy as np
 def sum_rewards(states, terminated, get_reward):
     rewards = []
     for i in range(len(states)):
-        rewards.append(get_reward(states[i], terminated[i]))
+        rewards.append(get_reward([states[i]/10], terminated[0]))
     return rewards
 
 

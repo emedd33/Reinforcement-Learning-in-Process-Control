@@ -7,10 +7,11 @@ kc_app = []
 reward = []
 kc_inc = 0.001
 min_reward = 99
+tank_n = 0
 min_reward_kc = 0
 while kc < 0.4:
     kc_app.append(kc)
-    kc_reward = main()
+    kc_reward = main(kc, tank_n)
     reward.append(kc_reward / MAIN_PARAMS["Max_time"])
     if reward[-1] < min_reward:
         min_reward = reward[-1]

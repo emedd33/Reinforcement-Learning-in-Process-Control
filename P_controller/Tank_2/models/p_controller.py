@@ -1,9 +1,8 @@
 class P_controller:
-    def __init__(self, environment, AGENT_PARAMS, i, kc):
-        self.z_nom = AGENT_PARAMS["VALVE_START_POSITION"]
-        # self.A = environment.model.r ** 2 * np.pi
-        self.h_set = AGENT_PARAMS["SS_POSITION"] * environment.model[i].h
-        self.Kc = AGENT_PARAMS["KC"]  # (-2*self.A)/self.z_nom
+    def __init__(self, environment, AGENT_PARAMS, i):
+        self.z_nom = AGENT_PARAMS["INIT_POSITION"]
+        self.h_set = AGENT_PARAMS["SS_POSITION"] * environment.tanks[i].h
+        self.Kc = AGENT_PARAMS["KC"]
         self.action_deley = AGENT_PARAMS["ACTION_DELAY"]
         self.action = AGENT_PARAMS["INIT_POSITION"]
         self.action_buffer = 99999

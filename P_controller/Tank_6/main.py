@@ -8,7 +8,6 @@ from params import (
 )
 import matplotlib.pyplot as plt
 import numpy as np
-import keyboard
 from rewards import sum_rewards
 from rewards import get_reward_2 as get_reward
 
@@ -16,7 +15,7 @@ from rewards import get_reward_2 as get_reward
 plt.style.use("ggplot")
 
 
-def main():
+def main(kc=AGENT_PARAMS_LIST[0]["KC"], tank_n=0):
     environment = Environment(TANK_PARAMS_LIST, TANK_DIST_LIST, MAIN_PARAMS)
     controllers = []
     for i, AGENT_PARAMS in enumerate(AGENT_PARAMS_LIST):
@@ -37,8 +36,8 @@ def main():
     z = [init_z]
     d = [init_d]
     reward = []
-    max_time = MAIN_PARAMS["Max_time"]
-    episode_reward=[]
+    max_time = MAIN_PARAMS["MAX_TIME"]
+    episode_reward = []
     for t in range(max_time):
         new_z = []
         new_h = []
@@ -53,10 +52,9 @@ def main():
             q_out.append(q_out_)
         z.append(new_z)
         h.append(new_h)
-        # new_reward = environment.get_reward(h[-1])
-        # reward.append(new_reward)
+
         reward = sum_rewards(
-            [new_h], [False], get_reward
+            new_h, [False], get_reward
         )  # get reward from transition to next state
         episode_reward.append(reward)
         new_d = []
@@ -70,9 +68,6 @@ def main():
 
         if environment.show_rendering:
             environment.render(z[-1])
-
-        if keyboard.is_pressed("ctrl+x"):
-            break
     print(f"reward: {np.sum(episode_reward)}")
     colors = [
         "peru",
@@ -152,5 +147,5 @@ def main():
 
 if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")
-    print("  Max time in each episode: {}".format(MAIN_PARAMS["Max_time"]))
+    print("  Max time in each episode: {}".format(MAIN_PARAMS["MAX_TIME"]))
     reward = main()
