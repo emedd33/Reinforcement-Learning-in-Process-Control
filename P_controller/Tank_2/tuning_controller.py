@@ -32,7 +32,6 @@ def tune_controllers(tank_number=0):
         if rewards[-1] > max_reward:
             max_reward = rewards[-1]
             max_reward_kc = kc_app[-1]
-        kc += kc_inc
         sys.stdout.write(
             "\r"
             + "Tank "
@@ -40,6 +39,7 @@ def tune_controllers(tank_number=0):
             + ": Current kc iteration: "
             + str(round(kc, 2))
         )
+        kc += kc_inc
         sys.stdout.flush()
     print(f"\nSimulation Done for tank {tank_number+1}")
     print("Max reward: ", max_reward, " with kc = ", round(max_reward_kc, 2))
@@ -57,7 +57,7 @@ _, (ax1, ax2) = plt.subplots(2, sharex=False, sharey=False)
 ax1.plot(all_kc_app[0], all_max_reward_values[0], color="peru", label="Tank 1")
 ax1.set_ylabel("SSE")
 ax1.set_xlabel("KC")
-ax1.set_ylim(-1, 0)
+ax1.set_ylim(top=0.01)
 ax1.legend(loc="upper right")
 
 ax2.plot(
@@ -65,7 +65,7 @@ ax2.plot(
 )
 ax2.legend(loc="upper right")
 ax2.set_ylabel("SSE")
-ax2.set_ylim(-1, 0)
+ax2.set_ylim(top=0.01)
 ax2.set_xlabel("KC")
 
 plt.tight_layout()

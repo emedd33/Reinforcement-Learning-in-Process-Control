@@ -81,7 +81,7 @@ def main(kc_tuning=0.16, tuning_number=None, plot=True):
         ax1.plot(h[:-1, 0], color="peru", label="Tank 1")
         ax1.set_ylabel("Level")
         ax1.legend(loc="upper right")
-        ax1.set_ylim(0, 10)
+        ax1.set_ylim(2.5, 7.5)
 
         ax2.plot(z[1:, 0], color="peru", label="Tank 1")
         ax2.legend(loc="upper right")
@@ -91,11 +91,13 @@ def main(kc_tuning=0.16, tuning_number=None, plot=True):
         ax3.plot(d[2:, 0], color="peru", label="Tank 1")
         ax3.set_ylabel("Disturbance")
         ax3.legend(loc="upper right")
+        ax3.set_ylim(0, 4)
 
         plt.tight_layout()
         plt.xlabel("Time")
         plt.show()
-    return np.sum(episode_reward)
+    episode_reward = np.array(episode_reward)
+    return np.sum(episode_reward[:, tuning_number])
 
 
 if __name__ == "__main__":

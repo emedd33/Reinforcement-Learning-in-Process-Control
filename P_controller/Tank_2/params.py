@@ -5,14 +5,14 @@ AGENT1_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "KC": 1.05,
+    "KC": 2.05,
 }
 
 AGENT2_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
-    "INIT_POSITION": 0.3,
-    "KC": 1.33,
+    "INIT_POSITION": 0.2,
+    "KC": 0.76,
 }
 
 TANK1_PARAMS = {

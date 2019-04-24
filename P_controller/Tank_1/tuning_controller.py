@@ -32,7 +32,6 @@ def tune_controllers(tank_number=0):
         if rewards[-1] > max_reward:
             max_reward = rewards[-1]
             max_reward_kc = kc_app[-1]
-        kc += kc_inc
         sys.stdout.write(
             "\r"
             + "Tank "
@@ -40,6 +39,7 @@ def tune_controllers(tank_number=0):
             + ": Current kc iteration: "
             + str(round(kc, 2))
         )
+        kc += kc_inc
         sys.stdout.flush()
     print(f"\nSimulation Done for tank {tank_number+1}")
     print(max_reward, " with kc = ", max_reward_kc)
