@@ -91,7 +91,7 @@ def main():
         )
         ax1.set_ylabel("Level")
         ax1.legend(loc="upper right")
-        ax1.set_ylim(0, 10)
+        ax1.set_ylim(2.5, 7.5)
 
         ax2.plot(
             z[1:, 0 + i * 3],
