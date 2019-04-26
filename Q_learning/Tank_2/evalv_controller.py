@@ -76,7 +76,7 @@ def main():
     ax2.plot(z[1:, 1], color="firebrick", label="Tank 2")
     ax2.legend(loc="upper right")
     ax2.set_ylabel("Valve")
-    ax2.set_ylim(0, 1.01)
+    ax2.set_ylim(-0.01, 1.01)
 
     ax3.plot(d[:, 0], color="peru", label="Tank 1")
     ax3.plot(d[:, 1], color="firebrick", label="Tank 2")

@@ -7,8 +7,7 @@ AGENT_PARAMS["EPSILON"] = [0, 0]
 AGENT_PARAMS["SAVE_MODEL"] = [False, False]
 AGENT_PARAMS["LOAD_MODEL"] = [True, True]
 AGENT_PARAMS["TRAIN_MODEL"] = [False, False]
-AGENT_PARAMS["MODEL_NAME"] = ["Network_[5, 5]HL0", "Network_[5, 5]HL1"]
-
+AGENT_PARAMS["Z_VARIANCE"] = [0.01, 0.01]
 
 for i in range(1, AGENT_PARAMS["N_TANKS"]):
     TANK_DIST[i]["add"] = True

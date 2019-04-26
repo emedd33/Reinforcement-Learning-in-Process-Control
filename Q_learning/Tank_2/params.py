@@ -3,7 +3,7 @@ MAIN_PARAMS = {
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
     "RENDER": False,
-    "MAX_MEAN_REWARD": 10,  # minimum reward before saving model
+    "MAX_MEAN_REWARD": 400,  # minimum reward before saving model
 }
 
 AGENT_PARAMS = {
@@ -22,7 +22,7 @@ AGENT_PARAMS = {
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
-    "SAVE_MODEL": [True, True],
+    "SAVE_MODEL": [False, False],
     "LOAD_MODEL": [False, False],
     "TRAIN_MODEL": [True, True],
     "LOAD_MODEL_NAME": ["Network_[5, 5]HL0", "Network_[5, 5]HL1"],

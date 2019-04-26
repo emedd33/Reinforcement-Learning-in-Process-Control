@@ -3,7 +3,7 @@ MAIN_PARAMS = {
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
     "RENDER": False,
-    "MAX_MEAN_REWARD": 10,  # minimum reward before saving model
+    "MAX_MEAN_REWARD": 150,  # minimum reward before saving model
 }
 
 AGENT_PARAMS = {
@@ -13,17 +13,17 @@ AGENT_PARAMS = {
     "ACTION_DELAY": [5],
     "INIT_ACTION": 0,
     "VALVE_POSITIONS": 10,
-    "EPSILON": [1],
+    "EPSILON": [0],
     "EPSILON_MIN": [0.05],
     "EPSILON_DECAY": [0.995],
-    "LEARNING_RATE": [0.0001],
+    "LEARNING_RATE": [0.0005],
     "HIDDEN_LAYER_SIZE": [[5, 5]],
     "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
     "SAVE_MODEL": [True],
-    "LOAD_MODEL": [False],
+    "LOAD_MODEL": [True],
     "TRAIN_MODEL": [True],
     "LOAD_MODEL_NAME": ["Network_[5, 5]HL0"],
     "LOAD_MODEL_PATH": "Q_learning/Tank_1/saved_networks/usable_networks/",
@@ -42,7 +42,7 @@ TANK1_PARAMS = {
 
 TANK1_DIST = {
     "add": True,
-    "pre_def_dist": True,
+    "pre_def_dist": False,
     "nom_flow": 1,  # 2.7503
     "var_flow": 0.1,
     "max_flow": 2,
