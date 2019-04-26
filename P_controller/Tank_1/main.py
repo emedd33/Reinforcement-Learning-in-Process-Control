@@ -14,7 +14,7 @@ from rewards import get_reward_SSE as get_reward
 plt.style.use("ggplot")
 
 
-def main(kc_tuning=0.16, tuning_number=None, plot=True):
+def main(tau_c_tuning=30, tuning_number=None, plot=True):
     environment = Environment(TANK_PARAMS_LIST, TANK_DIST_LIST, MAIN_PARAMS)
 
     controllers = []
@@ -22,7 +22,7 @@ def main(kc_tuning=0.16, tuning_number=None, plot=True):
         controller = P_controller(environment, AGENT_PARAMS, i)
         controllers.append(controller)
     if tuning_number is not None:
-        controllers[tuning_number].Kc = kc_tuning
+        controllers[tuning_number].evalv_kc(tau_c_tuning)
 
     init_h = []
     for tank in environment.tanks:

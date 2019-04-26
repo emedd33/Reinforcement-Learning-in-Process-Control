@@ -6,60 +6,63 @@ import sys
 
 TANK1_DIST["pre_def_dist"] = False
 
-kc_start = 0
-kc_inc = 0.01
-kc_end = 5
+tau_c_start = 10
+tau_c_inc = 1
+tau_c_end = 100
 all_max_rewards = []
 all_max_reward_values = []
-number_of_kc_evaluations = 30
-all_kc_app = []
+number_of_tau_c_evaluations = 100
+all_tau_c_app = []
 
 
 def tune_controllers(tank_number=0):
     rewards = []
     max_reward = -99
-    max_reward_kc = 0
-    kc_app = []
+    max_reward_tau_c = 0
+    tau_c = []
 
-    kc = kc_start
-    while kc < kc_end:
-        kc_app.append(kc)
+    tau_c = tau_c_start
+    tau_c_app = []
+    while tau_c < tau_c_end:
+        tau_c_app.append(tau_c)
         reward = [
-            main(kc_tuning=kc, tuning_number=tank_number, plot=False)
-            for i in range(number_of_kc_evaluations)
+            main(tau_c_tuning=tau_c, tuning_number=tank_number, plot=False)
+            for i in range(number_of_tau_c_evaluations)
         ]
         rewards.append(np.mean(reward))
         if rewards[-1] > max_reward:
             max_reward = rewards[-1]
-            max_reward_kc = kc_app[-1]
+            max_reward_tau_c = tau_c_app[-1]
         sys.stdout.write(
             "\r"
             + "Tank "
             + str(tank_number + 1)
-            + ": Current kc iteration: "
-            + str(round(kc, 2))
+            + ": Current tau_c iteration: "
+            + str(round(tau_c, 2))
         )
-        kc += kc_inc
+        tau_c += tau_c_inc
         sys.stdout.flush()
     print(f"\nSimulation Done for tank {tank_number+1}")
-    print(max_reward, " with kc = ", max_reward_kc)
+    print(max_reward, " with " + r"$\tau_c$" + ", max_reward_tau_c")
     all_max_reward_values.append(rewards)
-    all_max_rewards.append([max_reward_kc, max_reward])
-    all_kc_app.append(kc_app)
-    return max_reward_kc
+    all_max_rewards.append([max_reward_tau_c, max_reward])
+    all_tau_c_app.append(tau_c_app)
+    return max_reward_tau_c
 
 
 for i in range(1):
-    max_reward_kc = tune_controllers(i)
-    AGENT_PARAMS_LIST[i]["KC"] = max_reward_kc
+    max_reward_tau_c = tune_controllers(i)
+    AGENT_PARAMS_LIST[i]["TAU_C"] = max_reward_tau_c
 
 _, (ax1) = plt.subplots(1, sharex=False, sharey=False)
-ax1.plot(all_kc_app[0], all_max_reward_values[0], color="peru", label="Tank 1")
+ax1.plot(
+    all_tau_c_app[0], all_max_reward_values[0], color="peru", label="Tank 1"
+)
 ax1.set_ylabel("SSE")
-ax1.set_ylim(-1, 0.1)
+# ax1.set_ylim(-1, 0.1)
 ax1.legend(loc="upper right")
-ax1.set_xlabel("KC")
+ax1.set_xlabel(r"$\tau_c$")
 
 plt.tight_layout()
 plt.show()
-print(f"Best KC for Tank 1 was {round(all_max_rewards[0][0], 2)}")
+print(f"Best tau_c for Tank 1 was {round(all_max_rewards[0][0], 2)}")
