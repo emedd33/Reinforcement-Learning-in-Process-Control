@@ -9,12 +9,12 @@ from params import (
 import matplotlib.pyplot as plt
 import numpy as np
 from rewards import sum_rewards
-from rewards import get_reward_3 as get_reward
+from rewards import get_reward_SSE as get_reward
 
 plt.style.use("ggplot")
 
 
-def main(kc_tuning=0.16, tuning_number=None, plot=True):
+def main(tau_c_tuning=0.16, tuning_number=None, plot=True):
     environment = Environment(TANK_PARAMS_LIST, TANK_DIST_LIST, MAIN_PARAMS)
 
     controllers = []
@@ -22,7 +22,7 @@ def main(kc_tuning=0.16, tuning_number=None, plot=True):
         controller = P_controller(environment, AGENT_PARAMS, i)
         controllers.append(controller)
     if tuning_number is not None:
-        controllers[tuning_number].Kc = kc_tuning
+        controllers[tuning_number].tau_c = tau_c_tuning
 
     init_h = []
     for tank in environment.tanks:
@@ -103,7 +103,7 @@ def main(kc_tuning=0.16, tuning_number=None, plot=True):
             )
             ax1.set_ylabel("Level")
             ax1.legend(loc="upper right")
-            ax1.set_ylim(0, 10)
+            ax1.set_ylim(2.5, 7.5)
 
             ax2.plot(
                 z[1:, 0 + i * 3],
@@ -155,3 +155,4 @@ if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")
     print("  Max time in each episode: {}".format(MAIN_PARAMS["MAX_TIME"]))
     reward = main()
+    asp=2

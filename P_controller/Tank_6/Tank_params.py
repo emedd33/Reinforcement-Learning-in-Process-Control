@@ -23,8 +23,8 @@ TANK2_PARAMS = {
     "init_level": 0.5,
     "width": 8,
     "pipe_radius": 0.5,
-    "max_level": 0.9,
-    "min_level": 0.1,
+    "max_level": 0.75,
+    "min_level": 0.25,
 }
 
 TANK2_DIST = {

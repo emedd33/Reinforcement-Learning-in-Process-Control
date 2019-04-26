@@ -5,14 +5,14 @@ AGENT1_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "KC": 2.05,
+    "TAU_C": 30,
 }
 
 AGENT2_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "KC": 0.76,
+    "TAU_C": 100,
 }
 
 TANK1_PARAMS = {
@@ -20,8 +20,8 @@ TANK1_PARAMS = {
     "init_level": 0.5,
     "width": 10,
     "pipe_radius": 0.5,
-    "max_level": 0.9,
-    "min_level": 0.1,
+    "max_level": 0.75,
+    "min_level": 0.25,
 }
 
 TANK1_DIST = {
@@ -42,8 +42,8 @@ TANK2_PARAMS = {
     "init_level": 0.5,
     "width": 8,
     "pipe_radius": 0.5,
-    "max_level": 0.9,
-    "min_level": 0.1,
+    "max_level": 0.75,
+    "min_level": 0.25,
 }
 
 TANK2_DIST = {
