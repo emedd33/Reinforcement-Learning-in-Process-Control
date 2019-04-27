@@ -42,10 +42,12 @@ def main():
 
                 if environment.show_rendering:
                     environment.render(z)
+
                 if True in terminated:
                     break
 
             # Collect summary of episode
+            agent.AC_replay()
             episode_reward = np.array(episode_reward)
             episode_total_reward = []
             t_mean.append(t)
@@ -68,7 +70,6 @@ def main():
                 if mean_r[-1] >= max_mean_reward:
                     agent.save_trained_model()
                     max_mean_reward = mean_r[-1]
-            agent.PolicyGradientReplay(e)
 
             if not environment.running:
                 break

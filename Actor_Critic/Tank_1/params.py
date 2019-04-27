@@ -2,8 +2,8 @@ MAIN_PARAMS = {
     "EPISODES": 20000,
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
-    "RENDER": False,
-    "MAX_MEAN_REWARD": 200,  # minimum reward before saving model
+    "RENDER": True,
+    "MAX_MEAN_REWARD": 201,  # minimum reward before saving model
 }
 
 AGENT_PARAMS = {
@@ -14,22 +14,22 @@ AGENT_PARAMS = {
     "INIT_ACTION": 0.3,
     "VALVEPOS_UNCERTAINTY": 0,
     "EPSILON_DECAY": [1],
-    "LEARNING_RATE": [0.0005],
+    "ACTOR_LEARNING_RATE": [0.001],
+    "CRITIC_LEARNING_RATE": [0.001],
     "HIDDEN_LAYER_SIZE": [[5, 5]],
-    "BATCH_SIZE": 5,
+    "BATCH_SIZE": 1,
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
     "EPSILON": [0.05],
     "EPSILON_MIN": [0.05],
-    "BASE_LINE_LENGTH": 1,
-    "Z_VARIANCE": [0.05],
+    "Z_VARIANCE": [0.1],
     "SAVE_MODEL": [True],
-    "LOAD_MODEL": [True],
+    "LOAD_MODEL": [False],
     "TRAIN_MODEL": [True],
     "LOAD_MODEL_NAME": ["Network_[5, 5]HL"],
-    "LOAD_MODEL_PATH": "Policy_Gradient/Tank_1/saved_networks/training_networks/",
-    "SAVE_MODEL_PATH": "Policy_Gradient/Tank_1/saved_networks/training_networks/",
+    "LOAD_MODEL_PATH": "Actor_Critic/Tank_1/saved_networks/training_networks/",
+    "SAVE_MODEL_PATH": "Actor_Critic/Tank_1/saved_networks/training_networks/",
 }
 
 # Model parameters Tank 1
