@@ -42,10 +42,8 @@ def main():
 
                 if environment.show_rendering:
                     environment.render(z)
-
                 if True in terminated:
                     break
-
             # Collect summary of episode
             agent.AC_replay()
             episode_reward = np.array(episode_reward)

@@ -1,4 +1,4 @@
-from params import MAIN_PARAMS, AGENT_PARAMS, TANK_DIST
+from params import MAIN_PARAMS, AGENT_PARAMS, TANK_DIST, TANK_PARAMS
 
 MAIN_PARAMS["RENDER"] = True
 
@@ -9,4 +9,7 @@ AGENT_PARAMS["LOAD_MODEL"] = [True]
 AGENT_PARAMS["TRAIN_MODEL"] = [False]
 AGENT_PARAMS["LOAD_MODEL_NAME"] = ["Network_[5, 5]HL"]
 
+
 TANK_DIST[0]["pre_def_dist"] = True
+TANK_PARAMS[0]["max_level"] = 0.75
+TANK_PARAMS[0]["min_level"] = 0.25

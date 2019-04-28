@@ -27,7 +27,7 @@ def get_reward_2(state, terminated):
         return -10
     if state[0] > 0.4 and state[0] < 0.6:
         return 1
-    return 0
+    return -1
 
 
 def get_reward_3(state, terminated):
@@ -44,7 +44,7 @@ def get_reward_ABS(state, terminated):
 
     if terminated:
         return -10
-    return np.absolute(ss_position - state[0])
+    return -np.absolute(ss_position - state[0])
 
 
 def get_reward_SSE(state, terminated):
@@ -52,4 +52,4 @@ def get_reward_SSE(state, terminated):
 
     if terminated:
         return -10
-    return (ss_position - state[0]) ** 2
+    return -(ss_position - state[0]) ** 2
