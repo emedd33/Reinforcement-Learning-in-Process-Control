@@ -3,8 +3,7 @@ from models.Agent import Agent
 from params import MAIN_PARAMS, AGENT_PARAMS, TANK_PARAMS, TANK_DIST
 import matplotlib.pyplot as plt
 import numpy as np
-from rewards import get_reward_2 as get_reward
-from rewards import sum_rewards
+from params import get_reward, sum_rewards
 
 plt.style.use("ggplot")
 
