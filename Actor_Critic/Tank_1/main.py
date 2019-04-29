@@ -43,8 +43,6 @@ def main():
                     environment.render(z)
                 if True in terminated:
                     break
-            agent.AC_replay()
-            agent.memory.clear()
             episode_reward = np.array(episode_reward)
             episode_total_reward = []
             t_mean.append(t)
@@ -67,7 +65,8 @@ def main():
                 if mean_r[-1] >= max_mean_reward:
                     agent.save_trained_model()
                     max_mean_reward = mean_r[-1]
-
+            agent.AC_replay()
+            agent.memory.clear()
             if not environment.running:
                 break
 

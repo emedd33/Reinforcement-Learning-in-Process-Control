@@ -1,6 +1,6 @@
 MAIN_PARAMS = {
     "EPISODES": 20000,
-    "MEAN_EPISODE": 50,
+    "MEAN_EPISODE": 1,
     "MAX_TIME": 200,
     "RENDER": True,
     "MAX_MEAN_REWARD": 150,  # minimum reward before saving model
@@ -23,8 +23,8 @@ AGENT_PARAMS = {
     "GAMMA": 0.99,
     "EPSILON": [0, 0],
     "EPSILON_MIN": [0.05, 0.05],
-    "Z_VARIANCE": [0.03, 0.03],
-    "SAVE_MODEL": [False, True],
+    "Z_VARIANCE": [0.01, 0.05],
+    "SAVE_MODEL": [False, False],
     "LOAD_MODEL": [True, False],
     "TRAIN_MODEL": [False, True],
     "LOAD_ACTOR_NAME": ["Actor_Network_[5, 5]HL", "Actor_Network_[5, 5]HL"],

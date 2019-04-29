@@ -77,6 +77,7 @@ class Agent:
                 critics.append(critic)
         return actors, critics
 
+
     def remember(self, states, reward, terminated, t):
         "Stores instances of each time step"
 
