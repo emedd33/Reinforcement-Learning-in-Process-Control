@@ -2,8 +2,8 @@ MAIN_PARAMS = {
     "EPISODES": 20000,
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
-    "RENDER": False,
-    "MAX_MEAN_REWARD": 50,  # minimum reward before saving model
+    "RENDER": True,
+    "MAX_MEAN_REWARD": 150,  # minimum reward before saving model
 }
 
 AGENT_PARAMS = {
@@ -14,16 +14,16 @@ AGENT_PARAMS = {
     "INIT_ACTION": 0.3,
     "VALVEPOS_UNCERTAINTY": 0,
     "EPSILON_DECAY": [1],
-    "ACTOR_LEARNING_RATE": [0.001],
-    "CRITIC_LEARNING_RATE": [0.001],
+    "ACTOR_LEARNING_RATE": [0.01],
+    "CRITIC_LEARNING_RATE": [0.01],
     "HIDDEN_LAYER_SIZE": [[5, 5]],
     "BATCH_SIZE": 1,
     "MEMORY_LENGTH": 200,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.99,
-    "EPSILON": [0.05],
+    "EPSILON": [0],
     "EPSILON_MIN": [0.05],
-    "Z_VARIANCE": [0.05],
+    "Z_VARIANCE": [0.03],
     "SAVE_MODEL": [True],
     "LOAD_MODEL": [False],
     "TRAIN_MODEL": [True],
@@ -39,8 +39,8 @@ TANK1_PARAMS = {
     "init_level": 0.5,
     "width": 10,
     "pipe_radius": 0.5,
-    "max_level": 0.75,
-    "min_level": 0.25,
+    "max_level": 0.6,
+    "min_level": 0.4,
 }
 
 TANK1_DIST = {
@@ -58,3 +58,6 @@ TANK1_DIST = {
 
 TANK_PARAMS = [TANK1_PARAMS]
 TANK_DIST = [TANK1_DIST]
+
+from rewards import get_reward_3 as get_reward
+from rewards import sum_rewards
