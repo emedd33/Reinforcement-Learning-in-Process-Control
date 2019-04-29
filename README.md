@@ -22,7 +22,7 @@ REINFORCE Monte Carlo option of using baseline. **1 Tank**, **2 Tanks** or **6 T
 
 
 ### Actor critic method (A2C)
-Q Actor Critic implemented by combining REINFORCE with Q-learning.
+Q Actor Critic implemented by combining REINFORCE with Q-learning. The method is not fully optimized so it may have some errors. Only implemented for 1 Tank
 
 #### How to run the different project and update parameters
 Run main.py in each project. The different project are independent on each other.
