@@ -8,7 +8,7 @@ TANK1_DIST["pre_def_dist"] = False
 
 tau_c_start = 10
 tau_c_inc = 1
-tau_c_end = 100
+tau_c_end = 400
 all_max_rewards = []
 all_max_reward_values = []
 number_of_tau_c_evaluations = 100
@@ -58,8 +58,7 @@ _, (ax1) = plt.subplots(1, sharex=False, sharey=False)
 ax1.plot(
     all_tau_c_app[0], all_max_reward_values[0], color="peru", label="Tank 1"
 )
-ax1.set_ylabel("SSE")
-# ax1.set_ylim(-1, 0.1)
+ax1.set_ylabel("MSE")
 ax1.legend(loc="upper right")
 ax1.set_xlabel(r"$\tau_c$")
 

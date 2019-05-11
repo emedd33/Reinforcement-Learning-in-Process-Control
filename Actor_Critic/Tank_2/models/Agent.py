@@ -209,8 +209,9 @@ class Agent:
                 log_probs = self.actors[j].forward(states)
                 values_ = values.detach().numpy()
                 Qvals = np.zeros_like(values_)
-                for t in reversed(range(batch_size)):
-                    Qval = rewards[t] + self.gamma * Qvals[t]
+                Qvals[-1] = rewards[-1]
+                for t in reversed(range(batch_size-1)):
+                    Qval = rewards[t] + self.gamma * Qvals[t+1]
                     Qvals[t] = Qval
 
                 self.actors[j].actor_backward(values, log_probs, Qvals, dummy_data_index)

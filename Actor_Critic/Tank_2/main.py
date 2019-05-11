@@ -67,6 +67,8 @@ def main():
                 if mean_r[-1] >= max_mean_reward:
                     agent.save_trained_model()
                     max_mean_reward = mean_r[-1]
+                    if max_mean_reward >= 380:
+                        break
             agent.AC_replay()
 
             if not environment.running:

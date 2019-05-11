@@ -2,7 +2,7 @@ MAIN_PARAMS = {
     "EPISODES": 20000,
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
-    "RENDER": False,
+    "RENDER": True,
     "MAX_MEAN_REWARD": 200,  # minimum reward before saving model
 }
 
@@ -25,7 +25,7 @@ AGENT_PARAMS = {
     "BASE_LINE_LENGTH": 1,
     "Z_VARIANCE": [0.05],
     "SAVE_MODEL": [True],
-    "LOAD_MODEL": [True],
+    "LOAD_MODEL": [False],
     "TRAIN_MODEL": [True],
     "LOAD_MODEL_NAME": ["Network_[5, 5]HL"],
     "LOAD_MODEL_PATH": "Policy_Gradient/Tank_1/saved_networks/training_networks/",

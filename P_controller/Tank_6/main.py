@@ -148,11 +148,10 @@ def main(tau_c_tuning=30, tuning_number=None, plot=True):
             plt.show()
         print(np.sum(episode_reward))
     episode_reward = np.array(episode_reward)
-    return np.sum(episode_reward[:, tuning_number])
+    return np.mean(episode_reward[:, tuning_number])
 
 
 if __name__ == "__main__":
     print("#### SIMULATION STARTED ####")
     print("  Max time in each episode: {}".format(MAIN_PARAMS["MAX_TIME"]))
     reward = main()
-    asp = 2

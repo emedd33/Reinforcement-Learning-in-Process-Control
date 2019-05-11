@@ -28,19 +28,35 @@ AGENT2_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C": 92,
+    "TAU_C": 109,
+}
+AGENT3_PARAMS = {
+    "SS_POSITION": 0.5,  # steady state set position
+    "ACTION_DELAY": 5,
+    "INIT_POSITION": 0.2,
+    "TAU_C": 97,
 }
 
-AGENT3_PARAMS, AGENT4_PARAMS, AGENT5_PARAMS, AGENT6_PARAMS = (
-    AGENT2_PARAMS,
-    AGENT2_PARAMS,
-    AGENT2_PARAMS,
-    AGENT2_PARAMS,
-)
-AGENT3_PARAMS["TAU_C"] = 97
-AGENT4_PARAMS["TAU_C"] = 166
-AGENT5_PARAMS["TAU_C"] = 41
-AGENT6_PARAMS["TAU_C"] = 371
+AGENT4_PARAMS = {
+    "SS_POSITION": 0.5,  # steady state set position
+    "ACTION_DELAY": 5,
+    "INIT_POSITION": 0.2,
+    "TAU_C": 156,
+}
+
+AGENT5_PARAMS = {
+    "SS_POSITION": 0.5,  # steady state set position
+    "ACTION_DELAY": 5,
+    "INIT_POSITION": 0.2,
+    "TAU_C":98,
+}
+
+AGENT6_PARAMS = {
+    "SS_POSITION": 0.5,  # steady state set position
+    "ACTION_DELAY": 5,
+    "INIT_POSITION": 0.2,
+    "TAU_C": 211,
+}
 
 AGENT_PARAMS_LIST = [
     AGENT1_PARAMS,

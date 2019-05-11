@@ -38,12 +38,12 @@ def tune_controllers(tank_number=0):
             + "Tank "
             + str(tank_number + 1)
             + ": Current tau_c iteration: "
-            + str(round(tau_c, 2))
+            + str(round(tau_c+1, 2))
         )
         tau_c += tau_c_inc
         sys.stdout.flush()
     print(f"\nSimulation Done for tank {tank_number+1}")
-    print(max_reward, " with " + "tau_c: " + str(max_reward_tau_c))
+    print("max_reward: " + str(round(max_reward, 5)) + " with " + "tau_c: " + str(max_reward_tau_c))
 
     all_max_reward_values.append(rewards)
     all_max_rewards.append([max_reward_tau_c, max_reward])
@@ -55,7 +55,7 @@ for i in range(6):
     max_reward_tau_c = tune_controllers(i)
     AGENT_PARAMS_LIST[i]["TAU_C"] = max_reward_tau_c
 
-plt.subplot(3, 2, 1)
+plt.subplot(3, 1, 1)
 plt.plot(
     all_tau_c_app[0], all_max_reward_values[0], color="peru", label="Tank 1"
 )
@@ -64,7 +64,7 @@ plt.xlabel(r"$\tau_c$")
 # plt.ylim(top=0.05)
 plt.legend(loc="upper right")
 
-plt.subplot(3, 2, 2)
+plt.subplot(3, 1, 2)
 plt.plot(
     all_tau_c_app[1],
     all_max_reward_values[1],
@@ -76,7 +76,7 @@ plt.ylabel("SSE")
 # plt.ylim(top=0.05)
 plt.xlabel(r"$\tau_c$")
 
-plt.subplot(3, 2, 3)
+plt.subplot(3, 1, 3)
 plt.plot(
     all_tau_c_app[2],
     all_max_reward_values[2],
@@ -88,7 +88,11 @@ plt.ylabel("SSE")
 # plt.ylim(top=0.05)
 plt.xlabel(r"$\tau_c$")
 
-plt.subplot(3, 2, 4)
+plt.tight_layout()
+plt.show()
+
+
+plt.subplot(3, 1, 1)
 plt.plot(
     all_tau_c_app[3],
     all_max_reward_values[3],
@@ -100,7 +104,7 @@ plt.ylabel("SSE")
 # plt.ylim(top=0.05)
 plt.xlabel(r"$\tau_c$")
 
-plt.subplot(3, 2, 5)
+plt.subplot(3, 1, 2)
 plt.plot(
     all_tau_c_app[4],
     all_max_reward_values[4],
@@ -112,7 +116,7 @@ plt.ylabel("SSE")
 # plt.ylim(top=0.1)
 plt.xlabel(r"$\tau_c$")
 
-plt.subplot(3, 2, 6)
+plt.subplot(3, 1, 3)
 plt.plot(
     all_tau_c_app[5],
     all_max_reward_values[5],
