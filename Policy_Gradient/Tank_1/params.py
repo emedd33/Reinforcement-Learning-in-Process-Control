@@ -21,13 +21,13 @@ AGENT_PARAMS = {
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
     "EPSILON": [0],
-    "EPSILON_MIN": [0.05],
+    "EPSILON_MIN": [0],
     "BASE_LINE_LENGTH": 1,
     "Z_VARIANCE": [0.05],
     "SAVE_MODEL": [True],
     "LOAD_MODEL": [False],
     "TRAIN_MODEL": [True],
-    "LOAD_MODEL_NAME": ["Network_[5, 5]HL"],
+    "LOAD_MODEL_NAME": [""],
     "LOAD_MODEL_PATH": "Policy_Gradient/Tank_1/",
     "SAVE_MODEL_PATH": "Policy_Gradient/Tank_1/",
 }

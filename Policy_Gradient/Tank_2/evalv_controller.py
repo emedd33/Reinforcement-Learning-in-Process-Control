@@ -64,12 +64,12 @@ def main():
     ax1.plot(h[:-1, 0], color="peru", label="Tank 1")
     ax1.plot(h[:-1, 1], color="firebrick", label="Tank 2")
     ax1.set_ylabel("Level")
-    ax1.legend(loc="upper right")
+    ax1.legend(loc="upper left")
     ax1.set_ylim(2.5, 7.5)
 
     ax2.plot(z[1:, 0], color="peru", label="Tank 1")
     ax2.plot(z[1:, 1], color="firebrick", label="Tank 2")
-    ax2.legend(loc="upper right")
+    ax2.legend(loc="upper left")
     ax2.set_ylabel("Valve")
     ax2.set_ylim(0, 1.01)
 
@@ -77,7 +77,7 @@ def main():
     ax3.plot(d[:, 1], color="firebrick", label="Tank 2")
     ax3.set_ylim(0, 4)
     ax3.set_ylabel("Disturbance")
-    ax3.legend(loc="upper right")
+    ax3.legend(loc="upper left")
 
     # plt.legend([l1, l2, l3], ["Tank height", "Valve position", "Disturbance"])
     plt.tight_layout()
