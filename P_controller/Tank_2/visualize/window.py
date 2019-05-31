@@ -2,44 +2,48 @@ import pygame
 
 
 class Window:
-    def __init__(self, tank):
+    def __init__(self, tanks):
         pygame.init()
-        pygame.display.set_caption("Tank simulation")
-        self.WINDOW_HEIGHT = 400
-        self.WINDOW_WIDTH = 300
+        pygame.display.set_caption("2 Tank simulation")
+        self.WINDOW_HEIGHT = 280
+        self.WINDOW_WIDTH = 750
+
         self.screen = pygame.display.set_mode(
-            (self.WINDOW_HEIGHT, self.WINDOW_WIDTH)
+            (self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
         )
         self.background_image = pygame.image.load(
-            "Tank_1/visualize/images/EmptyTank.png"
+            "P_controller/Tank_2/visualize/images/2_tanks.png"
         ).convert()
         self.background_image = pygame.transform.scale(
-            self.background_image, (self.WINDOW_HEIGHT, self.WINDOW_WIDTH)
+            self.background_image, (self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
         )
+
         self.clock = pygame.time.Clock()
-        self.tank = TankImage(tank, 56.5, 29)
+        self.n_tanks = len(tanks)
+        self.tank1 = TankImage(tanks[0], 56.5, 29)
+        self.tank2 = TankImage(tanks[1], 407, 29)
 
     def Draw(self, input_z):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
         self.screen.blit(self.background_image, [0, 0])
-        self.tank.draw(self.screen, input_z)
-
+        self.tank1.draw(self.screen, input_z[0])
+        self.tank2.draw(self.screen, input_z[1])
         pygame.display.flip()
         return True
 
 
 class TankImage:
-    height = 200
-    width = 148
+    height = 186
+    width = 147
     choke_width = 35
     choke_height = 5
     rga_water = (25, 130, 150)
     rga_choke = (0, 0, 0)
     choke_left_adj = 234
     choke_top_adj = -7
-    choke_range = 167
+    choke_range = 155
 
     def __init__(self, tank, left_pos, top_pos):
         self.tank = tank
@@ -78,3 +82,4 @@ class TankImage:
                 TankImage.choke_height,
             ),
         )
+

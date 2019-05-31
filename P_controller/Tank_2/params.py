@@ -1,18 +1,18 @@
-MAIN_PARAMS = {"EPISODES": 1, "MAX_TIME": 200, "RENDER": False}
+MAIN_PARAMS = {"EPISODES": 1, "MAX_TIME": 200, "RENDER": True}
 
 # Agent parameters
 AGENT1_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C": 30,
+    "TAU_C": 200,
 }
 
 AGENT2_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C": 100,
+    "TAU_C": 250,
 }
 
 TANK1_PARAMS = {
