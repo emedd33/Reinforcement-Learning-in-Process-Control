@@ -20,7 +20,7 @@ AGENT_PARAMS = {
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
-    "EPSILON": [0.05],
+    "EPSILON": [0],
     "EPSILON_MIN": [0.05],
     "BASE_LINE_LENGTH": 1,
     "Z_VARIANCE": [0.05],
@@ -28,8 +28,8 @@ AGENT_PARAMS = {
     "LOAD_MODEL": [False],
     "TRAIN_MODEL": [True],
     "LOAD_MODEL_NAME": ["Network_[5, 5]HL"],
-    "LOAD_MODEL_PATH": "Policy_Gradient/Tank_1/saved_networks/training_networks/",
-    "SAVE_MODEL_PATH": "Policy_Gradient/Tank_1/saved_networks/training_networks/",
+    "LOAD_MODEL_PATH": "Policy_Gradient/Tank_1/",
+    "SAVE_MODEL_PATH": "Policy_Gradient/Tank_1/",
 }
 
 # Model parameters Tank 1
