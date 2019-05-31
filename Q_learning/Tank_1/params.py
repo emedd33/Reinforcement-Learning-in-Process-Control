@@ -2,7 +2,7 @@ MAIN_PARAMS = {
     "EPISODES": 20000,
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
-    "RENDER": False,
+    "RENDER": True,
     "MAX_MEAN_REWARD": 150,  # minimum reward before saving model
 }
 
@@ -16,7 +16,7 @@ AGENT_PARAMS = {
     "EPSILON": [1],
     "EPSILON_MIN": [0.05],
     "EPSILON_DECAY": [0.995],
-    "LEARNING_RATE": [0.0003],
+    "LEARNING_RATE": [0.001],
     "HIDDEN_LAYER_SIZE": [[5, 5]],
     "BATCH_SIZE": 5,
     "MEMORY_LENGTH": 10000,
@@ -25,9 +25,9 @@ AGENT_PARAMS = {
     "SAVE_MODEL": [True],
     "LOAD_MODEL": [False],
     "TRAIN_MODEL": [True],
-    "LOAD_MODEL_NAME": ["Network_[5, 5]HL0"],
-    "LOAD_MODEL_PATH": "Q_learning/Tank_1/saved_networks/usable_networks/",
-    "SAVE_MODEL_PATH": "Q_learning/Tank_1/saved_networks/training_networks/",
+    "LOAD_MODEL_NAME": [""],
+    "LOAD_MODEL_PATH": "Q_learning/Tank_1/",
+    "SAVE_MODEL_PATH": "Q_learning/Tank_1/",
 }
 
 # Model parameters Tank 1
