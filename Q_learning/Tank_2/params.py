@@ -22,7 +22,7 @@ AGENT_PARAMS = {
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
-    "SAVE_MODEL": [False, False],
+    "SAVE_MODEL": [True, True],
     "LOAD_MODEL": [False, False],
     "TRAIN_MODEL": [True, True],
     "LOAD_MODEL_NAME": ["", ""],
