@@ -11,7 +11,7 @@ class Window:
             (self.WINDOW_HEIGHT, self.WINDOW_WIDTH)
         )
         self.background_image = pygame.image.load(
-            "Tank_1/visualize/images/EmptyTank.png"
+            "P_controller/Tank_1/visualize/images/EmptyTank.png"
         ).convert()
         self.background_image = pygame.transform.scale(
             self.background_image, (self.WINDOW_HEIGHT, self.WINDOW_WIDTH)
@@ -48,11 +48,11 @@ class TankImage:
 
     def draw(self, screen, z):
         self.draw_level(screen)
-        self.draw_choke(screen, z)
+        self.draw_choke(screen, z[0])
 
     def draw_level(self, screen):
-        level_percent = (self.tank.level - self.tank.min) / (
-            self.tank.max - self.tank.min
+        level_percent = (self.tank[0].level - self.tank[0].min) / (
+            self.tank[0].max - self.tank[0].min
         )
         pygame.draw.rect(
             screen,
