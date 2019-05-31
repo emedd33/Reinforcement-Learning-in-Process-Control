@@ -36,12 +36,12 @@ def get_reward_3(state, terminated):
     return 0
 
 
-# def get_reward_ABS(state, terminated):
-#     "Calculates the environments reward for the next state"
+def get_reward_ABS(state, terminated):
+    "Calculates the environments reward for the next state"
 
-#     if terminated:
-#         return -10
-#     return np.absolute(ss_position - state[0])
+    if terminated:
+        return -10
+    return np.absolute(0.5 - state[0])
 
 
 def get_reward_SSE(state, terminated):

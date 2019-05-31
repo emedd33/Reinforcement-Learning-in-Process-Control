@@ -8,8 +8,8 @@ TANK1_DIST["pre_def_dist"] = False
 
 
 tau_c_start = 10
-tau_c_inc = 1
-tau_c_end = 400
+tau_c_inc = 10
+tau_c_end = 1000
 all_max_rewards = []
 all_max_reward_values = []
 number_of_tau_c_evaluations = 100
@@ -38,7 +38,7 @@ def tune_controllers(tank_number=0):
             + "Tank "
             + str(tank_number + 1)
             + ": Current tau_c iteration: "
-            + str(round(tau_c+1, 2))
+            + str(round(tau_c+tau_c_inc, 2))
         )
         tau_c += tau_c_inc
         sys.stdout.flush()

@@ -15,47 +15,47 @@ from Tank_params import (
     TANK6_DIST,
 )
 
-MAIN_PARAMS = {"EPISODES": 1, "MAX_TIME": 200, "RENDER": False}
+MAIN_PARAMS = {"EPISODES": 1, "MAX_TIME": 200, "RENDER": True}
 # Agent parameters
 AGENT1_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C": 31,
+    "TAU_C": 200,
 }
 
 AGENT2_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C": 109,
+    "TAU_C": 250,
 }
 AGENT3_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C": 97,
+    "TAU_C": 250,
 }
 
 AGENT4_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C": 156,
+    "TAU_C": 250,
 }
 
 AGENT5_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C":98,
+    "TAU_C": 250,
 }
 
 AGENT6_PARAMS = {
     "SS_POSITION": 0.5,  # steady state set position
     "ACTION_DELAY": 5,
     "INIT_POSITION": 0.2,
-    "TAU_C": 211,
+    "TAU_C": 250,
 }
 
 AGENT_PARAMS_LIST = [
