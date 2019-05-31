@@ -27,6 +27,7 @@ Q Actor Critic implemented by combining REINFORCE with Q-learning. The method is
 #### How to run the different project and update parameters
 Run main.py in each project. The different project are independent on each other.
 To alter parameters change the values in python file params.py and Tank_params for the 6 tank project.
+The evalv_controller.py script is a one episode run using the predetermined disturbance_200.csv and plots the history of the valve position, liquid level and disturbance to be used for comparison of different controllers
 
 
 
