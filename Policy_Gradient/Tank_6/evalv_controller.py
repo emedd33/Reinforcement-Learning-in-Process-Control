@@ -90,7 +90,7 @@ def main():
             label="Tank {}".format(str(3 + i * 3)),
         )
         ax1.set_ylabel("Level")
-        ax1.legend(loc="upper right")
+        ax1.legend(loc="upper left")
         ax1.set_ylim(2.5, 7.5)
 
         ax2.plot(
@@ -109,7 +109,7 @@ def main():
             label="Tank {}".format(str(3 + i * 3)),
         )
         ax2.set_ylabel("Valve")
-        ax2.legend(loc="upper right")
+        ax2.legend(loc="upper left")
         ax2.set_ylim(0, 1.01)
 
         ax3.plot(
@@ -128,7 +128,7 @@ def main():
             label="Tank {}".format(str(3 + i * 3)),
         )
         ax3.set_ylabel("Disturbance")
-        ax3.legend(loc="upper right")
+        ax3.legend(loc="upper left")
         ax3.set_ylim(0, 4)
 
         plt.tight_layout()

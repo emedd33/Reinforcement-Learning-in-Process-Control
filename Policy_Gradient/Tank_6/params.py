@@ -19,7 +19,7 @@ MAIN_PARAMS = {
     "EPISODES": 3000,
     "MEAN_EPISODE": 50,
     "MAX_TIME": 200,
-    "RENDER": False,
+    "RENDER": True,
     "MAX_MEAN_REWARD": 1200,  # minimum reward before saving model
 }
 
@@ -37,23 +37,16 @@ AGENT_PARAMS = {
     "MEMORY_LENGTH": 10000,
     "OBSERVATIONS": 4,  # level, gradient, is_above 0.5, prevous valve position
     "GAMMA": 0.9,
-    "EPSILON": [0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
-    "EPSILON_MIN": [0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
+    "EPSILON": [0, 0, 0, 0, 0, 0],
+    "EPSILON_MIN": [0, 0, 0, 0, 0, 0],
     "BASE_LINE_LENGTH": 1,
     "Z_VARIANCE": [0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
     "SAVE_MODEL": [True, True, True, True, True, True],
     "LOAD_MODEL": [False, False, False, False, False, False],
     "TRAIN_MODEL": [True, True, True, True, True, True],
-    "LOAD_MODEL_NAME": [
-        "Network_[5, 5]HL",
-        "Network_[5, 5]HL",
-        "Network_[5, 5]HL",
-        "Network_[5, 5]HL",
-        "Network_[5, 5]HL",
-        "Network_[5, 5]HL",
-    ],
-    "LOAD_MODEL_PATH": "Policy_Gradient/Tank_6/saved_networks/usable_networks/2/",
-    "SAVE_MODEL_PATH": "Policy_Gradient/Tank_6/saved_networks/training_networks/",
+    "LOAD_MODEL_NAME": ["", "", "", "", "", ""],
+    "LOAD_MODEL_PATH": "Policy_Gradient/Tank_6/",
+    "SAVE_MODEL_PATH": "Policy_Gradient/Tank_6/",
 }
 
 # Model parameters Tank 1
