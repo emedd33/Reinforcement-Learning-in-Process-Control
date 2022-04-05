@@ -6,7 +6,7 @@ The project was to see if the RL method from machine learning could be of use as
 
 The motivation is that some large complex industrial systems have have model sequations which need to be solved in order to have a control-model. And the solution is based on the system equations. Sometime the solution is hard to converge and solve. So this project was to figure out if one could give the system to the Machine, without any knowledge about the system and see if it could learn to control the systemstate given an disturbance to the system. 
 
-### Abscraction from the thesis
+### Abstraction from the thesis
 Using reinforcement learning as controllers in the process industries was ex-
 plored as an alternate path of doing control compared to the regular controllers.
 Methods such as value-based and policy-based methods were used as controllers
