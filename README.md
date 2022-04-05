@@ -1,6 +1,27 @@
-# Reinforcement Learning in Process Control [WIP].
+# Reinforcement Learning in Process Control .
 ![alt text](DescriptionImage.png)
 
+### Motivation 
+The project was to see if the RL method from machine learning could be of use as control model for industrial systems. Replacing traditional controllers like P-controller and MPC. So this is more of a POC to see if its viable to throw a RL algorithm on a industrial system which needs to be controlled. 
+
+The motivation is that some large complex industrial systems have have model sequations which need to be solved in order to have a control-model. And the solution is based on the system equations. Sometime the solution is hard to converge and solve. So this project was to figure out if one could give the system to the Machine, without any knowledge about the system and see if it could learn to control the systemstate given an disturbance to the system. 
+
+### Abscraction from the thesis
+Using reinforcement learning as controllers in the process industries was ex-
+plored as an alternate path of doing control compared to the regular controllers.
+Methods such as value-based and policy-based methods were used as controllers
+for three different cases of tank level regulation. The controllers were compared
+to a traditional P-controller for evaluation of the controller performance. The
+reinforcement learning controllers showed promising results as they managed
+to control the liquid level between the predetermined constraints. However,
+the P-controllers proved a better performance with smaller input changes com-
+pared to the reinforcement learning controllers which had large input changes
+that resulted in oscillatory liquid level. This thesis shows that the creation
+of reinforcement learning controllers is complicated and time-consuming and a
+well-tuned controller would most likely perform better. However, with more re-
+search and standardized approaches, there is a huge potential of including this
+field into the process industries due to its ability to handle nonlinearity and long
+term evaluations.
 
 #### Install requirements
 Python 3.6.7 was used, not sure which versions are supported
